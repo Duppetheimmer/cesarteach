@@ -249,7 +249,12 @@ export function AuthModal({
       }
 
       const localStudents = getLocalStudents();
-      const matched = localStudents.find(s => s.profile.email.toLowerCase() === cleanEmail);
+      const matched = localStudents.find(s => 
+        s.profile.email.toLowerCase() === cleanEmail ||
+        s.profile.email.toLowerCase().replace(/@.*$/, '') === cleanEmail ||
+        s.profile.fullName.toLowerCase() === cleanEmail ||
+        (s.profile.studentIdNumber && s.profile.studentIdNumber.toLowerCase() === cleanEmail)
+      );
 
       if (matched) {
         const userLang = matched.courseLanguage || matched.profile.targetLanguage || targetLanguage || 'es';
@@ -264,22 +269,7 @@ export function AuthModal({
           onClose();
         }, 400);
       } else {
-        const autoProfile: UserProfile = {
-          id: `std_${Date.now().toString(36)}`,
-          email: cleanEmail,
-          fullName: cleanEmail.split('@')[0],
-          role: 'student',
-          targetLanguage: targetLanguage,
-          studentIdNumber: `EST-${Math.floor(1000 + Math.random() * 9000)}`,
-          createdAt: new Date().toISOString(),
-          lastActiveAt: new Date().toISOString()
-        };
-        setStoredCurrentUser(autoProfile);
-        setSuccessMsg(`${t.successWelcome} ${autoProfile.fullName}!`);
-        setTimeout(() => {
-          onLoginSuccess(autoProfile, targetLanguage);
-          onClose();
-        }, 400);
+        throw new Error(isSpanishTarget ? 'Credenciales incorrectas o el usuario no existe.' : 'Incorrect credentials or user does not exist.');
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Error al iniciar sesión.');
@@ -412,7 +402,7 @@ export function AuthModal({
                   {t.labelEmail}
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -523,7 +513,7 @@ export function AuthModal({
                     {t.labelEmail}
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

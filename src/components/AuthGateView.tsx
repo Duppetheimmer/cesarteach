@@ -305,37 +305,8 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
         return;
       }
 
-      // 3. If account not found, provision fresh student profile with current targetLanguage
-      const autoProfile: UserProfile = {
-        id: `std_${Date.now().toString(36)}`,
-        email: cleanEmail,
-        fullName: cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        role: 'student',
-        targetLanguage: targetLanguage,
-        studentIdNumber: `EST-${Math.floor(1000 + Math.random() * 9000)}`,
-        createdAt: new Date().toISOString(),
-        lastActiveAt: new Date().toISOString()
-      };
-      
-      localStudents.unshift({
-        profile: autoProfile,
-        progress: {
-          completedLessons: [],
-          masteredWords: [],
-          examScore: undefined,
-          examPassed: false,
-          xp: 0,
-          streakDays: 1,
-          lastStudyDate: new Date().toISOString().split('T')[0],
-          unlockedBadges: ['first_login']
-        },
-        courseLanguage: targetLanguage
-      });
-      localStorage.setItem('lingostep_students_records_v2', JSON.stringify(localStudents));
-
-      setStoredCurrentUser(autoProfile);
-      setSuccessMsg(t.successWelcome);
-      setTimeout(() => onLoginSuccess(autoProfile, targetLanguage), 400);
+      // 3. If account not found, throw error instead of creating a new one
+      throw new Error(isSpanishTarget ? 'Credenciales incorrectas o el usuario no existe.' : 'Incorrect credentials or user does not exist.');
     } catch (err: any) {
       setErrorMsg(err.message || 'Error al iniciar sesión.');
     } finally {
@@ -638,7 +609,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
                       {t.labelEmail} <span className="text-rose-400">*</span>
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -709,7 +680,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
                     {t.labelEmail}
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

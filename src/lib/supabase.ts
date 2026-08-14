@@ -13,8 +13,8 @@ export function getSupabaseCredentials(): { url: string; anonKey: string; isCust
     }
   } catch (e) {}
 
-  const envUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
-  const envKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+  const envUrl = (import.meta.env.VITE_SUPABASE_URL || 'https://jleloxpjsqpvqnhyjqco.supabase.co').trim();
+  const envKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_mClhlK4tYEbPaYWKqO0Buw_hRClp85r').trim();
   return { url: envUrl, anonKey: envKey, isCustom: false };
 }
 
