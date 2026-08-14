@@ -1,0 +1,6 @@
+{
+  "name": "CesarTeach",
+  "description": "CesarTeach - Plataforma interactiva para dominar el Nivel A1 de Inglés y Español con lecciones paso a paso, ejercicios interactivos, tutoría IA y certificación.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
