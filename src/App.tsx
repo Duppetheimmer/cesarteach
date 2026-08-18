@@ -42,19 +42,16 @@ export default function App() {
   const {
     progress,
     isLoaded,
+    isSyncing,
+    syncStatus,
+    lastSyncedAt,
     addXP,
     markLessonComplete,
     markWordMastered,
     updateWordSRS,
-    recordExamResult
-  } = useProgress();
-
-  // Auto-sync progress to database whenever progress changes
-  useEffect(() => {
-    if (isLoaded && currentUser) {
-      syncStudentProgressToDatabase(currentUser, progress, courseLanguage);
-    }
-  }, [progress, currentUser, courseLanguage, isLoaded]);
+    recordExamResult,
+    forceSyncToCloud
+  } = useProgress(currentUser, courseLanguage);
 
   const handleLoginSuccess = (user: UserProfile, selectedLanguage?: 'en' | 'es') => {
     setCurrentUser(user);
@@ -197,9 +194,21 @@ export default function App() {
                       {userRank}
                     </span>
                     {currentUser && (
-                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" /> {courseLanguage === 'es' ? 'Synced' : 'Sincronizado'}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        {isSyncing || syncStatus === 'syncing' ? (
+                          <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 animate-pulse">
+                            <Database className="w-3 h-3 animate-spin" /> {courseLanguage === 'es' ? 'Saving to DB...' : 'Guardando en BD...'}
+                          </span>
+                        ) : syncStatus === 'synced' ? (
+                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1" title="Progreso guardado en la base de datos Supabase">
+                            <CheckCircle className="w-3 h-3 text-emerald-500" /> {courseLanguage === 'es' ? 'DB Synced' : 'Progreso en BD'}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
+                            <CheckCircle className="w-3 h-3" /> {courseLanguage === 'es' ? 'Saved' : 'Guardado'}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

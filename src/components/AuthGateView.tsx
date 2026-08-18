@@ -4,7 +4,9 @@ import {
   getSupabaseClient, 
   isSupabaseConfigured, 
   getLocalStudents, 
-  setStoredCurrentUser
+  setStoredCurrentUser,
+  fetchStudentProgressFromDatabase,
+  fetchStudentProfileFromDatabase
 } from '../lib/supabase';
 import { verifyTeacherPin } from '../lib/security';
 import { motion } from 'motion/react';
@@ -168,7 +170,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
       if (client) {
         try {
           const { data, error } = await client.auth.signUp({
-            email: cleanEmail,
+            email: cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@student.cesarteach.edu`,
             password: password,
             options: {
               data: {
@@ -190,35 +192,65 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
             email: newProfile.email,
             full_name: newProfile.fullName,
             role: 'student',
-            student_id_number: newProfile.studentIdNumber,
+            student_id_number: newProfile.studentIdNumber || null,
             avatar_url: newProfile.avatarUrl,
             created_at: newProfile.createdAt,
             last_active_at: newProfile.lastActiveAt
+          });
+
+          // Save initial record in student_progress table
+          await client.from('student_progress').upsert({
+            user_id: newProfile.id,
+            completed_lessons: [],
+            mastered_words: [],
+            exam_score: null,
+            exam_passed: false,
+            xp: 0,
+            streak_days: 1,
+            last_study_date: new Date().toISOString().split('T')[0],
+            unlocked_badges: ['b_first_step'],
+            word_srs_status: {},
+            lesson_dates: {},
+            course_language: targetLanguage,
+            total_exercises_done: 0,
+            time_spent_minutes: 0,
+            updated_at: new Date().toISOString()
           });
         } catch (supaErr) {
           console.warn('Notice from Supabase sign up:', supaErr);
         }
       }
 
-      // Save to local student registry
+      // Save to local student registry & user-specific progress key
+      const initialProgress = {
+        completedLessons: [],
+        masteredWords: [],
+        examScore: undefined,
+        examPassed: false,
+        xp: 0,
+        streakDays: 1,
+        lastStudyDate: new Date().toISOString().split('T')[0],
+        unlockedBadges: ['b_first_step'],
+        wordSRSStatus: {},
+        lessonDates: {},
+        totalExercisesDone: 0,
+        timeSpentMinutes: 0
+      };
+
+      try {
+        localStorage.setItem(`lingostep_progress_${newProfile.id}`, JSON.stringify(initialProgress));
+      } catch (e) {}
+
       const localStudents = getLocalStudents();
-      const existingIdx = localStudents.findIndex(s => s.profile.email.toLowerCase() === cleanEmail);
+      const existingIdx = localStudents.findIndex(s => s.profile.email.toLowerCase() === cleanEmail || s.profile.id === newProfile.id);
       if (existingIdx >= 0) {
         localStudents[existingIdx].profile = newProfile;
+        localStudents[existingIdx].progress = initialProgress;
         localStudents[existingIdx].courseLanguage = targetLanguage;
       } else {
         localStudents.unshift({
           profile: newProfile,
-          progress: {
-            completedLessons: [],
-            masteredWords: [],
-            examScore: undefined,
-            examPassed: false,
-            xp: 0,
-            streakDays: 1,
-            lastStudyDate: new Date().toISOString().split('T')[0],
-            unlockedBadges: ['first_login']
-          },
+          progress: initialProgress,
           courseLanguage: targetLanguage
         });
       }
@@ -256,8 +288,9 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
       // 1. Try Supabase Auth
       if (client) {
         try {
+          const authEmail = cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@student.cesarteach.edu`;
           const { data, error } = await client.auth.signInWithPassword({
-            email: cleanEmail,
+            email: authEmail,
             password: password
           });
 
@@ -274,6 +307,15 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
               lastActiveAt: new Date().toISOString(),
               avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(data.user.email || 'user')}`
             };
+
+            // Fetch remote progress from Supabase
+            const remoteProgress = await fetchStudentProgressFromDatabase(profile.id);
+            if (remoteProgress) {
+              try {
+                localStorage.setItem(`lingostep_progress_${profile.id}`, JSON.stringify(remoteProgress));
+              } catch (e) {}
+            }
+
             setStoredCurrentUser(profile);
             setSuccessMsg(t.successWelcome);
             setTimeout(() => onLoginSuccess(profile, userLang), 400);
@@ -282,9 +324,29 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
         } catch (supaErr) {
           console.warn('Supabase sign-in warning:', supaErr);
         }
+
+        // 2. Query Supabase profiles table directly
+        try {
+          const remoteProfile = await fetchStudentProfileFromDatabase(cleanEmail);
+          if (remoteProfile) {
+            const userLang = remoteProfile.targetLanguage || targetLanguage || 'es';
+            const remoteProgress = await fetchStudentProgressFromDatabase(remoteProfile.id);
+            if (remoteProgress) {
+              try {
+                localStorage.setItem(`lingostep_progress_${remoteProfile.id}`, JSON.stringify(remoteProgress));
+              } catch (e) {}
+            }
+            setStoredCurrentUser(remoteProfile);
+            setSuccessMsg(t.successWelcome);
+            setTimeout(() => onLoginSuccess(remoteProfile, userLang), 400);
+            return;
+          }
+        } catch (supaProfileErr) {
+          console.warn('Supabase profile query warning:', supaProfileErr);
+        }
       }
 
-      // 2. Check local registered students
+      // 3. Check local registered students
       const localStudents = getLocalStudents();
       const matched = localStudents.find(s => 
         s.profile.email.toLowerCase() === cleanEmail ||
@@ -305,7 +367,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
         return;
       }
 
-      // 3. If account not found, throw error instead of creating a new one
+      // 4. If account not found, throw error
       throw new Error(isSpanishTarget ? 'Credenciales incorrectas o el usuario no existe.' : 'Incorrect credentials or user does not exist.');
     } catch (err: any) {
       setErrorMsg(err.message || 'Error al iniciar sesión.');

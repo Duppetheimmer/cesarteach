@@ -177,13 +177,85 @@ export function setStoredCurrentUser(user: UserProfile | null) {
   }
 }
 
+// Fetch student progress directly from Supabase
+export async function fetchStudentProgressFromDatabase(userId: string): Promise<UserProgress | null> {
+  const client = getSupabaseClient();
+  if (!client || !userId) return null;
+
+  try {
+    const { data, error } = await client
+      .from('student_progress')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (!error && data) {
+      return {
+        completedLessons: Array.isArray(data.completed_lessons) ? data.completed_lessons : [],
+        masteredWords: Array.isArray(data.mastered_words) ? data.mastered_words : [],
+        examScore: data.exam_score !== null && data.exam_score !== undefined ? Number(data.exam_score) : undefined,
+        examPassed: Boolean(data.exam_passed),
+        examPassedDate: data.exam_passed_date || undefined,
+        xp: Number(data.xp || 0),
+        streakDays: Number(data.streak_days || 1),
+        lastStudyDate: data.last_study_date || new Date().toISOString().split('T')[0],
+        unlockedBadges: Array.isArray(data.unlocked_badges) ? data.unlocked_badges : [],
+        wordSRSStatus: typeof data.word_srs_status === 'object' && data.word_srs_status ? data.word_srs_status : {},
+        lessonDates: typeof data.lesson_dates === 'object' && data.lesson_dates ? data.lesson_dates : {},
+        totalExercisesDone: Number(data.total_exercises_done || 0),
+        timeSpentMinutes: Number(data.time_spent_minutes || 0)
+      };
+    }
+  } catch (err: any) {
+    console.warn('Error fetching student progress from Supabase:', err.message || err);
+  }
+  return null;
+}
+
+// Fetch user profile from Supabase by email, student id, or user id
+export async function fetchStudentProfileFromDatabase(identifier: string): Promise<UserProfile | null> {
+  const client = getSupabaseClient();
+  if (!client || !identifier) return null;
+
+  const clean = identifier.trim().toLowerCase();
+  try {
+    const { data, error } = await client
+      .from('profiles')
+      .select('*')
+      .or(`id.eq.${identifier},email.ilike.${clean},student_id_number.ilike.${clean}`)
+      .limit(1)
+      .maybeSingle();
+
+    if (!error && data) {
+      return {
+        id: data.id,
+        email: data.email,
+        fullName: data.full_name || data.email.split('@')[0],
+        role: (data.role as UserRole) || 'student',
+        avatarUrl: data.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(data.email)}`,
+        studentIdNumber: data.student_id_number,
+        notesFromTeacher: data.notes_from_teacher,
+        createdAt: data.created_at || new Date().toISOString(),
+        lastActiveAt: data.last_active_at || new Date().toISOString()
+      };
+    }
+  } catch (err: any) {
+    console.warn('Error querying Supabase profiles:', err.message || err);
+  }
+  return null;
+}
+
 // Sync progress to cloud (Supabase) and local store
 export async function syncStudentProgressToDatabase(
   user: UserProfile,
   progress: UserProgress,
   courseLanguage: 'en' | 'es'
 ): Promise<{ success: boolean; message?: string }> {
-  // 1. Update local database
+  if (!user || !user.id) {
+    return { success: false, message: 'Usuario no identificado' };
+  }
+
+  // 1. Update local database cache
   const students = getLocalStudents();
   const index = students.findIndex(s => s.profile.id === user.id || s.profile.email.toLowerCase() === user.email.toLowerCase());
 
@@ -212,42 +284,53 @@ export async function syncStudentProgressToDatabase(
 
   saveLocalStudents(students);
   setStoredCurrentUser(updatedProfile);
+  try {
+    localStorage.setItem(`lingostep_progress_${user.id}`, JSON.stringify(progress));
+  } catch (e) {}
 
   // 2. If Supabase is connected, sync to remote tables
   const client = getSupabaseClient();
   if (client) {
     try {
       // Upsert profile
-      await client.from('profiles').upsert({
+      const { error: profError } = await client.from('profiles').upsert({
         id: user.id,
         email: user.email,
         full_name: user.fullName,
-        role: user.role,
-        avatar_url: user.avatarUrl,
+        role: user.role || 'student',
+        avatar_url: user.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.email)}`,
         last_active_at: new Date().toISOString(),
-        student_id_number: user.studentIdNumber,
-        notes_from_teacher: user.notesFromTeacher
+        student_id_number: user.studentIdNumber || null,
+        notes_from_teacher: user.notesFromTeacher || null
       });
 
+      if (profError) {
+        console.warn('Supabase profile upsert notice:', profError.message);
+      }
+
       // Upsert student progress
-      await client.from('student_progress').upsert({
+      const { error: progError } = await client.from('student_progress').upsert({
         user_id: user.id,
-        completed_lessons: progress.completedLessons,
-        mastered_words: progress.masteredWords,
-        exam_score: progress.examScore,
-        exam_passed: progress.examPassed,
-        exam_passed_date: progress.examPassedDate,
-        xp: progress.xp,
-        streak_days: progress.streakDays,
-        last_study_date: progress.lastStudyDate,
-        unlocked_badges: progress.unlockedBadges,
-        word_srs_status: progress.wordSRSStatus,
-        lesson_dates: progress.lessonDates,
+        completed_lessons: Array.isArray(progress.completedLessons) ? progress.completedLessons : [],
+        mastered_words: Array.isArray(progress.masteredWords) ? progress.masteredWords : [],
+        exam_score: typeof progress.examScore === 'number' ? progress.examScore : null,
+        exam_passed: Boolean(progress.examPassed),
+        exam_passed_date: progress.examPassedDate || null,
+        xp: Number(progress.xp || 0),
+        streak_days: Number(progress.streakDays || 1),
+        last_study_date: progress.lastStudyDate || new Date().toISOString().split('T')[0],
+        unlocked_badges: Array.isArray(progress.unlockedBadges) ? progress.unlockedBadges : [],
+        word_srs_status: progress.wordSRSStatus || {},
+        lesson_dates: progress.lessonDates || {},
         course_language: courseLanguage,
-        total_exercises_done: progress.totalExercisesDone,
-        time_spent_minutes: progress.timeSpentMinutes,
+        total_exercises_done: Number(progress.totalExercisesDone || 0),
+        time_spent_minutes: Number(progress.timeSpentMinutes || 0),
         updated_at: new Date().toISOString()
       });
+
+      if (progError) {
+        console.warn('Supabase progress upsert notice:', progError.message);
+      }
 
       return { success: true, message: 'Progreso sincronizado en Supabase y localmente.' };
     } catch (err: any) {
