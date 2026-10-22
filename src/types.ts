@@ -1,4 +1,18 @@
-export type SectionTab = 'home' | 'a1-inicial' | 'a1-intermedio' | 'fluency' | 'flashcards' | 'exam' | 'ai-tutor' | 'ai-tools' | 'teacher-dashboard';
+export type SectionTab =
+  | 'home'
+  | 'a1-inicial'
+  | 'a1-intermedio'
+  | 'a2-plataforma'
+  | 'b1-umbral'
+  | 'b2-avanzado'
+  | 'fluency'
+  | 'flashcards'
+  | 'exam'
+  | 'ai-tutor'
+  | 'ai-tools'
+  | 'teacher-dashboard';
+
+export type CEFRLevel = 'A1' | 'A2' | 'B1' | 'B2';
 
 export type UserRole = 'student' | 'teacher';
 
@@ -43,6 +57,10 @@ export interface LessonStep {
   description: string;
   content: string;
   category?: string;
+  cefrLevel?: CEFRLevel;
+  grammarFocus?: string;
+  commonMistake?: string;
+  strategyTip?: string;
   quiz: QuizQuestion[];
   dialogue?: DialogueLine[];
 }
@@ -54,10 +72,12 @@ export interface VocabWord {
   example: string;
   category: string;
   phonetic?: string;
+  cefrLevel?: CEFRLevel;
 }
 
 export interface ExamQuestion extends QuizQuestion {
   sectionTitle: string;
+  cefrLevel?: CEFRLevel;
 }
 
 export interface Badge {
@@ -75,6 +95,7 @@ export interface ExamAttemptRecord {
   passed: boolean;
   totalQuestions: number;
   correctCount: number;
+  level?: CEFRLevel;
 }
 
 export interface UserProgress {
@@ -83,6 +104,7 @@ export interface UserProgress {
   examScore?: number; // Highest score %
   examPassed?: boolean;
   examPassedDate?: string;
+  levelScores?: Partial<Record<CEFRLevel, number>>;
   xp: number;
   streakDays: number;
   lastStudyDate?: string;

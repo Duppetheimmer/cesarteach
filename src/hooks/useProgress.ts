@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { UserProgress, Badge, UserProfile } from '../types';
+import { UserProgress, Badge, UserProfile, CEFRLevel } from '../types';
 import { 
   fetchStudentProgressFromDatabase, 
   syncStudentProgressToDatabase, 
@@ -14,10 +14,13 @@ export const SYSTEM_BADGES: Badge[] = [
   { id: 'b_5_lessons', title: 'Dedicación Constante', description: 'Completa 5 lecciones del curso', iconName: 'BookOpen', reqType: 'lessons', reqValue: 5 },
   { id: 'b_10_lessons', title: 'Líder A1', description: 'Completa 10 lecciones del curso', iconName: 'Award', reqType: 'lessons', reqValue: 10 },
   { id: 'b_10_words', title: 'Mente Léxica', description: 'Domina 10 palabras de vocabulario', iconName: 'Brain', reqType: 'words', reqValue: 10 },
-  { id: 'b_25_words', title: 'Vocabulario Ninja', description: 'Domina las 25 palabras clave A1', iconName: 'Zap', reqType: 'words', reqValue: 25 },
+  { id: 'b_25_words', title: 'Vocabulario Ninja', description: 'Domina 25 palabras clave del curso', iconName: 'Zap', reqType: 'words', reqValue: 25 },
   { id: 'b_100_xp', title: 'Primeros 100 XP', description: 'Acumula 100 Puntos de Experiencia', iconName: 'Sparkles', reqType: 'xp', reqValue: 100 },
   { id: 'b_500_xp', title: 'Estudiante Estrella', description: 'Acumula 500 Puntos de Experiencia', iconName: 'Star', reqType: 'xp', reqValue: 500 },
-  { id: 'b_cert_a1', title: 'Graduado A1', description: 'Aprueba el Examen Final de Certificación', iconName: 'Trophy', reqType: 'exam', reqValue: 1 },
+  { id: 'b_cert_a1', title: 'Graduado A1', description: 'Aprueba el Examen de Certificación A1 (≥80%)', iconName: 'Trophy', reqType: 'exam', reqValue: 1 },
+  { id: 'b_cert_a2', title: 'Graduado A2', description: 'Aprueba el Examen de Certificación A2 (≥80%)', iconName: 'Trophy', reqType: 2 as any, reqValue: 2 },
+  { id: 'b_cert_b1', title: 'Graduado B1 Independiente', description: 'Aprueba el Examen de Certificación B1 (≥80%)', iconName: 'Trophy', reqType: 3 as any, reqValue: 3 },
+  { id: 'b_cert_b2', title: 'Maestro B2 Avanzado', description: 'Aprueba el Examen de Certificación B2 (≥80%)', iconName: 'Trophy', reqType: 4 as any, reqValue: 4 },
 ];
 
 const defaultProgress: UserProgress = {
@@ -298,9 +301,9 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
     });
   }, [saveProgress]);
 
-  const recordExamResult = useCallback((scorePercent: number, passed: boolean) => {
+  const recordExamResult = useCallback((scorePercent: number, passed: boolean, level: CEFRLevel = 'A1') => {
     setProgress((prev) => {
-      const isNewPass = passed || prev.examPassed;
+      const isA1Pass = level === 'A1' ? (passed || prev.examPassed) : prev.examPassed;
       const highestScore = Math.max(scorePercent, prev.examScore || 0);
       const currentDate = new Date().toLocaleDateString('es-ES', {
         year: 'numeric',
@@ -308,13 +311,23 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
         day: 'numeric'
       });
 
-      const bonusXP = passed ? 150 : 30;
+      const certBadgeId = `b_cert_${level.toLowerCase()}`;
+      const updatedBadges = passed
+        ? Array.from(new Set([...(prev.unlockedBadges || []), certBadgeId]))
+        : prev.unlockedBadges || [];
+
+      const bonusXP = passed ? 200 : 30;
 
       const updated: UserProgress = {
         ...prev,
         examScore: highestScore,
-        examPassed: isNewPass,
-        examPassedDate: isNewPass ? (prev.examPassedDate || currentDate) : prev.examPassedDate,
+        examPassed: Boolean(isA1Pass || updatedBadges.includes('b_cert_a1')),
+        examPassedDate: (isA1Pass || passed) ? (prev.examPassedDate || currentDate) : prev.examPassedDate,
+        levelScores: {
+          ...(prev.levelScores || {}),
+          [level]: Math.max(scorePercent, prev.levelScores?.[level] || 0)
+        },
+        unlockedBadges: updatedBadges,
         xp: (prev.xp || 0) + bonusXP,
       };
       saveProgress(updated);
