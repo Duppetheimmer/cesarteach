@@ -497,6 +497,303 @@ Solo añadimos **by + autor** cuando el creador aporta información relevante:
         explanation: '"Run out of" significa quedarse sin suministros de algo.'
       }
     ]
+  },
+  {
+    id: 'b1-en-9',
+    day: 9,
+    title: 'Polite Indirect Questions & Question Tags',
+    description: 'Pregunta con cortesía ejecutiva ("Could you tell me where the station is?") y confirma información con Question Tags ("aren\'t you?").',
+    category: 'Pragmática y Cortesía B1',
+    cefrLevel: 'B1',
+    grammarFocus: 'Indirect Questions (Could you tell me + WH + Subject + Verb) | Question Tags (Positive -> Negative, Negative -> Positive)',
+    commonMistake: 'En una pregunta indirecta ("Could you tell me where the bank is?"), la segunda mitad YA NO invierte el orden ni usa "do/does/did". Es INCORRECTO decir "Could you tell me where is the bank?" o "Do you know what time does it open?".',
+    strategyTip: 'Regla del imán en Question Tags: Oración positiva (+) lleva Tag negativo (-); oración negativa (-) lleva Tag positivo (+). Y recuerda la excepción: "I am on time, AREN\'T I?".',
+    content: `En el nivel **B1**, hacer preguntas directas como *"Where is the bathroom?"* o *"What time is the meeting?"* puede sonar brusco con desconocidos o clientes. Los hablantes competentes usan **Indirect Questions** y **Question Tags**.
+
+### 1. Indirect Questions (El orden vuelve a ser Sujeto + Verbo)
+Cuando introduces la pregunta con **Could you tell me... / Do you know... / Would you mind telling me...**, la cláusula siguiente funciona como una afirmación normal:
+- Directa: *Where **is the station**?*
+  $\rightarrow$ Indirecta B1: *Could you tell me where **the station is**?*
+- Directa: *What time **does the bank open**?*
+  $\rightarrow$ Indirecta B1: *Do you know what time **the bank opens**?* (¡Desaparece *does* y el verbo toma *-s*!).
+- Preguntas de Sí/No usan **if** o **whether**:
+  $\rightarrow$ *Do you know **if she is coming** to the dinner?*
+
+### 2. Question Tags (¿Verdad? / ¿No es así?)
+En español basta con decir *"¿verdad?"* al final de cualquier frase. En inglés debes reciclar el **mismo auxiliar** en sentido opuesto:
+- *You **are** from Colombia, **aren't you**?* (+ $\rightarrow$ -)
+- *She **hasn't** arrived yet, **has she**?* (- $\rightarrow$ +)
+- *They **went** to Paris last year, **didn't they**?* (Past Simple $\rightarrow$ *didn't*)
+- **Excepción clave**: *I am in the right room, **aren't I**?*`,
+    dialogue: [
+      {
+        speaker: 'Lucas',
+        textEn: 'Excuse me, could you tell me what time the conference starts?',
+        textEs: 'Disculpe, ¿podría decirme a qué hora empieza la conferencia?'
+      },
+      {
+        speaker: 'Coordinator',
+        textEn: 'Of course! It starts at 9:30 AM in Hall B. You are registered already, aren\'t you?',
+        textEs: '¡Por supuesto! Empieza a las 9:30 AM en el Salón B. Usted ya está registrado, ¿verdad?'
+      },
+      {
+        speaker: 'Lucas',
+        textEn: 'Yes, I am. Do you know if there is Wi-Fi available inside the auditorium?',
+        textEs: 'Sí, así es. ¿Sabe si hay Wi-Fi disponible dentro del auditorio?'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b1-en-9-q1',
+        question: 'Elige la pregunta indirecta gramaticalmente correcta:',
+        options: [
+          'Could you tell me where is the nearest subway station?',
+          'Could you tell me where the nearest subway station is?',
+          'Could you tell me where does the nearest subway station is?',
+          'Do you know where is the subway station?'
+        ],
+        correctAnswer: 'Could you tell me where the nearest subway station is?',
+        explanation: 'En las preguntas indirectas, el orden después de "where/what/when" es Sujeto + Verbo ("where the nearest subway station is"), sin invertir.',
+        hint: 'Después de "where", pon primero el sujeto y al final el verbo "is".'
+      },
+      {
+        id: 'b1-en-9-q2',
+        question: 'Completa con el Question Tag correcto: "She speaks fluent Portuguese, ___?"',
+        options: ['isn\'t she', 'doesn\'t she', 'does she', 'didn\'t she'],
+        correctAnswer: 'doesn\'t she',
+        explanation: 'Como "speaks" está en Present Simple afirmativo (3ra persona), el Question Tag usa el auxiliar negativo "doesn\'t she?".',
+        hint: 'Present Simple afirmativo (she speaks) -> auxiliar negativo.'
+      },
+      {
+        id: 'b1-en-9-q3',
+        type: 'word-order',
+        question: 'Ordena esta pregunta indirecta con "does" eliminado:',
+        options: [],
+        wordTiles: ['Do', 'you', 'know', 'what', 'time', 'the', 'museum', 'closes?'],
+        correctAnswer: 'Do you know what time the museum closes?',
+        explanation: 'Al ser pregunta indirecta, no usamos "does" y el verbo "closes" va al final con "-s".'
+      }
+    ]
+  },
+  {
+    id: 'b1-en-10',
+    day: 10,
+    title: 'Result Clauses & Intensifiers: So, Such, Too & Enough',
+    description: 'Expresa causa y consecuencia con precisión usando "so... that", "such a... that", "too... to" y "enough to".',
+    category: 'Precisión Estructural B1',
+    cefrLevel: 'B1',
+    grammarFocus: 'So + Adj/Adv + that | Such + (a/an) + Adj + Noun + that | Too + Adj + to | Adj + enough + to',
+    commonMistake: 'No confundas "So" y "Such": usa "SO" cuando solo hay un adjetivo o adverbio ("The movie was SO good"), pero usa "SUCH" cuando le sigue un sustantivo ("It was SUCH a good movie").',
+    strategyTip: 'Si ves un sustantivo al final del bloque descriptivo (a day, a person, good news), elige siempre SUCH.',
+    content: `Para conectar causas e impactos con fluidez de nivel **B1**, el inglés utiliza cuatro estructuras de intensidad y consecuencia:
+
+### 1. SO + Adjetivo / Adverbio + (that...)
+Cuando calificas directamente un adjetivo o adverbio **sin sustantivo detrás**:
+- *The coffee was **so hot that** I couldn't drink it.* (El café estaba tan caliente que no pude beberlo).
+- *She spoke **so clearly that** everyone understood.*
+
+### 2. SUCH + (a / an) + Adjetivo + Sustantivo + (that...)
+Cuando el adjetivo acompaña a un **sustantivo**:
+- *It was **such a cold day that** we stayed indoors.* (Fue un día tan frío que nos quedamos adentro).
+- *They are **such friendly people that** everyone loves them.* (En plural o incontables, no lleva *a/an*: *such good weather*).
+
+### 3. Transformación entre "Too... to" y "Not... enough to"
+Ambas estructuras expresan la misma idea desde ángulos opuestos:
+- *The box is **too heavy to lift**.* $=$ *The box **isn't light enough to lift**.*`,
+    dialogue: [
+      {
+        speaker: 'Elena',
+        textEn: 'That was such an inspiring workshop that I took five pages of notes!',
+        textEs: '¡Fue un taller tan inspirador que tomé cinco páginas de apuntes!'
+      },
+      {
+        speaker: 'Marcus',
+        textEn: 'I agree! The speaker explained complex topics so simply that even beginners understood.',
+        textEs: '¡Estoy de acuerdo! El ponente explicó temas complejos de forma tan sencilla que hasta los principiantes entendieron.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b1-en-10-q1',
+        question: 'Elige entre So y Such: "It was ___ an interesting book that I read it in one night."',
+        options: ['so', 'such', 'too', 'enough'],
+        correctAnswer: 'such',
+        explanation: 'Como sigue el artículo + adjetivo + sustantivo ("an interesting book"), debemos usar "such".',
+        hint: 'Hay un sustantivo ("book") -> such a/an.'
+      },
+      {
+        id: 'b1-en-10-q2',
+        question: 'Completa: "The traffic was ___ heavy that we missed the beginning of the play."',
+        options: ['such', 'so', 'too', 'enough'],
+        correctAnswer: 'so',
+        explanation: '"Heavy" está solo como adjetivo antes de "that", por lo que usamos "so heavy that".',
+        hint: 'Adjetivo solo ("heavy") -> so.'
+      },
+      {
+        id: 'b1-en-10-q3',
+        type: 'word-order',
+        question: 'Ordena la oración de consecuencia con "such":',
+        options: [],
+        wordTiles: ['She', 'is', 'such', 'a', 'talented', 'architect', 'that', 'she', 'won.'],
+        correctAnswer: 'She is such a talented architect that she won.',
+        explanation: '"Such a + adjetivo + sustantivo singular contable + that..." expresa intensidad y resultado.'
+      }
+    ]
+  },
+  {
+    id: 'b1-en-11',
+    day: 11,
+    title: 'Verbs That Change Meaning (-ING vs. TO) & Passive Infinitives',
+    description: 'Distingue entre "remember doing" vs "remember to do", "try doing" vs "try to do" y estructuras pasivas con infinitivo.',
+    category: 'Matices Semánticos B1',
+    cefrLevel: 'B1',
+    grammarFocus: 'Remember / Forget / Stop / Try + -ING (past memory/experiment) vs. + TO (future duty/effort)',
+    commonMistake: '"I forgot locking the door" y "I forgot to lock the door" significan cosas opuestas: con "to lock" NO cerraste la puerta (olvidaste la tarea); con "locking" SÍ la cerraste pero no recuerdas el momento.',
+    strategyTip: 'Regla cronológica: "-ING" mira hacia una acción YA OCURRIDA o un experimento fácil; "TO + Verbo" mira hacia una OBLIGACIÓN FUTURA o un esfuerzo difícil.',
+    content: `En el nivel **A2** aprendiste qué verbos llevan *-ing* y cuáles llevan *to*. En **B1**, dominas los verbos que aceptan **ambos**, pero **cambian radicalmente de significado**:
+
+### 1. REMEMBER & FORGET
+- **+ TO + Infinitivo (Tarea / Obligación futura)**:
+  - *Please **remember to send** the email.* (Recuerda enviar el correo — primero recuerdas, luego lo envías).
+  - *I **forgot to buy** milk.* (Olvidé comprar leche — no la compré).
+- **+ Verbo-ING (Recuerdo de una experiencia del pasado)**:
+  - *I clearly **remember visiting** Rome in 2019.* (Recuerdo haber visitado Roma).
+  - *I will never **forget meeting** you for the first time.* (Jamás olvidaré haberte conocido).
+
+### 2. TRY
+- **Try + TO + Infinitivo (Hacer un esfuerzo por lograr algo difícil)**:
+  - *I **tried to open** the jar, but it was stuck.* (Intenté abrir el frasco con esfuerzo).
+- **Try + Verbo-ING (Probar un método o experimento para ver qué pasa)**:
+  - *If you can't sleep, **try drinking** chamomile tea.* (Prueba tomar té de manzanilla).
+
+### 3. NEED + -ING / TO BE + PARTICIPLE (Sentido Pasivo)
+- *My car **needs washing**.* $=$ *My car **needs to be washed**.* (Mi auto necesita ser lavado).`,
+    dialogue: [
+      {
+        speaker: 'Hannah',
+        textEn: 'Did you remember to lock the back door before we left the house?',
+        textEs: '¿Recordaste cerrar con llave la puerta trasera antes de que saliéramos de casa?'
+      },
+      {
+        speaker: 'Oliver',
+        textEn: 'Yes! I clearly remember turning the key twice and checking the handle.',
+        textEs: '¡Sí! Recuerdo claramente haber girado la llave dos veces y revisar la manija.'
+      },
+      {
+        speaker: 'Hannah',
+        textEn: 'Great, and if the alarm code doesn\'t work tonight, try entering it slowly.',
+        textEs: 'Genial, y si el código de la alarma no funciona esta noche, prueba ingresándolo despacio.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b1-en-11-q1',
+        question: '¿Cuál oración significa "Jamás olvidaré el recuerdo de haber volado en globo"?',
+        options: [
+          'I will never forget to fly in a hot-air balloon.',
+          'I will never forget flying in a hot-air balloon.',
+          'I never forgot to fly in a hot-air balloon.',
+          'I will never forget fly in a hot-air balloon.'
+        ],
+        correctAnswer: 'I will never forget flying in a hot-air balloon.',
+        explanation: '"Forget + -ING" se refiere al recuerdo de una experiencia ya vivida en el pasado.',
+        hint: 'Recuerdo de una experiencia pasada = -ING.'
+      },
+      {
+        id: 'b1-en-11-q2',
+        question: 'Completa la obligación antes de salir: "Don\'t forget ___ off the lights before you leave the office."',
+        options: ['turning', 'to turn', 'turn', 'turned'],
+        correctAnswer: 'to turn',
+        explanation: '"Don\'t forget + TO + verbo" recuerda cumplir una tarea pendiente.',
+        hint: 'Tarea u obligación por hacer = to + verbo.'
+      },
+      {
+        id: 'b1-en-11-q3',
+        question: 'Si la computadora está lenta y sugieres probar reiniciándola como experimento, dices:',
+        options: [
+          'Try restarting the computer.',
+          'Try to restart the computer with force.',
+          'Remember restarting the computer.',
+          'Stop to restart the computer.'
+        ],
+        correctAnswer: 'Try restarting the computer.',
+        explanation: '"Try + -ING" significa probar una solución o método para ver si funciona.',
+        hint: 'Probar un experimento/sugerencia = Try + -ING.'
+      }
+    ]
+  },
+  {
+    id: 'b1-en-12',
+    day: 12,
+    title: 'B1 Mastery Synthesis: Job Interviews (STAR Method) & Problem Resolution',
+    description: 'Integra todos los tiempos de B1 para responder entrevistas profesionales con el método STAR y resolver imprevistos.',
+    category: 'Síntesis Profesional B1',
+    cefrLevel: 'B1',
+    grammarFocus: 'Integrating Past Perfect, Present Perfect Continuous, Conditionals & Polite Requests in Real Scenarios',
+    commonMistake: 'En entrevistas en inglés, evita mezclar tiempos al azar. Usa Past Continuous/Past Perfect para el contexto, Past Simple para tus acciones y Present Perfect para el impacto actual.',
+    strategyTip: 'Estructura tus respuestas profesionales con STAR: Situation (Contexto), Task (Reto), Action (Lo que hiciste) y Result (Logro medible).',
+    content: `¡Llegaste a la lección final del **Nivel B1**! Aquí integramos toda la gramática intermedia en las dos situaciones más decisivas de la vida real: **entrevistas de trabajo** y **resolución diplomática de problemas**.
+
+### 1. El Método STAR para Entrevistas en Inglés
+- **S — Situation (Past Continuous / Past Perfect)**:
+  - *In my previous role, sales **had dropped** by 15% while the market **was changing**.*
+- **T — Task (Objetivo)**:
+  - *My goal was to redesign the onboarding process within two months.*
+- **A — Action (Past Simple / Connectors)**:
+  - *First, I interviewed key clients. **Although** our budget was tight, we automated the follow-up emails.*
+- **R — Result (Present Perfect / Passive)**:
+  - *As a result, customer satisfaction **has increased** by 30%, and the new system **is now used** by all branches.*
+
+### 2. Frases Diplomáticas para Resolver Problemas (B1 Pragmatics)
+- *I completely understand your frustration, and I apologize for the inconvenience.*
+- *If I were in your position, I would feel the same way.*
+- *Here is what we can do to solve this right away...*`,
+    dialogue: [
+      {
+        speaker: 'Interviewer',
+        textEn: 'Can you tell me about a time when you solved a difficult problem at work?',
+        textEs: '¿Puede contarme sobre alguna ocasión en la que resolvió un problema difícil en el trabajo?'
+      },
+      {
+        speaker: 'Candidate',
+        textEn: 'Certainly. Last year, a key supplier had canceled our delivery two days before a major event.',
+        textEs: 'Por supuesto. El año pasado, un proveedor clave había cancelado nuestra entrega dos días antes de un gran evento.'
+      },
+      {
+        speaker: 'Interviewer',
+        textEn: 'How did you handle that situation under pressure?',
+        textEs: '¿Cómo manejó esa situación bajo presión?'
+      },
+      {
+        speaker: 'Candidate',
+        textEn: 'I immediately contacted three local partners, negotiated express terms, and we delivered everything on schedule.',
+        textEs: 'Contacté de inmediato a tres socios locales, negocié condiciones exprés y entregamos todo a tiempo.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b1-en-12-q1',
+        question: 'En una entrevista con el método STAR, ¿qué tiempo verbal es ideal para conectar tu logro con el impacto que sigue vigente hoy?',
+        options: [
+          'Present Perfect ("Since then, our team has increased efficiency by 25%")',
+          'Past Continuous ("We were increasing efficiency")',
+          'Imperative ("Increase efficiency!")',
+          'Second Conditional ("We would increase efficiency")'
+        ],
+        correctAnswer: 'Present Perfect ("Since then, our team has increased efficiency by 25%")',
+        explanation: 'El Present Perfect conecta una acción iniciada en el pasado con un resultado tangible en el presente.',
+        hint: 'Pasado con impacto en el presente = Present Perfect.'
+      },
+      {
+        id: 'b1-en-12-q2',
+        type: 'word-order',
+        question: 'Ordena esta frase diplomática para atender un problema con un cliente:',
+        options: [],
+        wordTiles: ['I', 'apologize', 'for', 'the', 'delay', 'and', 'will', 'fix', 'it', 'immediately.'],
+        correctAnswer: 'I apologize for the delay and will fix it immediately.',
+        explanation: '"Apologize for + sustantivo" es la estructura profesional estándar para disculparse y proponer solución.'
+      }
+    ]
   }
 ];
 
@@ -808,6 +1105,376 @@ Se usa cuando contratas o encargas a alguien más que realice un servicio por ti
         options: ['despite', 'whereas', 'due to', 'unless'],
         correctAnswer: 'whereas',
         explanation: '"Whereas" significa "mientras que" y contrasta dos cláusulas de forma elegante.'
+      }
+    ]
+  },
+  {
+    id: 'b2-en-7',
+    day: 7,
+    title: 'Participle Clauses & Reduced Relative Clauses',
+    description: 'Condensa oraciones complejas con elegancia literaria y ejecutiva ("Having finished the report, she left").',
+    category: 'Sintaxis Condensada B2',
+    cefrLevel: 'B2',
+    grammarFocus: 'Present Participle (-ING: Knowing that...) | Past Participle (-ED: Built in 1990...) | Perfect Participle (Having + Participle)',
+    commonMistake: 'El sujeto de la cláusula participial DEBE ser el mismo que el de la oración principal. Evita los "dangling participles" como "Walking down the street, the trees looked tall" (¡los árboles no caminaban!).',
+    strategyTip: 'Usa "Having + Past Participle" al principio de la frase para enfatizar que la primera acción terminó completamente antes de la segunda.',
+    content: `Las **Participle Clauses (Cláusulas de Participio)** permiten expresar causa, simultaneidad o secuencia temporal con mucha mayor concisión y estilo que usando *because, when* o *who/which*:
+
+### 1. Present Participle (-ING: Causa o Simultaneidad Activa)
+- En vez de: *Because she knew the market well, she invested early.*
+- **Nivel B2**: ***Knowing** the market well, she invested early.* (Sabiendo bien cómo funcionaba el mercado, invirtió temprano).
+
+### 2. Past Participle (-ED / 3ra Columna: Sentido Pasivo)
+- En vez de: *The software, which was designed in Zurich, is ultra-secure.*
+- **Nivel B2**: ***Designed** in Zurich, the software is ultra-secure.* (Diseñado en Zúrich, el software es ultraseguro).
+
+### 3. Perfect Participle (Having + Past Participle: Acción Previa Completada)
+- ***Having completed** all the requirements, he applied for the B2 diploma.* (Habiendo completado todos los requisitos, solicitó el diploma B2).`,
+    dialogue: [
+      {
+        speaker: 'Professor',
+        textEn: 'Having analyzed the data from five countries, what conclusion did your team reach?',
+        textEs: 'Habiendo analizado los datos de cinco países, ¿a qué conclusión llegó su equipo?'
+      },
+      {
+        speaker: 'Researcher',
+        textEn: 'Founded on renewable energy, the new model reduces emissions by forty percent.',
+        textEs: 'Basado en energía renovable, el nuevo modelo reduce las emisiones en un cuarenta por ciento.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-en-7-q1',
+        question: 'Reduce la oración enfatizando que la acción terminó antes: "___ the contract carefully, the lawyer signed it."',
+        options: [
+          'Having read',
+          'Read',
+          'To read',
+          'Being read'
+        ],
+        correctAnswer: 'Having read',
+        explanation: '"Having + Past Participle (Having read)" expresa que el abogado primero terminó de leer el contrato y después lo firmó.',
+        hint: 'Acción activa completada antes de la principal = Having + participio.'
+      },
+      {
+        id: 'b2-en-7-q2',
+        question: 'Elige el participio con sentido pasivo: "___ in 1925, the novel remains a classic today."',
+        options: [
+          'Publishing',
+          'Published',
+          'Having publish',
+          'To publish'
+        ],
+        correctAnswer: 'Published',
+        explanation: 'Como la novela "fue publicada" (pasiva), usamos el Past Participle al inicio: "Published in 1925...".',
+        hint: 'La novela fue publicada (pasiva) -> Past Participle.'
+      }
+    ]
+  },
+  {
+    id: 'b2-en-8',
+    day: 8,
+    title: 'Impersonal & Distancing Passive Reporting (It is said / He is believed to...)',
+    description: 'Reporta noticias, estudios científicos e informes corporativos con objetividad académica.',
+    category: 'Registro Periodístico y Académico',
+    cefrLevel: 'B2',
+    grammarFocus: 'It is said/believed/reported that... | Subject + is said/believed/expected + to infinitive / to have + participle',
+    commonMistake: 'Cuando hablas de un hecho pasado con la estructura personal ("He is believed..."), usa el infinitivo perfecto: "He is believed TO HAVE LEFT the country" (NO "He is believed to left").',
+    strategyTip: 'Domina las dos fórmulas gemelas: 1) "It is thought that the company is growing" <-> 2) "The company is thought to be growing".',
+    content: `En el periodismo internacional, las finanzas y la escritura académica de nivel **B2**, rara vez se dice *"People say that..."*. En su lugar se emplean las **estructuras pasivas de distanciamiento**:
+
+### 1. Estructura Impersonal: It + Passive Verb + that + Clause
+Con verbos como *say, believe, think, expect, report, allege, know*:
+- ***It is reported that** inflation will decrease next quarter.* (Se informa que la inflación disminuirá el próximo trimestre).
+- ***It is widely believed that** bilingualism delays cognitive aging.*
+
+### 2. Estructura Personal: Sujeto + Passive Verb + TO + Infinitivo
+- Presente o Futuro (**to + verbo base**):
+  - *The CEO **is expected to announce** the merger today.* (Se espera que la directora ejecutiva anuncie la fusión hoy).
+- Pasado (**to have + Past Participle**):
+  - *The painting **is believed to have been** painted in 1650.* (Se cree que el cuadro fue pintado en 1650).`,
+    dialogue: [
+      {
+        speaker: 'Journalist',
+        textEn: ' The central bank is expected to lower interest rates tomorrow morning.',
+        textEs: 'Se espera que el banco central baje las tasas de interés mañana por la mañana.'
+      },
+      {
+        speaker: 'Economist',
+        textEn: 'Indeed, and the tech sector is reported to have grown by eight percent this year.',
+        textEs: 'En efecto, y se informa que el sector tecnológico ha crecido un ocho por ciento este año.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-en-8-q1',
+        question: 'Transforma con estructura pasiva personal sobre el pasado: "The ancient manuscript is believed ___ written in the 12th century."',
+        options: [
+          'to be',
+          'to have been',
+          'that was',
+          'having been'
+        ],
+        correctAnswer: 'to have been',
+        explanation: 'Para referirse a un evento anterior en voz pasiva, usamos el infinitivo perfecto pasivo: "to have been + participio".',
+        hint: 'Evento pasado pasivo = to have been + participio.'
+      },
+      {
+        id: 'b2-en-8-q2',
+        type: 'word-order',
+        question: 'Ordena la oración periodística de proyección:',
+        options: [],
+        wordTiles: ['The', 'company', 'is', 'expected', 'to', 'open', 'new', 'offices.'],
+        correctAnswer: 'The company is expected to open new offices.',
+        explanation: '"Sujeto + is expected + to + verbo base" es la fórmula estándar en inglés de negocios.'
+      }
+    ]
+  },
+  {
+    id: 'b2-en-9',
+    day: 9,
+    title: 'Unreal Time: It\'s High Time, Would Rather & Formal Subjunctive',
+    description: 'Expresa urgencia ("It\'s high time we left"), preferencias sobre otros ("I\'d rather you didn\'t") y el subjuntivo formal anglosajón.',
+    category: 'Gramática de Precisión B2',
+    cefrLevel: 'B2',
+    grammarFocus: 'It\'s (high) time + Sujeto + Past Simple | Would rather + Sujeto + Past Simple | Suggest/Insist + that + Sujeto + Verbo Base',
+    commonMistake: 'Aunque "It\'s time we went home" y "I\'d rather you stayed" usan un verbo en PAST SIMPLE, su significado es de PRESENTE o FUTURO inmediato.',
+    strategyTip: 'En el Subjuntivo Formal en inglés (después de suggest, recommend, insist, essential, vital + that), el verbo va en FORMA BASE sin "-s" ni siquiera para "he/she/it": "The doctor recommended that he REST" (no "rests").',
+    content: `El inglés utiliza lo que los lingüistas llaman **"Unreal Past" (Pasado Irreal)** para expresar urgencia o preferencia en el presente, además del **Mandative Subjunctive** en contextos formales:
+
+### 1. It's (high / about) time + Sujeto + Past Simple
+Indica que algo **ya debería haberse hecho** y es urgente hacerlo ahora:
+- *It's midnight! **It's high time we went** home.* (¡Ya es hora de que nos vayamos a casa!).
+- ***It's about time you started** preparing for the interview.*
+
+### 2. Would rather + Sujeto Distinto + Past Simple
+Cuando prefieres que **otra persona** haga o no haga algo hoy:
+- *I **would rather you didn't mention** this to anyone.* (Preferiría que no le mencionaras esto a nadie).
+- *I'd rather we **took** the train instead of driving.*
+
+### 3. El Subjuntivo Formal en Inglés (Mandative Subjunctive)
+Después de *insist, suggest, recommend, demand, it is essential/vital that*:
+- *The board insisted that the director **resign** immediately.* (¡Sin *-s*!).
+- *It is vital that every student **be** on time.* (Se usa *be* invariable).`,
+    dialogue: [
+      {
+        speaker: 'Victoria',
+        textEn: 'It is high time we upgraded our server infrastructure.',
+        textEs: 'Ya es hora de que actualicemos nuestra infraestructura de servidores.'
+      },
+      {
+        speaker: 'Daniel',
+        textEn: 'I agree, and the security team recommended that every employee change their password today.',
+        textEs: 'Estoy de acuerdo, y el equipo de seguridad recomendó que cada empleado cambie su contraseña hoy.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-en-9-q1',
+        question: 'Completa con Unreal Past para expresar urgencia en el presente: "It\'s 11 PM! It\'s high time we ___ to bed."',
+        options: ['go', 'went', 'will go', 'have gone'],
+        correctAnswer: 'went',
+        explanation: 'Después de "It\'s time / It\'s high time + sujeto", usamos el verbo en Past Simple ("went") aunque nos refiramos al presente.',
+        hint: 'It\'s high time + sujeto + Past Simple.'
+      },
+      {
+        id: 'b2-en-9-q2',
+        question: 'Elige la forma de Subjuntivo Formal en inglés: "It is essential that she ___ present at the signing."',
+        options: ['is', 'be', 'was', 'will be'],
+        correctAnswer: 'be',
+        explanation: 'Tras "It is essential/vital/important that...", el subjuntivo formal inglés usa el verbo base "be" para todas las personas.',
+        hint: 'Subjuntivo formal en inglés = verbo base puro ("be").'
+      }
+    ]
+  },
+  {
+    id: 'b2-en-10',
+    day: 10,
+    title: 'Advanced Phrasal Verbs & High-Register Collocations',
+    description: 'Domina Phrasal Verbs de 3 palabras (put up with, come up with, live up to) y colocaciones precisas de nivel B2.',
+    category: 'Riqueza Léxica B2',
+    cefrLevel: 'B2',
+    grammarFocus: 'Three-word Phrasal Verbs (come up with, put up with, live up to, cut down on) & Make/Do/Take Collocations',
+    commonMistake: 'Los Phrasal Verbs de tres palabras son INSEPARABLES: siempre coloca el objeto al final ("She came up with a brilliant idea", NUNCA "She came a brilliant idea up with").',
+    strategyTip: 'Sustituye verbos genéricos por colocaciones precisas: en vez de "make research", di SIEMPRE "conduct / carry out research".',
+    content: `En el nivel **B2**, la diferencia entre un estudiante promedio y un hablante avanzado radica en sus **colocaciones naturales** y los **Phrasal Verbs de tres palabras**:
+
+### 1. Three-Word Phrasal Verbs Imprescindibles
+- **Come up with** (Idear / proponer una solución o plan):
+  - *She **came up with** an innovative marketing strategy.*
+- **Put up with** (Tolerar / aguantar algo molesto):
+  - *I cannot **put up with** that noise anymore.*
+- **Live up to** (Estar a la altura de las expectativas):
+  - *The concert truly **lived up to** our expectations.*
+- **Cut down on** (Reducir el consumo de algo):
+  - *My doctor advised me to **cut down on** caffeine.*
+- **Look up to** (Admirar / respetar a alguien):
+  - *Young engineers really **look up to** her leadership.*
+
+### 2. Colocaciones Avanzadas que Evitan Errores de Hispanohablantes
+- **Conduct / Carry out** research or an investigation (*NUNCA "make research"*).
+- **Make** a breakthrough / **Make** an effort / **Make** progress.
+- **Reach** an agreement / **Reach** a consensus / **Meet** a deadline.`,
+    dialogue: [
+      {
+        speaker: 'Sophia',
+        textEn: 'How did your team come up with such a creative solution before the deadline?',
+        textEs: '¿Cómo ideó tu equipo una solución tan creativa antes de la fecha límite?'
+      },
+      {
+        speaker: 'Ethan',
+        textEn: 'We conducted thorough research and everyone worked hard to live up to the client\'s expectations.',
+        textEs: 'Realizamos una investigación exhaustiva y todos trabajaron duro para estar a la altura de las expectativas del cliente.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-en-10-q1',
+        question: '¿Qué Phrasal Verb significa "estar a la altura de las expectativas"? "The movie didn\'t ___ the hype."',
+        options: [
+          'live up to',
+          'put up with',
+          'cut down on',
+          'come up with'
+        ],
+        correctAnswer: 'live up to',
+        explanation: '"Live up to (expectations / the hype)" significa cumplir o estar a la altura de lo que se esperaba.',
+        hint: 'Estar a la altura = live up to.'
+      },
+      {
+        id: 'b2-en-10-q2',
+        question: 'Elige la colocación académica correcta para "hacer una investigación":',
+        options: [
+          'make a research',
+          'conduct research',
+          'do a researches',
+          'take research'
+        ],
+        correctAnswer: 'conduct research',
+        explanation: '"Research" es incontable y se combina con "conduct", "carry out" o "do" ("conduct research"), jamás con "make".',
+        hint: 'Conduct / carry out research.'
+      }
+    ]
+  },
+  {
+    id: 'b2-en-11',
+    day: 11,
+    title: 'Academic Hedging, Nuance & Essay Cohesion',
+    description: 'Estructura ensayos y presentaciones persuasivas con conectores de cohesión (Notwithstanding, Consequently) y matizadores (Hedging).',
+    category: 'Escritura y Argumentación B2',
+    cefrLevel: 'B2',
+    grammarFocus: 'Hedging (tend to, appear to, it could be argued that) | Cause & Concession (Owing to, Notwithstanding, Consequently)',
+    commonMistake: 'No confundas "Because of / Owing to / Due to" (que van seguidos de un SUSTANTIVO) con "Because / Since / As" (que van seguidos de SUJETO + VERBO).',
+    strategyTip: 'En textos académicos B2, evita afirmaciones absolutas ("Everyone knows..."). Usa Hedging: "Evidence suggests that..." o "There is a tendency for...".',
+    content: `Para escribir informes ejecutivos, ensayos internacionales o debatir con rigor en **Nivel B2**, necesitas dominar dos herramientas: **Hedging (Matización)** y **Conectores de Causa/Consecuencia formal**.
+
+### 1. Academic Hedging (Lenguaje Cauteloso y Objetivo)
+En lugar de hacer generalizaciones absolutas que pueden ser refutadas, matiza tus afirmaciones:
+- *Remote work **tends to increase** autonomy.* (Tiende a incrementar...).
+- ***It could be argued that** regulation is necessary.* (Podría argumentarse que...).
+- *The results **appear to indicate** a positive correlation.* (Parecen indicar...).
+
+### 2. Conectores de Causa y Consecuencia de Alto Nivel
+- **Owing to / Due to + Sustantivo** (Debido a):
+  - ***Owing to** supply chain delays, prices rose by 5%.*
+- **Consequently / As a result / Therefore** (Por consiguiente):
+  - *Demand exceeded supply; **consequently**, new factories were opened.*
+- **Notwithstanding + Sustantivo** (A pesar de — muy formal):
+  - ***Notwithstanding** the initial obstacles, the treaty was signed.*`,
+    dialogue: [
+      {
+        speaker: 'Panelist A',
+        textEn: 'It could be argued that automation will replace repetitive jobs within five years.',
+        textEs: 'Podría argumentarse que la automatización reemplazará los empleos repetitivos en cinco años.'
+      },
+      {
+        speaker: 'Panelist B',
+        textEn: 'That is true to some extent; however, owing to demographic shifts, skilled labor will remain in high demand.',
+        textEs: 'Eso es cierto hasta cierto punto; sin embargo, debido a los cambios demográficos, la mano de obra calificada seguirá teniendo alta demanda.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-en-11-q1',
+        question: 'Completa con el conector formal seguido de sustantivo: "___ the severe weather conditions, all flights were rescheduled."',
+        options: [
+          'Because',
+          'Owing to',
+          'Although',
+          'Whereas'
+        ],
+        correctAnswer: 'Owing to',
+        explanation: '"Owing to" (al igual que "Due to") significa "Debido a" y va seguido de un sintagma nominal ("the severe weather conditions").',
+        hint: 'Seguido de sustantivo ("the severe weather conditions") = Owing to.'
+      },
+      {
+        id: 'b2-en-11-q2',
+        type: 'word-order',
+        question: 'Ordena esta introducción de argumento académico con Hedging:',
+        options: [],
+        wordTiles: ['It', 'could', 'be', 'argued', 'that', 'education', 'is', 'the', 'key.'],
+        correctAnswer: 'It could be argued that education is the key.',
+        explanation: '"It could be argued that..." presenta una tesis con elegancia y objetividad académica.'
+      }
+    ]
+  },
+  {
+    id: 'b2-en-12',
+    day: 12,
+    title: 'B2 Capstone: Complex Negotiations, Crisis Management & C1 Readiness',
+    description: 'Integra inversiones, condicionales mixtos, voz pasiva impersonal y diplomacia ejecutiva en escenarios de alta dirección.',
+    category: 'Cumbre de Perfeccionamiento B2',
+    cefrLevel: 'B2',
+    grammarFocus: 'Full Synthesis of B2 Grammar: Mixed Conditionals, Inversions, Passive Reporting, Causatives & Diplomatic Negotiation',
+    commonMistake: 'En una negociación avanzada, nunca rechaces una oferta con un simple "No". Usa estructuras condicionales diplomáticas: "We would be willing to accept those terms provided that..." (Siempre y cuando...).',
+    strategyTip: 'Conectores condicionales avanzados como "Provided that / As long as" (Siempre y cuando) y "Unless" (A menos que) te dan control total en cualquier negociación.',
+    content: `¡Bienvenido a la **Lección Cumbre (12/12) del Nivel B2 Avanzado**! Aquí integras todas las herramientas de perfeccionamiento en situaciones de **negociación internacional y gestión de crisis**.
+
+### 1. Condicionantes de Negociación: Provided that / As long as / On condition that
+- *We can sign the contract today, **provided that** delivery is guaranteed by June.* (Podemos firmar hoy, siempre y cuando la entrega esté garantizada para junio).
+- *We are open to a 10% discount, **as long as** you commit to a two-year partnership.*
+
+### 2. Síntesis de Estructuras B2 en Acción
+Observa cómo un hablante B2 certificado combina múltiples estructuras en un solo párrafo ejecutivo:
+- *"Had we not diversified our suppliers last year (**Inversión Condicional**), we would be facing severe shortages today (**Mixed Conditional**). Furthermore, the new logistics hub is expected to be operational by Q4 (**Passive Reporting**), which will allow us to meet global demand."*`,
+    dialogue: [
+      {
+        speaker: 'Director Chen',
+        textEn: 'We are prepared to increase our investment, provided that your company guarantees exclusive distribution rights.',
+        textEs: 'Estamos dispuestos a aumentar nuestra inversión, siempre y cuando su empresa garantice derechos de distribución exclusiva.'
+      },
+      {
+        speaker: 'VP Morales',
+        textEn: 'Not only can we guarantee exclusivity in the region, but we will also have the localized platform deployed by October.',
+        textEs: 'No solo podemos garantizar la exclusividad en la región, sino que también tendremos la plataforma localizada desplegada para octubre.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-en-12-q1',
+        question: 'Elige el conector de condición para negociar ("siempre y cuando"): "We will approve the budget ___ all safety standards are met."',
+        options: [
+          'provided that',
+          'despite',
+          'whereas',
+          'owing to'
+        ],
+        correctAnswer: 'provided that',
+        explanation: '"Provided that" (o "as long as") significa "siempre y cuando / con la condición de que".',
+        hint: 'Siempre y cuando = provided that.'
+      },
+      {
+        id: 'b2-en-12-q2',
+        question: 'Identifica la inversión condicional formal equivalente a "If we had known earlier...":',
+        options: [
+          'Had we known earlier...',
+          'Did we know earlier...',
+          'Were we known earlier...',
+          'Have we known earlier...'
+        ],
+        correctAnswer: 'Had we known earlier...',
+        explanation: 'En registro formal B2/C1, "If we had known" puede invertirse eliminando "if": "Had we known earlier...".',
+        hint: 'Invierte Had + sujeto + participio.'
       }
     ]
   }
@@ -1213,6 +1880,244 @@ When **le** or **les** is followed by **lo, la, los, las**, change **le/les** to
         explanation: 'Yes/No indirect questions are introduced by "si" (if/whether).'
       }
     ]
+  },
+  {
+    id: 'b1-es-9',
+    day: 9,
+    title: 'Opinion & Certainty: Creo que (Indicative) vs. No creo que (Subjunctive)',
+    description: 'Master the crucial switch between stating beliefs ("Creo que es verdad") and questioning them ("No creo que sea verdad").',
+    category: 'Subjunctive vs. Indicative',
+    cefrLevel: 'B1',
+    grammarFocus: 'Affirmative Belief/Certainty + Indicative vs. Negative Belief/Doubt + Subjunctive',
+    commonMistake: 'English speakers often overuse the Subjunctive after "Creo que" or "Pienso que". Remember: affirmative "Creo que / Estoy seguro de que / Es evidente que" take the INDICATIVE! Only the negative ("No creo que...") triggers the Subjunctive.',
+    strategyTip: 'Think of a traffic light: Affirmative certainty = Green Light (Indicative); "No" before a verb of thinking/truth = Amber Light of Doubt (Subjunctive).',
+    content: `One of the most important **CEFR B1** distinctions in Spanish is how **negation** flips the mood from Indicative to Subjunctive with verbs of perception, opinion, and certainty (*creer, pensar, parecer, estar seguro, ser verdad/evidente*):
+
+### 1. Affirmative Opinion or Certainty $\rightarrow$ INDICATIVE (Facts & Beliefs)
+When you state what you think or know is true in the affirmative, use the normal **Indicative**:
+- *Creo que Marta **tiene** razón.* (I think Marta is right).
+- *Es evidente que el clima **está** cambiando.* (It is obvious that the climate is changing).
+- *Estoy seguro de que ellos **vienen** hoy.*
+
+### 2. Negative Opinion or Denial $\rightarrow$ SUBJUNCTIVE (Doubt & Unreality)
+The moment you add **"NO"** before these expressions, you open a space of doubt—triggering the **Subjunctive**:
+- *No creo que Marta **tenga** razón.* (I don't think Marta is right).
+- *No es verdad que el examen **sea** imposible.* (It's not true that the exam is impossible).
+- *No estamos seguros de que ellos **vengan** hoy.*`,
+    dialogue: [
+      {
+        speaker: 'Natalia',
+        textEn: 'Do you think the train is going to arrive on time today?',
+        textEs: '¿Crees que el tren va a llegar a tiempo hoy?'
+      },
+      {
+        speaker: 'David',
+        textEn: 'Honestly, I don\'t think it will arrive on time because there is a strike.',
+        textEs: 'Sinceramente, no creo que llegue a tiempo porque hay una huelga.'
+      },
+      {
+        speaker: 'Natalia',
+        textEn: 'It is true that traffic is heavy, so let\'s take the metro.',
+        textEs: 'Es verdad que hay mucho tráfico, así que tomemos el metro.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b1-es-9-q1',
+        question: 'Compare affirmative vs. negative opinion: "Pienso que este hotel ___ (ser) excelente, pero no pienso que ___ (ser) barato."',
+        options: [
+          'es / sea',
+          'sea / es',
+          'es / es',
+          'sea / sea'
+        ],
+        correctAnswer: 'es / sea',
+        explanation: 'Affirmative "Pienso que" takes the Indicative ("es"), while negated "no pienso que" triggers the Subjunctive ("sea").',
+        hint: 'Pienso que + Indicativo | No pienso que + Subjuntivo.'
+      },
+      {
+        id: 'b1-es-9-q2',
+        question: 'Complete: "No es cierto que nosotros ___ (tener) problemas con el proyecto."',
+        options: ['tenemos', 'tengamos', 'tendremos', 'tuvimos'],
+        correctAnswer: 'tengamos',
+        explanation: '"No es cierto que" denies certainty and requires the Present Subjunctive ("tengamos").',
+        hint: 'Denied truth -> Subjunctive.'
+      }
+    ]
+  },
+  {
+    id: 'b1-es-10',
+    day: 10,
+    title: 'Relative Pronouns & Nuanced Connectors (Lo que, El cual, Quien, Cuyo)',
+    description: 'Link complex clauses seamlessly using "Lo que" (What/That which), "En el que" (In which), and "Cuyo" (Whose).',
+    category: 'Complex Syntax B1',
+    cefrLevel: 'B1',
+    grammarFocus: 'Que vs. Quien | Lo que (abstract "what") | Preposition + el/la que | Cuyo/a/os/as (possession)',
+    commonMistake: 'In English we use "what" in statements ("I understand what you mean"). In Spanish, NEVER use "qué" without a question! Use "LO QUE": "Entiendo lo que dices" (NOT "Entiendo qué dices").',
+    strategyTip: '"Cuyo, cuya, cuyos, cuyas" (whose) agrees in gender and number with the THING possessed, not the owner ("La autora cuyas novelas leí").',
+    content: `To build sophisticated **B1** sentences without chopping your ideas into tiny fragments, you need Spanish relative pronouns:
+
+### 1. "LO QUE" = "What" / "The thing that" (In Statements)
+Whenever English uses *"what"* in the middle or start of a statement (not a question), Spanish uses **lo que**:
+- ***Lo que** más me gusta de España es su gastronomía.* (What I like most about Spain is its cuisine).
+- *No entendí **lo que** explicó el profesor.* (I didn't understand what the professor explained).
+
+### 2. Preposition + EL QUE / LA QUE / LOS QUE / LAS QUE (Or QUIEN for people)
+In Spanish, you can NEVER leave a preposition dangling at the end of a sentence (*"The house I live in"*):
+- *La casa **en la que** vivo es muy luminosa.* (The house in which I live...).
+- *La amiga **con quien** (or **con la que**) viajé es arquitecta.* (The friend I traveled with...).
+
+### 3. CUYO / CUYA / CUYOS / CUYAS (Whose)
+- *Es un director **cuyas** películas han ganado muchos premios.* (He is a director whose films have won many awards).`,
+    dialogue: [
+      {
+        speaker: 'Marcos',
+        textEn: 'What surprised me most about Bogota was the kindness of the people.',
+        textEs: 'Lo que más me sorprendió de Bogotá fue la amabilidad de la gente.'
+      },
+      {
+        speaker: 'Julia',
+        textEn: 'Yes! And the neighborhood in which we stayed had amazing coffee shops.',
+        textEs: '¡Sí! Y el barrio en el que nos alojamos tenía cafeterías increíbles.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b1-es-10-q1',
+        question: 'How do you translate "I know what you need" into Spanish?',
+        options: [
+          'Sé qué necesitas.',
+          'Sé lo que necesitas.',
+          'Sé el que necesitas.',
+          'Sé cual necesitas.'
+        ],
+        correctAnswer: 'Sé lo que necesitas.',
+        explanation: '"Lo que" translates "what" (= that which) in non-interrogative sentences referring to an idea or thing.',
+        hint: 'Use "lo que" for "what / the thing that".'
+      },
+      {
+        id: 'b1-es-10-q2',
+        question: 'Complete: "La empresa para ___ trabajo tiene oficinas en cinco países."',
+        options: [
+          'que',
+          'la que',
+          'lo que',
+          'quienes'
+        ],
+        correctAnswer: 'la que',
+        explanation: 'After prepositions like "para, en, con", Spanish uses the article + que matching the noun ("la empresa" -> "para la que").',
+        hint: 'La empresa (feminine singular) -> para la que.'
+      }
+    ]
+  },
+  {
+    id: 'b1-es-11',
+    day: 11,
+    title: 'Accidental "Se" (Se me olvidó / Se rompió) & Impersonal "Se"',
+    description: 'Express unplanned accidents like a native ("Se me cayeron las llaves") instead of blaming yourself directly.',
+    category: 'Native Idiomatic Grammar',
+    cefrLevel: 'B1',
+    grammarFocus: 'Se + Indirect Pronoun (me, te, le, nos, les) + Verb (3rd person sing./plural) + Subject',
+    commonMistake: 'If you say "Olvidé mi cartera" or "Rompí el vaso", it sounds almost like you did it on purpose! Native speakers say "Se me olvidó la cartera" and "Se me rompió el vaso" (Literally: The glass broke itself on me).',
+    strategyTip: 'The verb in Accidental "Se" agrees with the OBJECT that was forgotten, dropped, or lost: "Se me perdió EL pasaporte" (singular) vs. "Se me perdieron LAS llaves" (plural).',
+    content: `One of the most authentic hallmarks of **B1 Spanish** is the **Accidental "Se" (Se involuntario)**. Instead of presenting yourself as the guilty agent of an accident, Spanish shifts the focus to the event happening unintentionally:
+
+### 1. Formula: SE + (me / te / le / nos / les) + Verb (él/ellos) + Thing
+- **Olvidar** (To forget):
+  - *¡**Se me olvidó** el paraguas en el tren!* (I accidentally forgot my umbrella).
+  - ***Se nos olvidaron** los pasaportes.* (Plural *olvidaron* agrees with *los pasaportes*).
+- **Caer** (To drop):
+  - ***Se me cayó** el teléfono al suelo.* (I dropped my phone).
+- **Perder** (To lose):
+  - *¿**Se te perdieron** las gafas otra vez?* (Did you lose your glasses again?).
+- **Romper / Quemar / Acabar** (To break / burn / run out of):
+  - ***Se acabó** el café.* (We ran out of coffee).`,
+    dialogue: [
+      {
+        speaker: 'Valeria',
+        textEn: 'Why are you late, Mateo? Did you miss the bus?',
+        textEs: '¿Por qué llegas tarde, Mateo? ¿Perdiste el autobús?'
+      },
+      {
+        speaker: 'Mateo',
+        textEn: 'Worse! I accidentally locked my keys inside the apartment and my phone battery died.',
+        textEs: '¡Peor! Se me quedaron las llaves dentro del apartamento y se me descargó el teléfono.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b1-es-11-q1',
+        question: 'Complete the accidental structure: "Ayer se me ___ (caer) las gafas en la escalera."',
+        options: ['cayó', 'cayeron', 'caí', 'caían'],
+        correctAnswer: 'cayeron',
+        explanation: 'Because "las gafas" is plural, the preterite verb must agree in the 3rd person plural: "se me cayeron".',
+        hint: 'Las gafas (plural) -> cayeron.'
+      },
+      {
+        id: 'b1-es-11-q2',
+        type: 'word-order',
+        question: 'Order this natural Spanish sentence for "I forgot your birthday":',
+        options: [],
+        wordTiles: ['Perdona,', 'se', 'me', 'olvidó', 'tu', 'cumpleaños.'],
+        correctAnswer: 'Perdona, se me olvidó tu cumpleaños.',
+        explanation: '"Se + me + olvidó + singular noun" is the idiomatic way to express an unintentional oversight.'
+      }
+    ]
+  },
+  {
+    id: 'b1-es-12',
+    day: 12,
+    title: 'B1 Mastery Synthesis: Professional Interviews & Problem Resolution',
+    description: 'Integrate Subjunctive, Conditional, Past Perfect, and formal connectors in job interviews and workplace scenarios.',
+    category: 'Professional Fluency B1',
+    cefrLevel: 'B1',
+    grammarFocus: 'Integrating Narrative Tenses, Subjunctive Purpose Clauses & Polite Negotiation in Spanish',
+    commonMistake: 'In professional Spanish interviews, avoid overusing the subject pronoun "Yo" in every sentence ("Yo trabajé, yo hice, yo logré"). Spanish verb endings already show the subject, so omitting "yo" sounds much more natural and modest.',
+    strategyTip: 'Use "Aportar valor" (to add value), "Resolver imprevistos" (to solve unexpected issues), and "Cumplir con los plazos" (to meet deadlines) in professional contexts.',
+    content: `Congratulations on reaching **Lesson 12 of the CEFR B1 Module**! Let's synthesize your B1 grammar into real-world professional communication in Spanish:
+
+### 1. Presenting Your Experience & Achievements
+- **Past Context & Prior Milestones (Imperfecto + Pluscuamperfecto)**:
+  - *Cuando me incorporé al equipo, la empresa **había decidido** expandirse a nuevos mercados.*
+- **Actions & Purpose (Pretérito Indefinido + Para que + Subjuntivo)**:
+  - *Implementé un nuevo sistema **para que los clientes pudieran** hacer pedidos en línea.*
+- **Future Value (Condicional Simple)**:
+  - *En este puesto, **aportaría** mi experiencia bilingüe y **mejoraría** la comunicación con los socios.*`,
+    dialogue: [
+      {
+        speaker: 'Entrevistadora',
+        textEn: 'Why would you like to join our international team in Madrid?',
+        textEs: '¿Por qué le gustaría incorporarse a nuestro equipo internacional en Madrid?'
+      },
+      {
+        speaker: 'Candidato',
+        textEn: 'Because I would love to contribute my experience so that the company can grow in the North American market.',
+        textEs: 'Porque me encantaría aportar mi experiencia para que la empresa pueda crecer en el mercado norteamericano.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b1-es-12-q1',
+        question: 'Complete the professional purpose clause: "Diseñamos esta guía para que el equipo ___ (resolver) cualquier duda rápidamente."',
+        options: ['resuelve', 'resuelva', 'resolverá', 'resolvió'],
+        correctAnswer: 'resuelva',
+        explanation: '"Para que" always triggers the Subjunctive ("resuelva").',
+        hint: 'Para que + Subjuntivo.'
+      },
+      {
+        id: 'b1-es-12-q2',
+        question: 'Which phrase is the most natural way to say "meet the deadlines" in professional Spanish?',
+        options: [
+          'encontrar las líneas muertas',
+          'cumplir con los plazos de entrega',
+          'hacer las fechas finales',
+          'conocer el tiempo límite'
+        ],
+        correctAnswer: 'cumplir con los plazos de entrega',
+        explanation: '"Cumplir con los plazos (de entrega)" is the authentic Spanish collocation for "to meet deadlines".',
+        hint: 'Cumplir con los plazos.'
+      }
+    ]
   }
 ];
 
@@ -1526,6 +2431,361 @@ The participle must agree in **gender and number** with the subject:
         explanation: '"Dar en el clavo" is used when someone identifies the exact point or solution.'
       }
     ]
+  },
+  {
+    id: 'b2-es-7',
+    day: 7,
+    title: 'Mixed Conditionals & "Como si" + Imperfect/Pluperfect Subjunctive',
+    description: 'Connect past decisions to present realities ("Si hubiera aceptado, hoy viviría allí") and master "Como si..." (As if...).',
+    category: 'Advanced Hypotheticals B2',
+    cefrLevel: 'B2',
+    grammarFocus: 'Si + Pluscuamperfecto de Subjuntivo, Condicional Simple (hoy) | Como si + Imperfecto / Pluscuamperfecto de Subjuntivo',
+    commonMistake: 'After "Como si" (As if / As though), you can NEVER use the Indicative or Present Subjunctive! You must ALWAYS use either Imperfect Subjunctive ("como si fuera") or Pluperfect Subjunctive ("como si hubiera sido").',
+    strategyTip: 'Look at the time marker in the second clause: if you see "ahora / hoy", use the Simple Conditional ("viviría hoy"); if it\'s about the past ("ayer"), use Compound Conditional ("habría vivido ayer").',
+    content: `In **B2 Spanish**, you move beyond standard textbook conditionals to express **Mixed Conditionals** and vivid comparisons with **Como si (As if)**:
+
+### 1. Mixed Conditional (Past Cause $\rightarrow$ Present Result)
+When an action you took (or didn't take) in the past determines your reality **today**:
+- **Si + Hubiera + Participio**, **Condicional Simple (-ía) + ahora/hoy**
+- *Si **hubiera estudiado** arquitectura, **trabajaría** en ese estudio **ahora**.* (If I had studied architecture, I would be working at that firm now).
+- *Si no **nos hubiéramos mudado** a España, hoy no **hablaríamos** español con fluidez.*
+
+### 2. "COMO SI" (As If / As Though) $\rightarrow$ Always Past Subjunctive!
+Even when talking about the present, **como si** introduces an unreal comparison and requires the **Imperfect Subjunctive (-ra/-se)** or **Pluperfect Subjunctive (hubiera)**:
+- *Gasta dinero **como si fuera** multimillonario.* (He spends money as if he were a billionaire).
+- *Me saludó tranquilamente, **como si no hubiera pasado** nada.* (She greeted me calmly, as if nothing had happened).`,
+    dialogue: [
+      {
+        speaker: 'Lucía',
+        textEn: 'He speaks about Mexican history as if he had lived there his whole life!',
+        textEs: '¡Habla de la historia de México como si hubiera vivido allí toda su vida!'
+      },
+      {
+        speaker: 'Sebastián',
+        textEn: 'If he hadn\'t taken that university exchange ten years ago, he wouldn\'t be a historian today.',
+        textEs: 'Si no hubiera hecho aquel intercambio universitario hace diez años, hoy no sería historiador.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-es-7-q1',
+        question: 'Complete after "Como si": "Ella conduce por Madrid como si ___ (conocer) cada calle de memoria."',
+        options: ['conoce', 'conozca', 'conociera', 'conocerá'],
+        correctAnswer: 'conociera',
+        explanation: '"Como si" ALWAYS requires the Imperfect Subjunctive ("conociera") or Pluperfect Subjunctive, never the present.',
+        hint: 'Como si + Imperfecto de Subjuntivo (-ra).'
+      },
+      {
+        id: 'b2-es-7-q2',
+        question: 'Mixed Conditional (past cause -> present result): "Si hubiéramos comprado esa casa en 2018, hoy no ___ (pagar) alquiler."',
+        options: ['pagaríamos', 'habríamos pagado', 'pagábamos', 'paguemos'],
+        correctAnswer: 'pagaríamos',
+        explanation: 'Because the result applies to the present ("hoy"), we use the Simple Conditional ("pagaríamos").',
+        hint: 'Result today ("hoy") = Condicional Simple (-íamos).'
+      }
+    ]
+  },
+  {
+    id: 'b2-es-8',
+    day: 8,
+    title: 'Nuanced Conditional Conjunctions (Siempre y cuando, A no ser que, Salvo que)',
+    description: 'Set precise conditions and exceptions in contracts, negotiations, and debates using advanced subjunctive triggers.',
+    category: 'Negotiation & Conditions B2',
+    cefrLevel: 'B2',
+    grammarFocus: 'Siempre y cuando / Con tal de que (Provided that) + Subjunctive | A no ser que / Salvo que (Unless) + Subjunctive',
+    commonMistake: 'Unlike "Si" (which cannot take Present Subjunctive), all these conditional conjunctions ("siempre y cuando", "con tal de que", "a no ser que") MUST take the Present Subjunctive when referring to present/future!',
+    strategyTip: 'Group them into two mental buckets: Positive conditions ("Siempre y cuando" = As long as) and Negative exceptions ("A no ser que / Salvo que" = Unless). Both buckets always take the Subjunctive!',
+    content: `In professional and academic Spanish, relying only on *"si"* feels repetitive. **Level B2** speakers use specialized conditional conjunctions that **always trigger the Subjunctive**:
+
+### 1. Setting a Required Condition ("Provided that / As long as")
+- **Siempre y cuando / Siempre que + Subjuntivo**:
+  - *Aceptaremos el acuerdo **siempre y cuando se respeten** los plazos.* (We will accept the agreement provided that the deadlines are respected).
+- **Con tal de que + Subjuntivo**:
+  - *Te presto mi coche **con tal de que me lo devuelvas** mañana.*
+
+### 2. Expressing Exceptions ("Unless / Except if")
+- **A no ser que / A menos que / Salvo que + Subjuntivo**:
+  - *El evento se celebrará al aire libre, **salvo que llueva**.* (The event will be held outdoors, unless it rains).
+  - *No tomaremos una decisión **a no ser que todos estén** de acuerdo.*`,
+    dialogue: [
+      {
+        speaker: 'Abogada',
+        textEn: 'We can sign the lease today, provided that the owner includes the repairs in the contract.',
+        textEs: 'Podemos firmar el contrato de alquiler hoy, siempre y cuando el propietario incluya las reparaciones en el contrato.'
+      },
+      {
+        speaker: 'Cliente',
+        textEn: 'Perfect. I will be at the office at four, unless an urgent meeting comes up.',
+        textEs: 'Perfecto. Estaré en la oficina a las cuatro, a no ser que surja una reunión urgente.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-es-8-q1',
+        question: 'Complete the negotiation condition: "Te apoyaré en el proyecto siempre y cuando ___ (ser - tú) totalmente transparente."',
+        options: ['eres', 'seas', 'serás', 'fuiste'],
+        correctAnswer: 'seas',
+        explanation: '"Siempre y cuando" (provided that / as long as) always triggers the Subjunctive ("seas").',
+        hint: 'Siempre y cuando + Subjuntivo.'
+      },
+      {
+        id: 'b2-es-8-q2',
+        question: 'Which conjunction means "unless" and requires the Subjunctive? "Mañana saldremos al campo, ___ haga mal tiempo."',
+        options: [
+          'a no ser que',
+          'debido a que',
+          'puesto que',
+          'ya que'
+        ],
+        correctAnswer: 'a no ser que',
+        explanation: '"A no ser que" (or "salvo que / a menos que") means "unless" and takes the Subjunctive ("haga").',
+        hint: 'Unless = a no ser que.'
+      }
+    ]
+  },
+  {
+    id: 'b2-es-9',
+    day: 9,
+    title: 'Verbs with Prepositional Regimen (Soñar con, Consistir en, Fijarse en)',
+    description: 'Master fixed verb + preposition combinations that differ completely from English (soñar con, depender de, tardar en).',
+    category: 'Lexical & Prepositional Precision',
+    cefrLevel: 'B2',
+    grammarFocus: 'Soñar CON, Enamorarse DE, Consistir EN, Tardar EN, Quejarse DE, Fijarse EN, Comprometerse A',
+    commonMistake: 'Never translate English prepositions word-for-word! In English you "dream ABOUT" (en español: "soñar CON"), you "fall in love WITH" (en español: "enamorarse DE"), and something "consists OF" (en español: "consistir EN").',
+    strategyTip: 'Learn each verb together with its preposition as a single vocabulary unit: "fijarse en" (to notice), "comprometerse a" (to commit to).',
+    content: `One of the clearest markers of **B2 mastery** is using the exact preposition required by Spanish verbs (**Régimen Preposicional**) rather than translating from English:
+
+### 1. Verbs with "CON" (Instead of "about" or "on")
+- **Soñar con**: *Anoche **soñé con** nuestro viaje a Patagonia.* (I dreamed about our trip).
+- **Contar con**: *Puedes **contar conmigo** para lo que necesites.* (You can count on me).
+
+### 2. Verbs with "EN" (Instead of "of", "at", or "to")
+- **Consistir en**: *El examen **consiste en** doce preguntas.* (The exam consists of 12 questions).
+- **Fijarse en** (To notice / pay attention to): *¿Te **fijaste en** ese detalle?*
+- **Tardar en + Infinitive** (To take time to do something): *No **tardes en** llegar.*
+- **Insistir en**: *Ella **insistió en** pagar la cena.*
+
+### 3. Verbs with "DE" & "A"
+- **Enamorarse de** (To fall in love with): *Me **enamoré de** esta ciudad.*
+- **Depender de** (To depend on) / **Quejarse de** (To complain about).
+- **Comprometerse a + Infinitive** (To commit to): *Nos **comprometemos a** entregar el pedido.*`,
+    dialogue: [
+      {
+        speaker: 'Clara',
+        textEn: 'Did you notice the architecture of the building we just passed?',
+        textEs: '¿Te fijaste en la arquitectura del edificio por el que acabamos de pasar?'
+      },
+      {
+        speaker: 'oliver',
+        textEn: 'Yes! I fell in love with the historic center as soon as we arrived, and it didn\'t take us long to find the hotel.',
+        textEs: '¡Sí! Me enamoré del centro histórico en cuanto llegamos, y no tardamos nada en encontrar el hotel.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-es-9-q1',
+        question: 'Choose the authentic Spanish preposition: "Nuestra estrategia consiste ___ tres fases principales."',
+        options: ['de', 'en', 'con', 'por'],
+        correctAnswer: 'en',
+        explanation: 'Unlike English "consist of", Spanish uses "consistir EN" ("consiste en tres fases").',
+        hint: 'Consistir + EN.'
+      },
+      {
+        id: 'b2-es-9-q2',
+        question: 'How do you say "I fell in love with the culture and I dream about returning"?',
+        options: [
+          'Me enamoré con la cultura y sueño sobre volver.',
+          'Me enamoré de la cultura y sueño con volver.',
+          'Me enamoré en la cultura y sueño de volver.',
+          'Me enamoré por la cultura y sueño a volver.'
+        ],
+        correctAnswer: 'Me enamoré de la cultura y sueño con volver.',
+        explanation: 'In Spanish, you fall in love "DE" something (enamorarse de) and dream "CON" something (soñar con).',
+        hint: 'Enamorarse DE + Soñar CON.'
+      }
+    ]
+  },
+  {
+    id: 'b2-es-10',
+    day: 10,
+    title: 'Sequence of Tenses in the Subjunctive (Correlación Temporal)',
+    description: 'Coordinate main clauses and subjunctive clauses across past, present, and future ("Me alegró que vinieras").',
+    category: 'Subjunctive Mastery B2',
+    cefrLevel: 'B2',
+    grammarFocus: 'Present/Future Main Clause -> Present/Perfect Subjunctive | Past/Conditional Main Clause -> Imperfect/Pluperfect Subjunctive',
+    commonMistake: 'When the main verb is in the past ("Me sorprendió que...", "Te pedí que...", "Sería bueno que..."), you cannot use the Present Subjunctive! You must shift to the Imperfect Subjunctive: "Te pedí que vinieras" (NOT "Te pedí que vengas").',
+    strategyTip: 'Match the timeline: Present/Future triggers Present Subjunctive (pido que hagas); Past/Conditional triggers Imperfect Subjunctive (pedí/pediría que hicieras).',
+    content: `To speak and write seamlessly at **Level B2**, you must master **La Correlación de Tiempos (Sequence of Tenses)**—matching the tense of the Subjunctive to the tense of the main verb:
+
+### 1. Group 1: Main Verb in Present, Future, or Perfect $\rightarrow$ Present or Present Perfect Subjunctive
+- **Simultaneous or Future action (Present Subjunctive)**:
+  - *Me alegra que **estés** aquí hoy.* (I'm glad you are here today).
+- **Completed prior action (Present Perfect Subjunctive: haya + participio)**:
+  - *Me alegra que **hayas aprobado** el examen ayer.* (I'm glad you passed the exam yesterday).
+
+### 2. Group 2: Main Verb in Preterite, Imperfect, or Conditional $\rightarrow$ Imperfect or Pluperfect Subjunctive
+- **Simultaneous or Subsequent action (Imperfect Subjunctive: -ra/-se)**:
+  - *El director nos **pidió** que **entregáramos** el informe antes del viernes.*
+  - *Me **gustaría** que **vinieras** a nuestra boda.* (I would like you to come to our wedding).
+- **Prior past action (Pluperfect Subjunctive: hubiera + participio)**:
+  - *Me sorprendió que no **hubieran recibido** el mensaje antes.*`,
+    dialogue: [
+      {
+        speaker: 'Sofía',
+        textEn: 'I am so glad that you have already finished the B2 lessons!',
+        textEs: '¡Me alegra muchísimo que ya hayas terminado las lecciones de B2!'
+      },
+      {
+        speaker: 'Liam',
+        textEn: 'Thank you! Last year my mentor recommended that I practice every single day, and it worked.',
+        textEs: '¡Gracias! El año pasado mi mentor me recomendó que practicara todos los días, y funcionó.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-es-10-q1',
+        question: 'Apply the Sequence of Tenses after a past main verb: "Ayer el médico me recomendó que ___ (descansar) tres días."',
+        options: ['descanse', 'descansara', 'descansé', 'descansaría'],
+        correctAnswer: 'descansara',
+        explanation: 'Because "recomendó" is in the past (Preterite), the subordinate subjunctive verb shifts to the Imperfect Subjunctive ("descansara").',
+        hint: 'Past main verb (recomendó) -> Imperfect Subjunctive (-ra).'
+      },
+      {
+        id: 'b2-es-10-q2',
+        question: 'Present emotion about a recently completed action: "Es fantástico que ustedes ___ (lograr) el acuerdo esta mañana."',
+        options: [
+          'hayan logrado',
+          'lograran',
+          'han logrado',
+          'lograron'
+        ],
+        correctAnswer: 'hayan logrado',
+        explanation: '"Es fantástico que" (Present) followed by an action completed earlier today uses the Present Perfect Subjunctive ("hayan logrado").',
+        hint: 'Present trigger + completed action = haya/hayan + participio.'
+      }
+    ]
+  },
+  {
+    id: 'b2-es-11',
+    day: 11,
+    title: 'Formal Discourse Markers & Academic/Journalistic Register',
+    description: 'Structure high-level essays, presentations, and debates using C1-bridge connectors (Cabe destacar, Por consiguiente, En definitiva).',
+    category: 'Academic & Executive Spanish',
+    cefrLevel: 'B2',
+    grammarFocus: 'Structuring (En primer lugar, Cabe destacar que), Reformulating (Dicho de otro modo), Concluding (En definitiva, Por consiguiente)',
+    commonMistake: 'Avoid repeating "pero", "y", and "entonces" in every sentence of a presentation. Use formal discourse markers like "No obstante", "Asimismo", and "Por consiguiente".',
+    strategyTip: 'Start your key argument in a meeting or essay with "Cabe destacar que..." (It is worth highlighting that...) to command immediate professional attention.',
+    content: `At **CEFR B2**, you are expected to produce clear, well-structured essays, reports, and oral presentations using **Marcadores del Discurso de Registro Formal**:
+
+### 1. Highlighting & Adding Arguments
+- **Cabe destacar que / Conviene subrayar que**: *It should be highlighted / emphasized that...*
+  - ***Cabe destacar que** las energías limpias han reducido los costes un 25%.*
+- **Asimismo / De igual modo**: *Likewise / Furthermore.*
+
+### 2.Introducing Topics & Reformulating
+- **En lo que respecta a / En cuanto a**: *With regard to / As for...*
+  - ***En lo que respecta al** presupuesto, mantenemos una posición sólida.*
+- **Dicho de otro modo / Es decir**: *In other words / That is to say.*
+
+### 3. Logical Consequence & Synthesis
+- **Por consiguiente / En consecuencia**: *Consequently / Therefore.*
+- **En definitiva / En conclusión**: *Ultimately / In short.*`,
+    dialogue: [
+      {
+        speaker: 'Ponente',
+        textEn: 'With regard to the Latin American market, it is worth highlighting that our digital platform grew by 40%.',
+        textEs: 'En lo que respecta al mercado latinoamericano, cabe destacar que nuestra plataforma digital creció un 40%.'
+      },
+      {
+        speaker: 'Directora',
+        textEn: 'Consequently, we will expand our local support team in the next quarter.',
+        textEs: 'Por consiguiente, ampliaremos nuestro equipo de soporte local en el próximo trimestre.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-es-11-q1',
+        question: 'Which formal expression means "It is worth highlighting that..."?',
+        options: [
+          'Cabe destacar que...',
+          'A no ser que...',
+          'Como si fuera...',
+          'De repente que...'
+        ],
+        correctAnswer: 'Cabe destacar que...',
+        explanation: '"Cabe destacar que" is a high-register academic and executive marker used to emphasize a key point.',
+        hint: 'Destacar = to highlight.'
+      },
+      {
+        id: 'b2-es-11-q2',
+        type: 'word-order',
+        question: 'Order this formal executive sentence:',
+        options: [],
+        wordTiles: ['Por', 'consiguiente,', 'hemos', 'aprobado', 'el', 'nuevo', 'presupuesto.'],
+        correctAnswer: 'Por consiguiente, hemos aprobado el nuevo presupuesto.',
+        explanation: '"Por consiguiente" introduces a formal logical consequence ("Consequently / Therefore").'
+      }
+    ]
+  },
+  {
+    id: 'b2-es-12',
+    day: 12,
+    title: 'B2 Capstone: Diplomatic Negotiation, Nuanced Debate & Full Synthesis',
+    description: 'Synthesize all subjunctive tenses, passive structures, idioms, and diplomatic strategies to achieve full B2 mastery.',
+    category: 'Capstone Mastery B2',
+    cefrLevel: 'B2',
+    grammarFocus: 'Full Integration of Present/Past/Perfect Subjunctive, Conditional Counterfactuals, Passive Voice & Diplomatic Hedging',
+    commonMistake: 'When disagreeing in Spanish at a professional level, avoid saying "Estás equivocado". Use diplomatic concession: "Entiendo tu punto de vista; no obstante, convendría considerar que..."',
+    strategyTip: 'Using the Conditional or Imperfect Subjunctive of politeness ("Quisiera proponer...", "Convendría analizar...") makes any negotiation smoother and more persuasive.',
+    content: `Welcome to **Lesson 12/12 of the CEFR B2 Spanish Mastery Path**! Here you bring together every grammatical structure and communicative strategy to debate, negotiate, and express subtle nuances like an advanced bilingual speaker.
+
+### 1. Diplomatic Disagreement & Persuasion (Cortesía Estratégica)
+- *Comprendo perfectamente su postura; **no obstante, cabría preguntarse si** existe una alternativa más eficiente.*
+- ***Quisiera** (or **Me gustaría**) proponer una solución intermedia **para que ambas partes queden** satisfechas.*
+
+### 2. Full B2 Synthesis in Action
+Notice how all your B2 tools work together in a single executive statement:
+- *"Si **hubiéramos previsto** estos cambios el año pasado (**Pluscuamperfecto de Subjuntivo**), hoy ya **habríamos duplicado** nuestra capacidad (**Condicional Compuesto**). **No obstante**, **siempre y cuando actuemos** con rapidez (**Conjunción + Subjuntivo**), el proyecto **se llevará a cabo** con éxito (**Pasiva Refleja + Modismo**)."*`,
+    dialogue: [
+      {
+        speaker: 'Directora ejecutiva',
+        textEn: 'I understand your concern regarding the timeline; nevertheless, we would like the launch to take place in October.',
+        textEs: 'Comprendo su inquietud respecto a los plazos; no obstante, quisiéramos que el lanzamiento se llevara a cabo en octubre.'
+      },
+      {
+        speaker: 'Socio estratégico',
+        textEn: 'We can meet that date provided that both teams work in coordination starting Monday.',
+        textEs: 'Podemos cumplir con esa fecha siempre y cuando ambos equipos trabajen en coordinación a partir del lunes.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'b2-es-12-q1',
+        question: 'Complete the diplomatic synthesis sentence: "Quisiéramos que el acuerdo se ___ (firmar) antes de que ___ (terminar) el trimestre."',
+        options: [
+          'firmara / termine',
+          'firme / terminó',
+          'firmó / terminara',
+          'firmaría / termina'
+        ],
+        correctAnswer: 'firmara / termine',
+        explanation: '"Quisiéramos que" takes the Imperfect Subjunctive ("firmara"), and "antes de que" referring to the upcoming end of the quarter takes the Subjunctive ("termine" / "terminara").',
+        hint: 'Both clauses require the Subjunctive mood!'
+      },
+      {
+        id: 'b2-es-12-q2',
+        question: 'Which expression best translates "To carry out / execute a project" in executive Spanish?',
+        options: [
+          'Llevar a cabo un proyecto',
+          'Dar en el clavo un proyecto',
+          'Echar de menos un proyecto',
+          'Quedarse sin un proyecto'
+        ],
+        correctAnswer: 'Llevar a cabo un proyecto',
+        explanation: '"Llevar a cabo" is the essential B2 idiomatic verb phrase for "to carry out / execute".',
+        hint: 'Llevar a cabo = execute / carry out.'
+      }
+    ]
   }
 ];
 
@@ -1587,6 +2847,60 @@ export const b1EnglishVocab: VocabWord[] = [
     category: 'Profesional B1',
     phonetic: '/ˈdedlaɪn/',
     cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-en-7',
+    word: 'Give up',
+    translation: 'Rendirse / Dejar un hábito',
+    example: 'Never give up on your long-term goals.',
+    category: 'Phrasal Verbs B1',
+    phonetic: '/ɡɪv ʌp/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-en-8',
+    word: 'Find out',
+    translation: 'Descubrir / Averiguar',
+    example: 'Can you find out what time the train leaves?',
+    category: 'Phrasal Verbs B1',
+    phonetic: '/faɪnd aʊt/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-en-9',
+    word: 'Although',
+    translation: 'Aunque (+ sujeto y verbo)',
+    example: 'Although it was cold, we enjoyed the tour.',
+    category: 'Conectores B1',
+    phonetic: '/ɔːlˈðoʊ/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-en-10',
+    word: 'Used to',
+    translation: 'Solía (hábito del pasado)',
+    example: 'I used to play the piano when I was younger.',
+    category: 'Gramática B1',
+    phonetic: '/ˈjuːst tuː/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-en-11',
+    word: 'Apologize for',
+    translation: 'Disculparse por (+ sustantivo/-ing)',
+    example: 'I apologize for arriving late to the meeting.',
+    category: 'Profesional B1',
+    phonetic: '/əˈpɑːlədʒaɪz fɔːr/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-en-12',
+    word: 'Carry on',
+    translation: 'Continuar / Seguir adelante',
+    example: 'Please carry on with your work.',
+    category: 'Phrasal Verbs B1',
+    phonetic: '/ˈkæri ɑːn/',
+    cefrLevel: 'B1'
   }
 ];
 
@@ -1643,6 +2957,60 @@ export const b2EnglishVocab: VocabWord[] = [
     example: 'They conducted a thorough investigation of the system.',
     category: 'Ejecutivo B2',
     phonetic: '/ˈθɜːroʊ/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-en-7',
+    word: 'Come up with',
+    translation: 'Idear / Proponer una solución',
+    example: 'She came up with a brilliant strategy.',
+    category: 'Phrasal Verbs B2',
+    phonetic: '/kʌm ʌp wɪð/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-en-8',
+    word: 'Live up to',
+    translation: 'Estar a la altura de (las expectativas)',
+    example: 'The product lived up to all our expectations.',
+    category: 'Phrasal Verbs B2',
+    phonetic: '/lɪv ʌp tuː/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-en-9',
+    word: 'Put up with',
+    translation: 'Tolerar / Aguantar',
+    example: 'We cannot put up with constant delays.',
+    category: 'Phrasal Verbs B2',
+    phonetic: '/pʊt ʌp wɪð/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-en-10',
+    word: 'Provided that',
+    translation: 'Siempre y cuando / Con la condición de que',
+    example: 'We will sign provided that the terms are clear.',
+    category: 'Negociación B2',
+    phonetic: '/prəˈvaɪdɪd ðæt/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-en-11',
+    word: 'Owing to',
+    translation: 'Debido a (+ sustantivo)',
+    example: 'Owing to high demand, we opened a second branch.',
+    category: 'Conectores B2',
+    phonetic: '/ˈoʊɪŋ tuː/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-en-12',
+    word: 'Go the extra mile',
+    translation: 'Dar un esfuerzo extra extraordinario',
+    example: 'Our support team always goes the extra mile for clients.',
+    category: 'Idioms B2',
+    phonetic: '/ɡoʊ ði ˈekstrə maɪl/',
     cefrLevel: 'B2'
   }
 ];
@@ -1701,6 +3069,60 @@ export const spanishB1Vocab: VocabWord[] = [
     category: 'Connectors B1',
     phonetic: '/poɾ lo ˈtan.to/',
     cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-es-7',
+    word: 'Para que',
+    translation: 'So that / In order that (+ Subjunctive)',
+    example: 'Te envío el enlace para que puedas conectarte.',
+    category: 'Subjunctive B1',
+    phonetic: '/ˈpa.ɾa ke/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-es-8',
+    word: 'Se me olvidó',
+    translation: 'I accidentally forgot (Accidental Se)',
+    example: 'Perdona, se me olvidó traer el documento.',
+    category: 'Idiomatic B1',
+    phonetic: '/se me ol.βiˈðo/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-es-9',
+    word: 'Hacerse (+ profesión)',
+    translation: 'To become (through voluntary effort)',
+    example: 'Estudió mucho y se hizo arquitecta.',
+    category: 'Verbs of Change',
+    phonetic: '/aˈθeɾ.se/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-es-10',
+    word: 'Lo que',
+    translation: 'What / That which (in statements)',
+    example: 'Entiendo perfectamente lo que quieres decir.',
+    category: 'Pronouns B1',
+    phonetic: '/lo ke/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-es-11',
+    word: 'Cumplir con los plazos',
+    translation: 'To meet the deadlines',
+    example: 'Nuestro equipo siempre cumple con los plazos.',
+    category: 'Professional B1',
+    phonetic: '/kumˈpliɾ kon los ˈpla.θos/',
+    cefrLevel: 'B1'
+  },
+  {
+    id: 'v-b1-es-12',
+    word: 'Quedarse sin palabras',
+    translation: 'To be left speechless',
+    example: 'Me quedé sin palabras al ver el paisaje.',
+    category: 'Verbs of Change',
+    phonetic: '/keˈðaɾ.se sin paˈla.βɾas/',
+    cefrLevel: 'B1'
   }
 ];
 
@@ -1757,6 +3179,60 @@ export const spanishB2Vocab: VocabWord[] = [
     example: 'El subjuntivo es imprescindible para el nivel avanzado.',
     category: 'Executive B2',
     phonetic: '/im.pɾes.θinˈdi.βle/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-es-7',
+    word: 'Siempre y cuando',
+    translation: 'Provided that / As long as (+ Subjunctive)',
+    example: 'Firmaremos hoy siempre y cuando acepten la cláusula.',
+    category: 'Negotiation B2',
+    phonetic: '/ˈsjem.pɾe i ˈkwan.do/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-es-8',
+    word: 'Cabe destacar que',
+    translation: 'It is worth highlighting that',
+    example: 'Cabe destacar que las ventas crecieron un 30%.',
+    category: 'Academic B2',
+    phonetic: '/ˈka.βe ðes.taˈkaɾ ke/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-es-9',
+    word: 'Por consiguiente',
+    translation: 'Consequently / Therefore',
+    example: 'Superamos la meta; por consiguiente, ampliaremos el equipo.',
+    category: 'Academic B2',
+    phonetic: '/poɾ kon.siˈɣjen.te/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-es-10',
+    word: 'Fijarse en',
+    translation: 'To notice / pay close attention to',
+    example: '¿Te fijaste en los detalles del contrato?',
+    category: 'Prepositional Verbs',
+    phonetic: '/fiˈxaɾ.se en/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-es-11',
+    word: 'A no ser que',
+    translation: 'Unless (+ Subjunctive)',
+    example: 'Empezaremos a las nueve, a no ser que surja un imprevisto.',
+    category: 'Negotiation B2',
+    phonetic: '/a no ˈseɾ ke/',
+    cefrLevel: 'B2'
+  },
+  {
+    id: 'v-b2-es-12',
+    word: 'Como si (+ Imperf. Subj.)',
+    translation: 'As if / As though',
+    example: 'Habla español como si hubiera nacido en Madrid.',
+    category: 'Subjunctive B2',
+    phonetic: '/ˈko.mo si/',
     cefrLevel: 'B2'
   }
 ];
@@ -1837,6 +3313,47 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     options: ['collaborate', 'collaborating', 'collaborated', 'be collaborate'],
     correctAnswer: 'collaborating',
     explanation: 'Después de "look forward to", el verbo siempre va en gerundio (-ing).'
+  },
+  {
+    id: 'exam-b1-en-9',
+    sectionTitle: 'Indirect Questions',
+    cefrLevel: 'B1',
+    question: 'Could you tell me what time ___?',
+    options: [
+      'does the flight depart',
+      'the flight departs',
+      'departs the flight',
+      'is the flight depart'
+    ],
+    correctAnswer: 'the flight departs',
+    explanation: 'En preguntas indirectas, el orden es Sujeto + Verbo ("the flight departs") sin el auxiliar "does".'
+  },
+  {
+    id: 'exam-b1-en-10',
+    sectionTitle: 'Question Tags',
+    cefrLevel: 'B1',
+    question: 'You haven\'t seen my notebook anywhere, ___?',
+    options: ['haven\'t you', 'have you', 'did you', 'do you'],
+    correctAnswer: 'have you',
+    explanation: 'Oración negativa en Present Perfect ("haven\'t seen") lleva Question Tag positivo ("have you?").'
+  },
+  {
+    id: 'exam-b1-en-11',
+    sectionTitle: 'So vs. Such',
+    cefrLevel: 'B1',
+    question: 'It was ___ a memorable conference that everyone asked for a second edition.',
+    options: ['so', 'such', 'too', 'enough'],
+    correctAnswer: 'such',
+    explanation: 'Delante de "a/an + adjetivo + sustantivo" ("a memorable conference") siempre se usa "such".'
+  },
+  {
+    id: 'exam-b1-en-12',
+    sectionTitle: 'Verb Meaning Shifts',
+    cefrLevel: 'B1',
+    question: 'Please remember ___ the client before 5 PM; it is very urgent.',
+    options: ['calling', 'to call', 'call', 'called'],
+    correctAnswer: 'to call',
+    explanation: '"Remember + TO + verbo" expresa recordar cumplir una obligación o tarea pendiente.'
   }
 ];
 
@@ -1894,6 +3411,65 @@ export const b2FinalExamQuestions: ExamQuestion[] = [
     options: ['despite', 'whereas', 'due to', 'moreover'],
     correctAnswer: 'whereas',
     explanation: '"Whereas" contrasta dos cláusulas completas con registro formal.'
+  },
+  {
+    id: 'exam-b2-en-7',
+    sectionTitle: 'Participle Clauses',
+    cefrLevel: 'B2',
+    question: '___ all the security checks, the aircraft was cleared for takeoff.',
+    options: [
+      'Having completed',
+      'Completed',
+      'To complete',
+      'Completing by'
+    ],
+    correctAnswer: 'Having completed',
+    explanation: '"Having + Past Participle" indica una acción completada antes de la oración principal.'
+  },
+  {
+    id: 'exam-b2-en-8',
+    sectionTitle: 'Passive Reporting',
+    cefrLevel: 'B2',
+    question: 'The CEO is expected ___ the new sustainability targets tomorrow.',
+    options: ['announcing', 'to announce', 'that announces', 'announce'],
+    correctAnswer: 'to announce',
+    explanation: 'Estructura pasiva personal: Subject + is expected + to + verbo base.'
+  },
+  {
+    id: 'exam-b2-en-9',
+    sectionTitle: 'Unreal Past (It\'s High Time)',
+    cefrLevel: 'B2',
+    question: 'It is high time we ___ a permanent solution to this logistics issue.',
+    options: ['find', 'found', 'will find', 'have found'],
+    correctAnswer: 'found',
+    explanation: '"It\'s high time + sujeto" va seguido de Past Simple ("found") para expresar urgencia en el presente.'
+  },
+  {
+    id: 'exam-b2-en-10',
+    sectionTitle: 'Three-Word Phrasal Verbs',
+    cefrLevel: 'B2',
+    question: 'Our engineering team ___ an ingenious way to reduce battery consumption.',
+    options: ['came up with', 'put up with', 'cut down on', 'looked up to'],
+    correctAnswer: 'came up with',
+    explanation: '"Come up with" significa idear o encontrar una solución creativa.'
+  },
+  {
+    id: 'exam-b2-en-11',
+    sectionTitle: 'Formal Cause Connectors',
+    cefrLevel: 'B2',
+    question: '___ the unexpected supply shortage, delivery dates were adjusted.',
+    options: ['Owing to', 'Because', 'Although', 'Whereas'],
+    correctAnswer: 'Owing to',
+    explanation: '"Owing to" significa "Debido a" y va seguido de un sustantivo.'
+  },
+  {
+    id: 'exam-b2-en-12',
+    sectionTitle: 'Negotiation Conditionals',
+    cefrLevel: 'B2',
+    question: 'We will sign the partnership ___ your company guarantees 24/7 technical support.',
+    options: ['provided that', 'despite', 'unless', 'nonetheless'],
+    correctAnswer: 'provided that',
+    explanation: '"Provided that" significa "siempre y cuando / con la condición de que".'
   }
 ];
 
@@ -1969,6 +3545,47 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     options: ['tendrá', 'tendría', 'tenga', 'ha tenido'],
     correctAnswer: 'tendría',
     explanation: 'Al reportar en pasado una promesa futura, el Futuro pasa a Condicional ("tendría").'
+  },
+  {
+    id: 'exam-b1-es-9',
+    sectionTitle: 'Opinion & Doubt (No creo que)',
+    cefrLevel: 'B1',
+    question: 'Creo que el museo ___ (estar) abierto, pero no creo que ___ (haber) entradas.',
+    options: [
+      'está / haya',
+      'esté / hay',
+      'está / hay',
+      'esté / haya'
+    ],
+    correctAnswer: 'está / haya',
+    explanation: '"Creo que" afirmativo lleva Indicativo ("está"), mientras que "no creo que" lleva Subjuntivo ("haya").'
+  },
+  {
+    id: 'exam-b1-es-10',
+    sectionTitle: 'Relative Pronouns (Lo que)',
+    cefrLevel: 'B1',
+    question: '___ más me gusta de este curso es la claridad de las explicaciones.',
+    options: ['Que', 'Lo que', 'El cual', 'Quien'],
+    correctAnswer: 'Lo que',
+    explanation: '"Lo que" equivale a "What / The thing that" al encabezar una afirmación.'
+  },
+  {
+    id: 'exam-b1-es-11',
+    sectionTitle: 'Accidental Se',
+    cefrLevel: 'B1',
+    question: '¡Qué desastre! Se me ___ (olvidar) los boletos de tren en casa.',
+    options: ['olvidó', 'olvidaron', 'olvidé', 'olvidaban'],
+    correctAnswer: 'olvidaron',
+    explanation: 'En el "Se accidental", el verbo concuerda en plural con "los boletos" ("se me olvidaron").'
+  },
+  {
+    id: 'exam-b1-es-12',
+    sectionTitle: 'Purpose Clauses (Para que)',
+    cefrLevel: 'B1',
+    question: 'Te llamo ahora para que ___ (poder - nosotros) organizar la agenda de mañana.',
+    options: ['podemos', 'podamos', 'podremos', 'pudimos'],
+    correctAnswer: 'podamos',
+    explanation: '"Para que" exige siempre el modo Subjuntivo ("podamos").'
   }
 ];
 
@@ -2026,5 +3643,60 @@ export const spanishB2FinalExamQuestions: ExamQuestion[] = [
     options: ['es', 'sea', 'será', 'fue'],
     correctAnswer: 'sea',
     explanation: '"Aunque + Subjuntivo" proyecta una concesión hipotética o de futuro ("even if").'
+  },
+  {
+    id: 'exam-b2-es-7',
+    sectionTitle: 'Como si + Past Subjunctive',
+    cefrLevel: 'B2',
+    question: 'Él explica la arquitectura colonial como si ___ (ser) un historiador experto.',
+    options: ['es', 'sea', 'fuera', 'sería'],
+    correctAnswer: 'fuera',
+    explanation: '"Como si" exige SIEMPRE Imperfecto o Pluscuamperfecto de Subjuntivo ("como si fuera").'
+  },
+  {
+    id: 'exam-b2-es-8',
+    sectionTitle: 'Conditional Conjunctions',
+    cefrLevel: 'B2',
+    question: 'Firmaremos el convenio hoy mismo, siempre y cuando se ___ (incluir) las garantías.',
+    options: ['incluyen', 'incluyan', 'incluirán', 'incluyeron'],
+    correctAnswer: 'incluyan',
+    explanation: '"Siempre y cuando" exige siempre el modo Subjuntivo ("incluyan").'
+  },
+  {
+    id: 'exam-b2-es-9',
+    sectionTitle: 'Prepositional Regimen',
+    cefrLevel: 'B2',
+    question: 'La evaluación final consiste ___ doce preguntas de nivel avanzado.',
+    options: ['de', 'en', 'con', 'por'],
+    correctAnswer: 'en',
+    explanation: 'En español se dice "consistir EN" (a diferencia del inglés "consist of").'
+  },
+  {
+    id: 'exam-b2-es-10',
+    sectionTitle: 'Sequence of Tenses (Correlación Temporal)',
+    cefrLevel: 'B2',
+    question: 'El director nos pidió ayer que ___ (preparar) el informe financiero.',
+    options: ['preparemos', 'preparáramos', 'preparamos', 'prepararemos'],
+    correctAnswer: 'preparáramos',
+    explanation: 'Cuando el verbo principal está en pasado ("pidió"), el subjuntivo subordinado pasa a Imperfecto ("preparáramos").'
+  },
+  {
+    id: 'exam-b2-es-11',
+    sectionTitle: 'Formal Discourse Markers',
+    cefrLevel: 'B2',
+    question: '___ destacar que los resultados superaron todas las previsiones del trimestre.',
+    options: ['Cabe', 'Tiene', 'Hace', 'Pone'],
+    correctAnswer: 'Cabe',
+    explanation: '"Cabe destacar que..." es el marcador discursivo formal para resaltar un punto clave.'
+  },
+  {
+    id: 'exam-b2-es-12',
+    sectionTitle: 'Mixed Conditionals',
+    cefrLevel: 'B2',
+    question: 'Si me hubiera mudado a Madrid hace cinco años, hoy ___ (hablar) español como un nativo.',
+    options: ['hablaría', 'habría hablado', 'hablaba', 'hable'],
+    correctAnswer: 'hablaría',
+    explanation: 'Causa en el pasado ("Si me hubiera mudado") con consecuencia en el presente ("hoy hablaría") usa Condicional Simple.'
   }
 ];
+

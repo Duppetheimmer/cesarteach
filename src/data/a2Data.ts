@@ -609,7 +609,307 @@ Para cerrar el nivel A2, aprenderás a conectar condiciones y resultados futuros
         targetText: 'If we work together we will achieve great results',
         options: [],
         correctAnswer: 'If we work together we will achieve great results',
-        explanation: '¡Excelente entonación! Has completado todos los módulos del nivel A2.'
+        explanation: '¡Excelente entonación! Sigamos profundizando en las estructuras clave de A2.'
+      }
+    ]
+  },
+  {
+    id: 'a2_9',
+    day: 27,
+    cefrLevel: 'A2',
+    category: 'A2 • Patrones Verbales',
+    title: 'Gerunds (-ING) vs. Infinitives (To + Verb)',
+    description: 'Descubre por qué decimos "I enjoy reading" pero "I decided to read", y cómo cambia el significado en verbos como Stop y Remember.',
+    grammarFocus: 'Verbos + -ING (enjoy, avoid, mind, finish, suggest) vs. Verbos + TO + Infinitivo (want, decide, hope, plan, promise)',
+    commonMistake: 'En español siempre usamos el infinitivo ("Disfruto leer" / "Terminé de comer"). En inglés es INCORRECTO decir "I enjoy to read" o "I finished to eat": debe ser "I enjoy reading" y "I finished eating".',
+    strategyTip: 'Truco mental: Los verbos que miran hacia el FUTURO (want, hope, decide, plan, promise) llevan TO + Verbo. Los verbos que expresan disfrute, hábito o fin de una experiencia (enjoy, finish, avoid, mind) llevan -ING.',
+    content: `🎯 OBJETIVO CEFR A2.9: DOMINAR CUÁNDO USAR "-ING" Y CUÁNDO USAR "TO + VERBO"
+
+Cuando juntas dos verbos seguidos en inglés, el primer verbo dicta la forma del segundo. Dominar este patrón hace que tu inglés suene inmediatamente natural.
+
+1. VERBOS QUE SIEMPRE EXIGEN "-ING" (GERUND)
+Memoriza el grupo "EFAMS":
+• Enjoy (Disfrutar): "I enjoy cooking on weekends." (Disfruto cocinar los fines de semana).
+• Finish (Terminar): "Have you finished reading the report?" (¿Terminaste de leer el informe?).
+• Avoid (Evitar): "You should avoid driving in heavy rain." (Deberías evitar conducir bajo lluvia fuerte).
+• Mind (Importar / Molestar): "Would you mind opening the window?" (¿Te importaría abrir la ventana?).
+• Suggest / Recommend (Sugerir): "She suggested taking a taxi." (Ella sugirió tomar un taxi).
+• + Después de CUALQUIER preposición (in, on, at, for, about, without, before, after):
+  - "Thank you FOR helping me."
+  - "She left WITHOUT saying goodbye."
+
+2. VERBOS QUE SIEMPRE EXIGEN "TO + VERBO" (INFINITIVE)
+• Decide (Decidir): "We decided to move to a bigger apartment."
+• Plan / Hope / Expect (Planear / Esperar): "I hope to see you soon."
+• Promise / Offer / Refuse (Prometer / Ofrecer / Negarse): "He promised to call me at 5 PM."
+• Need / Want / Would like: "I would like to book a table for two."
+
+3. ¡CUIDADO! VERBOS QUE CAMBIAN DE SIGNIFICADO:
+• STOP + -ING = Dejar un hábito o interrumpir lo que hacías:
+  - "He stopped smoking two years ago." (Dejó de fumar).
+• STOP + TO + VERB = Detener la marcha para hacer otra cosa:
+  - "We stopped to buy some water." (Nos detuvimos para comprar agua).`,
+    dialogue: [
+      { speaker: ' Clara', textEn: 'Have you finished preparing your suitcase for the trip?', textEs: '¿Has terminado de preparar tu maleta para el viaje?' },
+      { speaker: 'Daniel', textEn: 'Almost! I decided to pack light because I want to avoid paying extra luggage fees.', textEs: '¡Casi! Decidí empacar ligero porque quiero evitar pagar cargos extra de equipaje.' },
+      { speaker: 'Clara', textEn: 'Smart move! Would you mind sharing a taxi to the airport tomorrow morning?', textEs: '¡Buena jugada! ¿Te importaría compartir un taxi al aeropuerto mañana por la mañana?' },
+      { speaker: 'Daniel', textEn: 'Not at all! I promise to be ready by 6:00 AM.', textEs: '¡Para nada! Prometo estar listo a las 6:00 AM.' }
+    ],
+    quiz: [
+      {
+        id: 'a2_9_q1',
+        question: 'Elige la combinación correcta: She really enjoys _____ languages, so she decided _____ a course in London.',
+        options: [
+          'to learn / taking',
+          'learning / to take',
+          'learning / taking',
+          'learn / to take'
+        ],
+        correctAnswer: 'learning / to take',
+        explanation: '"Enjoy" exige siempre verbo con -ING ("enjoy learning"), mientras que "Decide" exige TO + Infinitivo ("decided to take").',
+        hint: 'Enjoy + -ing | Decide + to...'
+      },
+      {
+        id: 'a2_9_q2',
+        question: 'Completa la regla de las preposiciones: He left the restaurant without _____ the bill.',
+        options: ['pay', 'to pay', 'paying', 'paid'],
+        correctAnswer: 'paying',
+        explanation: 'Después de cualquier preposición en inglés (without, before, after, for, about), el verbo SIEMPRE va en -ING ("without paying").',
+        hint: 'Without es preposición -> verbo con -ing.'
+      },
+      {
+        id: 'a2_9_q3',
+        type: 'word-order',
+        question: 'Ordena esta pregunta cortés muy común en nivel A2:',
+        targetText: 'Would you mind closing the door please',
+        options: [],
+        correctAnswer: 'Would you mind closing the door please',
+        explanation: '"Would you mind + verbo-ING" es la forma más educada de pedir un favor en inglés.',
+        hint: 'Comienza con "Would you mind closing..."'
+      }
+    ]
+  },
+  {
+    id: 'a2_10',
+    day: 28,
+    cefrLevel: 'A2',
+    category: 'A2 • Precisión Gramatical',
+    title: 'Quantifiers: Much, Many, A Few, A Little, Too & Enough',
+    description: 'Domina los sustantivos contables e incontables y expresa cantidades exactas o excesivas sin cometer errores.',
+    grammarFocus: 'Countable (many / a few / few) vs. Uncountable (much / a little / little) | Too + adj vs. Adj + enough',
+    commonMistake: 'Palabras como "Information", "Advice", "Furniture", "Luggage" y "Traffic" son INCONTABLES en inglés. ¡Nunca digas "an advice" o "many informations"! Di "some advice" o "a piece of advice".',
+    strategyTip: 'Presta atención a la letra "A": "A few / A little" es POSITIVO (unos cuantos / un poco, alcanza). "Few / Little" sin "a" es NEGATIVO (casi nada / muy pocos, no alcanza).',
+    content: `🎯 OBJETIVO CEFR A2.10: EXPRESAR CANTIDAD Y SUFICIENCIA CON PRECISIÓN
+
+1. SUSTANTIVOS CONTABLES VS. INCONTABLES TRAMPOSOS
+• Contables (se pueden contar: 1 chair, 2 chairs):
+  - Usan: MANY (muchos), A FEW (unos pocos), FEW (casi ninguno).
+• Incontables (líquidos, conceptos o masas que no tienen plural):
+  - Money, Time, Water, Traffic, Information, Advice (consejo), Luggage (equipaje), Homework, News.
+  - Usan: MUCH (mucho), A LITTLE (un poco), LITTLE (casi nada).
+
+2. LA DIFERENCIA ENTRE "A LITTLE" Y "LITTLE" (O "A FEW" Y "FEW")
+• "I have A LITTLE money, let's buy coffee!" (Tengo algo de dinero — sentido positivo 😊).
+• "I have LITTLE money, I can't buy coffee." (Tengo muy poco dinero — sentido negativo 😟).
+• "I have A FEW good friends in this city." (Tengo algunos buenos amigos 😊).
+• "Very FEW people passed the test." (Muy pocas personas aprobaron 😟).
+
+3. TOO, TOO MUCH, TOO MANY & ENOUGH
+• TOO + Adjetivo (Demasiado...): "This soup is too hot."
+• TOO MUCH + Incontable: "There is too much traffic today."
+• TOO MANY + Contable plural: "There are too many cars."
+• Adjetivo + ENOUGH (Suficientemente...): "Is the water warm enough?" (¡Enough va DESPUÉS del adjetivo!)
+• ENOUGH + Sustantivo (Suficiente...): "We have enough time." (¡Enough va ANTES del sustantivo!)`,
+    dialogue: [
+      { speaker: 'Lucas', textEn: 'Can you give me some advice before my trip to Chicago?', textEs: '¿Puedes darme algún consejo antes de mi viaje a Chicago?' },
+      { speaker: 'Emma', textEn: 'Sure! Don\'t take too much luggage, and leave early because there is always a lot of traffic.', textEs: '¡Claro! No lleves demasiado equipaje y sal temprano porque siempre hay mucho tráfico.' },
+      { speaker: 'Lucas', textEn: 'Do I have enough time to visit the art museum if I only stay for a few days?', textEs: '¿Tengo suficiente tiempo para visitar el museo de arte si solo me quedo unos pocos días?' },
+      { speaker: 'Emma', textEn: 'Yes! A few hours in the morning is warm and quiet enough to see the best galleries.', textEs: '¡Sí! Unas cuantas horas por la mañana es suficientemente tranquilo para ver las mejores galerías.' }
+    ],
+    quiz: [
+      {
+        id: 'a2_10_q1',
+        question: 'Cuidado con los incontables en inglés: Can you give me _____ before the interview?',
+        options: [
+          'an advice',
+          'some advices',
+          'some advice',
+          'many advice'
+        ],
+        correctAnswer: 'some advice',
+        explanation: '"Advice" (consejo) e "Information" son sustantivos incontables en inglés: nunca llevan "an" ni plural "-s". Se usa "some advice" o "a piece of advice".',
+        hint: 'Advice es incontable en inglés.'
+      },
+      {
+        id: 'a2_10_q2',
+        question: 'Elige la posición correcta de "enough": This apartment isn\'t _____ for our family.',
+        options: [
+          'enough big',
+          'big enough',
+          'too big enough',
+          'many big'
+        ],
+        correctAnswer: 'big enough',
+        explanation: '"Enough" se coloca SIEMPRE DESPUÉS de los adjetivos (big enough, old enough, warm enough) y ANTES de los sustantivos (enough money).',
+        hint: 'Adjetivo + enough.'
+      },
+      {
+        id: 'a2_10_q3',
+        question: 'Completa: We only have _____ minutes left before the train leaves, so hurry up!',
+        options: ['a little', 'a few', 'much', 'too much'],
+        correctAnswer: 'a few',
+        explanation: '"Minutes" es contable plural, por lo que usamos "a few minutes" (unos pocos minutos).',
+        hint: 'Minutes es contable plural.'
+      }
+    ]
+  },
+  {
+    id: 'a2_11',
+    day: 29,
+    cefrLevel: 'A2',
+    category: 'A2 • Hábitos y Adaptación',
+    title: 'Past Habits & Adaptation: Used to vs. Be/Get Used to',
+    description: 'Habla de lo que solías hacer antes ("I used to live...") y diferéncialo de acostumbrarse a algo nuevo ("I am getting used to living...").',
+    grammarFocus: 'Used to + Infinitive (solía) | Didn\'t use to | Be/Get used to + Noun/-ING (estar/acostumbrarse a)',
+    commonMistake: 'En preguntas y negativas con "Did", "used to" pierde la "-d": escribe "Did you use to play?" y "I didn\'t use to like it" (NO "didn\'t used to").',
+    strategyTip: 'No confundas: "I used to wake up early" (Antes solía despertarme temprano, ya no) vs. "I am used to waking up early" (Estoy acostumbrado a despertarme temprano hoy en día).',
+    content: `🎯 OBJETIVO CEFR A2.11: DOMINAR "USED TO" (SOLÍA) VS. "GET USED TO" (ACOSTUMBRARSE)
+
+Esta es una de las estructuras más útiles del inglés real para comparar tu vida pasada con tu vida actual.
+
+1. "USED TO + VERBO BASE" (Hábitos o estados del pasado que ya cambiaron)
+Equivale a "Solía..." o al Pretérito Imperfecto en español (jugaba, vivía, tenía):
+• Afirmativa: "I used to live in a small town, but now I live in Madrid." (Antes vivía en un pueblo pequeño).
+• Negativa (DIDN'T USE TO): "She didn't use to drink coffee, but now she loves it." (Ella no solía tomar café).
+• Pregunta (DID YOU USE TO...?): "Where did you use to go on vacation as a child?"
+
+2. "BE USED TO + SUSTANTIVO / -ING" (Estar acostumbrado a algo)
+Aquí "used" funciona como adjetivo ("acostumbrado") y "to" es una preposición:
+• "I am used to cold weather." (Estoy acostumbrado al clima frío).
+• "He is used to speaking in public." (Él está acostumbrado a hablar en público — nota el -ING).
+
+3. "GET USED TO + SUSTANTIVO / -ING" (El proceso de acostumbrarse)
+• "It took me three months to get used to driving on the left." (Me tomó tres meses acostumbrarme a conducir por la izquierda).`,
+    dialogue: [
+      { speaker: 'Sofía', textEn: 'How is your new life in London, David? Did you use to live in a big city before?', textEs: '¿Cómo va tu nueva vida en Londres, David? ¿Solías vivir en una gran ciudad antes?' },
+      { speaker: 'David', textEn: 'No, I didn\'t use to take the subway at all! I used to walk everywhere in my hometown.', textEs: '¡No, no solía tomar el metro para nada! Solía caminar a todas partes en mi ciudad natal.' },
+      { speaker: 'Sofía', textEn: 'And are you getting used to the rainy weather?', textEs: '¿Y te estás acostumbrando al clima lluvioso?' },
+      { speaker: 'David', textEn: 'Yes, I am slowly getting used to carrying an umbrella every day!', textEs: '¡Sí, poco a poco me estoy acostumbrando a llevar un paraguas todos los días!' }
+    ],
+    quiz: [
+      {
+        id: 'a2_11_q1',
+        question: 'Elige la forma negativa correcta de un hábito pasado: I _____ like vegetables when I was a child.',
+        options: [
+          'didn\'t used to',
+          'didn\'t use to',
+          'don\'t used to',
+          'wasn\'t use to'
+        ],
+        correctAnswer: 'didn\'t use to',
+        explanation: 'Como el auxiliar "didn\'t" ya marca el pasado, "use to" va sin la "-d" final ("didn\'t use to").',
+        hint: 'Después de didn\'t, el verbo pierde la -d.'
+      },
+      {
+        id: 'a2_11_q2',
+        question: 'Diferencia clave: "I am getting used to _____ early for my new job."',
+        options: [
+          'wake up',
+          'waking up',
+          'woke up',
+          'be wake up'
+        ],
+        correctAnswer: 'waking up',
+        explanation: 'En "be/get used to", "to" es una preposición ("acostumbrarse a"), por lo que el verbo que sigue lleva -ING ("waking up").',
+        hint: 'Get used to + verbo con -ING.'
+      },
+      {
+        id: 'a2_11_q3',
+        type: 'word-order',
+        question: 'Ordena la oración sobre un hábito del pasado:',
+        targetText: 'We used to go to the beach every summer',
+        options: [],
+        correctAnswer: 'We used to go to the beach every summer',
+        explanation: '"We used to go..." expresa una costumbre repetida en el pasado ("Solíamos ir / Íbamos").',
+        hint: 'Comienza con "We used to go..."'
+      }
+    ]
+  },
+  {
+    id: 'a2_12',
+    day: 30,
+    cefrLevel: 'A2',
+    category: 'A2 • Autonomía y Movimiento',
+    title: 'Prepositions of Movement & Essential A2 Phrasal Verbs',
+    description: 'Da y comprende indicaciones precisas de movimiento (across, through, into, along) y domina los Phrasal Verbs esenciales de la vida diaria.',
+    grammarFocus: 'Movement: into/out of, through vs. across, along, towards | Phrasal Verbs: look after, look for, put on, take off, get on/off',
+    commonMistake: 'No confundas "Across" con "Through": "Walk ACROSS the street" (cruzar una superficie plana de un lado a otro) vs. "Drive THROUGH the tunnel / park" (atravesar un espacio tridimensional rodeado de árboles o paredes).',
+    strategyTip: 'En inglés cotidiano, los hablantes nativos prefieren los Phrasal Verbs: dicen "take off your shoes" en lugar de "remove your shoes", y "look for my keys" en lugar de "search my keys".',
+    content: `🎯 OBJETIVO CEFR A2.12: NAVEGAR POR EL MUNDO Y USAR PHRASAL VERBS COTIDIANOS
+
+Para cerrar el Nivel A2 con dominio total, necesitas describir movimiento en el espacio y manejar los verbos compuestos más frecuentes del día a día.
+
+1. PREPOSICIONES DE MOVIMIENTO (¿Hacia dónde se mueve?)
+• ACROSS (Cruzar de un lado a otro en superficie plana):
+  - "Walk across the bridge / across the street." (Cruza el puente / la calle).
+• THROUGH (Atravesar por dentro de un espacio cerrado o con árboles):
+  - "The train went through the tunnel." (El tren atravesó el túnel).
+• INTO vs. OUT OF (Entrar a vs. Salir de):
+  - "She walked into the bank and came out of the building ten minutes later."
+• ALONG (A lo largo de / siguiendo una línea):
+  - "We walked along the river at sunset." (Caminamos a lo largo del río).
+• TOWARDS (En dirección hacia):
+  - "He walked towards the station."
+
+2. LOS 6 PHRASAL VERBS IMPRESCINDIBLES DE A2
+• LOOK FOR (Buscar): "I am looking for my glasses." (¡En español no lleva preposición, en inglés siempre lleva FOR!).
+• LOOK AFTER (Cuidar a alguien): "Can you look after my dog this weekend?"
+• PUT ON vs. TAKE OFF (Ponerse vs. Quitarse ropa / Despegar un avión):
+  - "Put on your jacket, it's cold." / "The plane took off on time."
+• GET ON vs. GET OFF (Subirse a vs. Bajarse de autobús, tren, avión):
+  - "Get off the bus at the third stop."
+• WAKE UP vs. GET UP (Despertarse vs. Levantarse de la cama).`,
+    dialogue: [
+      { speaker: 'Tourist', textEn: 'Excuse me, I am looking for the Central Library. How do I get there from here?', textEs: 'Disculpe, estoy buscando la Biblioteca Central. ¿Cómo llego allí desde aquí?' },
+      { speaker: 'Local', textEn: 'It\'s very easy! First, walk across this avenue and go through the green park.', textEs: '¡Es muy fácil! Primero, cruce esta avenida y atraviese el parque verde.' },
+      { speaker: 'Tourist', textEn: 'Okay, across the avenue and through the park. And then?', textEs: 'Bien, cruzo la avenida y atravieso el parque. ¿Y después?' },
+      { speaker: 'Local', textEn: 'Walk along the canal for two minutes and you will see the big glass entrance right in front of you.', textEs: 'Camine a lo largo del canal por dos minutos y verá la gran entrada de cristal justo frente a usted.' }
+    ],
+    quiz: [
+      {
+        id: 'a2_12_q1',
+        question: 'Elige las preposiciones de movimiento correctas: The train went _____ the dark tunnel and then crossed _____ the river bridge.',
+        options: [
+          'across / through',
+          'through / across',
+          'along / into',
+          'into / out'
+        ],
+        correctAnswer: 'through / across',
+        explanation: 'Usamos "through" para atravesar el interior de un túnel (espacio 3D cerrado) y "across" para cruzar por encima de un puente.',
+        hint: 'Túnel = through | Puente = across.'
+      },
+      {
+        id: 'a2_12_q2',
+        question: '¿Qué Phrasal Verb significa "cuidar a alguien o algo"? Can you _____ my cat while I am away?',
+        options: [
+          'look for',
+          'look after',
+          'look at',
+          'take off'
+        ],
+        correctAnswer: 'look after',
+        explanation: '"Look after" significa cuidar de alguien (una mascota, un niño, una planta). "Look for" significa buscar.',
+        hint: 'Look after = take care of.'
+      },
+      {
+        id: 'a2_12_q3',
+        type: 'speaking',
+        question: 'Pronuncia esta frase final del módulo A2 en voz alta:',
+        targetText: 'Walk across the street and go through the park',
+        options: [],
+        correctAnswer: 'Walk across the street and go through the park',
+        explanation: '¡Felicidades! Has completado las 12 lecciones exhaustivas del Nivel A2.'
       }
     ]
   }
@@ -1210,7 +1510,306 @@ English speakers often translate both "por" and "para" as "for". Here is the cry
         targetText: 'Muchas gracias por tu ayuda con el informe para el cliente',
         options: [],
         correctAnswer: 'Muchas gracias por tu ayuda con el informe para el cliente',
-        explanation: 'Awesome job! You have mastered all 8 lessons of Spanish CEFR A2!'
+        explanation: 'Awesome job! Let\'s continue with lessons 9 to 12 to master every nuance of CEFR A2 Spanish!'
+      }
+    ]
+  },
+  {
+    id: 'es_a2_9',
+    day: 27,
+    cefrLevel: 'A2',
+    category: 'A2 • Daily Life & Reflexives',
+    title: 'Reflexive Verbs, Daily Routines & Stem Changes',
+    description: 'Master reflexive pronouns (me, te, se, nos) and stem-changing routine verbs (despertarse, vestirse, acostarse) in present and past.',
+    grammarFocus: 'me, te, se, nos, se + verb | Stem-changers: despertarse (e->ie), acostarse (o->ue), vestirse (e->i)',
+    commonMistake: 'With body parts and clothing in Spanish, do NOT use possessive adjectives ("mi, tu")! Say "Me lavo LAS manos" and "Me pongo LA chaqueta" (NOT "Me lavo mis manos").',
+    strategyTip: 'When you have two verbs together (Voy a levantarme / Quiero ducharme), you can put the reflexive pronoun EITHER before the first verb ("Me voy a levantar") OR attached to the end of the infinitive ("Voy a levantarme")!',
+    content: `🎯 CEFR A2.9 GOAL: TALKING ABOUT DAILY ROUTINES & PERSONAL CARE NATURALLY
+
+In Spanish, many daily routine actions are "reflexive" (the person doing the action also receives it), marked by "-SE" at the end of the infinitive.
+
+1. REFLEXIVE PRONOUNS + STEM-CHANGING ROUTINE VERBS
+• DESPERTARSE (to wake up, e -> ie):
+  - Yo me despierto a las siete. (I wake up at 7:00).
+  - Tú te despiertas temprano.
+• LEVANTARSE (to get up, regular):
+  - Ella se levanta enseguida. (She gets up right away).
+• VESTIRSE (to get dressed, e -> i):
+  - Nosotros nos vestimos rápido.
+• ACOSTARSE (to go to bed, o -> ue):
+  - Ellos se acuestan a las once de la noche.
+
+2. BODY PARTS & CLOTHING RULE
+Because the reflexive pronoun (me, te, se) already tells us whose body or clothes it is, Spanish uses the definite article (el, la, los, las):
+• "Me lavo los dientes después de desayunar." (I brush my teeth after having breakfast).
+• "Me quito los zapatos al entrar en casa." (I take off my shoes when entering the house).
+
+3. RECIPROCAL VERBS (Each other: Nos / Se)
+• "Mi hermano y yo nos llevamos muy bien." (My brother and I get along very well with each other).`,
+    dialogue: [
+      { speaker: 'Elena', textEn: 'What time do you usually wake up during the week, Sam?', textEs: '¿A qué hora te despiertas normalmente entre semana, Sam?' },
+      { speaker: 'Sam', textEn: 'I wake up at 6:30, take a shower, and get dressed before having coffee.', textEs: 'Me despierto a las seis y media, me ducho y me visto antes de tomar café.' },
+      { speaker: 'Elena', textEn: 'And what time did you go to bed last night?', textEs: '¿Y a qué hora te acostaste anoche?' },
+      { speaker: 'Sam', textEn: 'Last night I went to bed very late because I stayed up watching a Spanish series.', textEs: 'Anoche me acosté muy tarde porque me quedé viendo una serie en español.' }
+    ],
+    quiz: [
+      {
+        id: 'es_a2_9_q1',
+        question: 'Choose the natural Spanish way to say "I wash my hands before eating":',
+        options: [
+          'Me lavo mis manos antes de comer.',
+          'Me lavo las manos antes de comer.',
+          'Lavo mis manos antes de comer.',
+          'Te lavas las manos antes de comer.'
+        ],
+        correctAnswer: 'Me lavo las manos antes de comer.',
+        explanation: 'In Spanish, reflexive verbs use the definite article ("las manos", "los dientes") rather than the possessive "mis".',
+        hint: 'Use "me lavo + las manos".'
+      },
+      {
+        id: 'es_a2_9_q2',
+        question: 'Complete with the correct stem-changing reflexive form: Normalmente yo _____ (acostarse, o->ue) a las diez y media.',
+        options: [
+          'me acuesto',
+          'me acosto',
+          'acuesto',
+          'se acuesta'
+        ],
+        correctAnswer: 'me acuesto',
+        explanation: '"Acostarse" changes O -> UE in the present tense and needs the pronoun "me" for Yo: "me acuesto".',
+        hint: 'Yo + me + acuesto.'
+      },
+      {
+        id: 'es_a2_9_q3',
+        type: 'word-order',
+        question: 'Order the sentence about morning routine:',
+        targetText: 'Me despierto temprano y me ducho todos los días',
+        options: [],
+        correctAnswer: 'Me despierto temprano y me ducho todos los días',
+        explanation: 'Great job placing the reflexive pronoun "me" directly before each conjugated verb!',
+        hint: 'Start with "Me despierto temprano..."'
+      }
+    ]
+  },
+  {
+    id: 'es_a2_10',
+    day: 28,
+    cefrLevel: 'A2',
+    category: 'A2 • Indirect Pronouns & Gustar Verbs',
+    title: 'Indirect Object Pronouns & Verbs Like Gustar (Encantar, Importar, Parecer)',
+    description: 'Go beyond basic "me gusta" to master "encantar, interesar, molestar, importar, quedar bien" and Indirect Object Pronouns (me, te, le, nos, les).',
+    grammarFocus: 'A mí me / A ti te / A él le / A nosotros nos / A ellos les + singular (-a) or plural (-an) verb',
+    commonMistake: 'The verb agrees with the THING that pleases or matters, NOT the person! Say "A mí me encantan los conciertos" (plural "encantan" because "los conciertos" is plural).',
+    strategyTip: 'When mentioning a specific person ("A María" or "A mis padres"), you STILL must include the pronoun "le" or "les" before the verb: "A María LE encanta el arte".',
+    content: `🎯 CEFR A2.10 GOAL: EXPRESSING REACTIONS, OPINIONS & INDIRECT OBJECTS
+
+1. VERBS THAT WORK EXACTLY LIKE "GUSTAR"
+In Spanish, these verbs literally mean "to be pleasing/interesting/important to someone":
+• ENCANTAR (To love something):
+  - "Me encanta esta canción" (1 thing) / "Me encantan tus zapatos" (2+ things).
+• INTERESAR (To be interested in):
+  - "¿Te interesa la historia de México?" (Are you interested in Mexican history?).
+• IMPORTAR (To care / mind):
+  - "¿Te importa cerrar la ventana?" (Do you mind closing the window?).
+• MOLESTAR (To bother / annoy):
+  - "A mi padre le molesta el ruido." (Noise bothers my father).
+• PARECER (To seem / think of):
+  - "¿Qué te parece este restaurante?" (What do you think of this restaurant?).
+• QUEDAR BIEN / MAL (To fit or suit well - clothes):
+  - "¡Esa camisa te queda genial!" (That shirt looks great on you!).
+
+2. INDIRECT OBJECT PRONOUNS (To whom an action is done)
+• Me (to me), Te (to you), Le (to him/her/usted), Nos (to us), Les (to them/ustedes):
+  - "El camarero NOS trajo el menú." (The waiter brought US the menu).
+  - "Siempre LE digo la verdad a mi mejor amigo." (I always tell my best friend the truth).`,
+    dialogue: [
+      { speaker: 'Sofía', textEn: 'What do you think of this green jacket, Leo? Does it suit me?', textEs: '¿Qué te parece esta chaqueta verde, Leo? ¿Me queda bien?' },
+      { speaker: 'Leo', textEn: 'It looks fantastic on you! And I love the color.', textEs: '¡Te queda genial! Y además me encanta el color.' },
+      { speaker: 'Sofía', textEn: 'Are you interested in looking at the shoes on the second floor?', textEs: '¿Te interesa mirar los zapatos del segundo piso?' },
+      { speaker: 'Leo', textEn: 'Sure, I don\'t mind waiting while you try them on.', textEs: 'Claro, no me importa esperar mientras te los pruebas.' }
+    ],
+    quiz: [
+      {
+        id: 'es_a2_10_q1',
+        question: 'Complete the sentence: A mis amigos _____ _____ mucho las películas de ciencia ficción.',
+        options: [
+          'le gustan',
+          'les encanta',
+          'les encantan',
+          'los encantan'
+        ],
+        correctAnswer: 'les encantan',
+        explanation: '"A mis amigos" requires the plural indirect pronoun "les", and "las películas" (plural subject) requires the plural verb "encantan".',
+        hint: 'A mis amigos -> les | las películas -> encantan.'
+      },
+      {
+        id: 'es_a2_10_q2',
+        question: 'How do you say "That dress looks great on you!" in Spanish?',
+        options: [
+          '¡Ese vestido te queda genial!',
+          '¡Ese vestido eres genial!',
+          '¡Ese vestido te gusta genial!',
+          '¡Ese vestido lo queda bien!'
+        ],
+        correctAnswer: '¡Ese vestido te queda genial!',
+        explanation: '"Quedar bien / genial" is the idiomatic Spanish verb for how clothes fit or look on someone.',
+        hint: 'Use "te queda genial".'
+      },
+      {
+        id: 'es_a2_10_q3',
+        type: 'word-order',
+        question: 'Order the question asking for someone\'s opinion:',
+        targetText: 'Qué te parece nuestra nueva oficina en el centro',
+        options: [],
+        correctAnswer: 'Qué te parece nuestra nueva oficina en el centro',
+        explanation: '"¿Qué te parece...?" is the most natural way to ask "What do you think of...?" in Spanish.',
+        hint: 'Start with "Qué te parece..."'
+      }
+    ]
+  },
+  {
+    id: 'es_a2_11',
+    day: 29,
+    cefrLevel: 'A2',
+    category: 'A2 • Precision & Negation',
+    title: 'Indefinites & Double Negation (Alguien/Nadie, Algún/Ningún, Tampoco)',
+    description: 'Master Spanish double negation ("No conozco a nadie") and pairs of affirmative/negative words without translating literally from English.',
+    grammarFocus: 'Algo/Nada | Alguien/Nadie | Algún/Ningún | Siempre/Nunca | También/Tampoco',
+    commonMistake: 'In English, double negatives are wrong ("I don\'t know nobody"). In Spanish, when the negative word comes AFTER the verb, double negation is MANDATORY: "No conozco a nadie" (Literally: I don\'t know nobody).',
+    strategyTip: 'To agree with a negative statement ("Me neither"), NEVER use "también no"—always use "Yo tampoco"!',
+    content: `🎯 CEFR A2.11 GOAL: MASTERING SPANISH DOUBLE NEGATION & OPPOSITE PAIRS
+
+1. THE 5 ESSENTIAL AFFIRMATIVE / NEGATIVE PAIRS
+• Algo (Something) <-> Nada (Nothing / Anything)
+• Alguien (Someone) <-> Nadie (No one / Anyone)
+• Algún / Alguno/a (Some / Any) <-> Ningún / Ninguno/a (None / Not any)
+• Siempre (Always) <-> Nunca / Jamás (Never)
+• También (Also / Too) <-> Tampoco (Neither / Either)
+
+2. THE GOLDEN RULE OF SPANISH DOUBLE NEGATION
+If the negative word (nada, nadie, nunca, ningún, tampoco) goes AFTER the verb, you MUST put "NO" before the verb:
+• "No tengo nada en los bolsillos." (I don't have anything in my pockets).
+• "No hay nadie en la sala." (There isn't anyone in the room).
+• "Ella no come carne nunca." OR "Ella nunca come carne." (If "nunca" goes BEFORE the verb, drop the "no"!).
+
+3. APOCOPATION: ALGÚN & NINGÚN BEFORE MASCULINE SINGULAR NOUNS
+• Before a masculine singular noun, "alguno" and "ninguno" drop the "-o":
+  - "¿Tienes algún plan para hoy?" -> "No, no tengo ningún plan."`,
+    dialogue: [
+      { speaker: 'Camila', textEn: 'Do you know anyone at this conference, Ryan?', textEs: '¿Conoces a alguien en esta conferencia, Ryan?' },
+      { speaker: 'Ryan', textEn: 'No, I don\'t know anyone here yet.', textEs: 'No, todavía no conozco a nadie aquí.' },
+      { speaker: 'Camila', textEn: 'Me neither! Have you ever attended this event before?', textEs: '¡Yo tampoco! ¿Has asistido alguna vez a este evento?' },
+      { speaker: 'Ryan', textEn: 'Never, this is my first time, but I don\'t have any problem introducing myself!', textEs: 'Nunca, es mi primera vez, ¡pero no tengo ningún problema en presentarme!' }
+    ],
+    quiz: [
+      {
+        id: 'es_a2_11_q1',
+        question: 'Translate "I don\'t have any problem with the schedule" into natural Spanish:',
+        options: [
+          'No tengo algún problema con el horario.',
+          'No tengo ningún problema con el horario.',
+          'No tengo ninguno problema con el horario.',
+          'Tengo ningún problema con el horario.'
+        ],
+        correctAnswer: 'No tengo ningún problema con el horario.',
+        explanation: 'Spanish requires double negation ("No tengo ningún...") and drops the "-o" before the masculine singular noun "problema".',
+        hint: 'No tengo + ningún problema.'
+      },
+      {
+        id: 'es_a2_11_q2',
+        question: 'How do you reply "Me neither" when a friend says "No me gusta el café amargo"?',
+        options: [
+          'A mí también no.',
+          'A mí tampoco.',
+          'Yo también.',
+          'Yo nunca.'
+        ],
+        correctAnswer: 'A mí tampoco.',
+        explanation: 'To agree with a negative statement, we use "tampoco" (and with gustar-type verbs, "A mí tampoco").',
+        hint: 'Negative agreement = tampoco.'
+      },
+      {
+        id: 'es_a2_11_q3',
+        type: 'word-order',
+        question: 'Order the double-negative sentence in Spanish:',
+        targetText: 'Hoy no hay nadie en la oficina',
+        options: [],
+        correctAnswer: 'Hoy no hay nadie en la oficina',
+        explanation: 'When "nadie" follows the verb "hay", "no" must precede the verb: "no hay nadie".',
+        hint: 'Start with "Hoy no hay..."'
+      }
+    ]
+  },
+  {
+    id: 'es_a2_12',
+    day: 30,
+    cefrLevel: 'A2',
+    category: 'A2 • Verbal Periphrases & Fluency',
+    title: 'Essential Periphrases: Acabar de, Tener que, Hay que & Estar + Gerundio',
+    description: 'Express what you "just did" (Acabo de...), obligations (Tengo que / Hay que), and ongoing actions (Estoy haciendo / Seguir haciendo).',
+    grammarFocus: 'Acabar de + Infinitive (just did) | Tener que vs. Hay que + Inf | Estar / Seguir + Gerundio (-ando / -iendo)',
+    commonMistake: 'In English, "-ing" is used as a noun ("Swimming is healthy"). In Spanish, the gerund (-ando/-iendo) is NEVER a noun! Use the infinitive as a noun: "Nadar es saludable" (NOT "Nadando es saludable").',
+    strategyTip: 'Use "Acabo de + infinitivo" whenever you want to say "I just [did something]" in English—it is super easy because "acabo" is in the present tense!',
+    content: `🎯 CEFR A2.12 GOAL: SPEAKING WITH NATURAL FLUENCY USING VERBAL PERIPHRASES
+
+1. "ACABAR DE + INFINITIVE" (To have just done something)
+Instead of complicated past tenses, Spanish uses Present of ACABAR + DE + INFINITIVE:
+• "Acabo de llegar al aeropuerto." (I just arrived at the airport).
+• "Ellos acaban de comprar una casa." (They just bought a house).
+
+2. PERSONAL VS. IMPERSONAL OBLIGATION: TENER QUE VS. HAY QUE
+• TENER QUE + Infinitive (Specific person must do it):
+  - "Tengo que enviar este documento hoy." (I have to send this document today).
+• HAY QUE + Infinitive (General rule / "One must"):
+  - "Para hablar bien español, hay que practicar todos los días." (To speak Spanish well, one must practice every day).
+
+3. ESTAR + GERUNDIO & SEGUIR + GERUNDIO (-ANDO / -IENDO)
+• ESTAR + Gerundio (Right now in progress):
+  - "Estoy preparando la cena." (I am making dinner right now).
+• SEGUIR + Gerundio (Keep doing / Still doing):
+  - "¿Sigues viviendo en el mismo barrio?" (Are you still living in the same neighborhood?).
+  - Irregular gerunds to remember: Leer -> Leyendo, Dormir -> Durmiendo, Pedir -> Pidiendo.`,
+    dialogue: [
+      { speaker: 'Martín', textEn: 'Hi Claire! Where are you? We are waiting for you at the cafe.', textEs: '¡Hola Claire! ¿Dónde estás? Te estamos esperando en la cafetería.' },
+      { speaker: 'Claire', textEn: 'I just got off the metro! I am walking towards the square right now.', textEs: '¡Acabo de bajar del metro! Estoy caminando hacia la plaza ahora mismo.' },
+      { speaker: 'Martín', textEn: 'Great! Are you still taking Spanish classes in the evenings?', textEs: '¡Genial! ¿Sigues tomando clases de español por las tardes?' },
+      { speaker: 'Claire', textEn: 'Yes, one has to be consistent to pass the official A2 exam!', textEs: '¡Sí, hay que ser constante para aprobar el examen oficial A2!' }
+    ],
+    quiz: [
+      {
+        id: 'es_a2_12_q1',
+        question: 'How do you say "I just spoke with the manager" in idiomatic Spanish?',
+        options: [
+          'Justo hablo con el gerente.',
+          'Acabo de hablar con el gerente.',
+          'Acabo hablando con el gerente.',
+          'Tengo que hablar con el gerente.'
+        ],
+        correctAnswer: 'Acabo de hablar con el gerente.',
+        explanation: '"Acabar de + infinitive" is the standard Spanish structure for "to have just done something".',
+        hint: 'Use "Acabo de + infinitive".'
+      },
+      {
+        id: 'es_a2_12_q2',
+        question: 'Choose the right form to express "Are you still working at the same company?":',
+        options: [
+          '¿Sigues trabajando en la misma empresa?',
+          '¿Sigues trabajar en la misma empresa?',
+          '¿Acabas de trabajando en la misma empresa?',
+          '¿Hay que trabajando en la misma empresa?'
+        ],
+        correctAnswer: '¿Sigues trabajando en la misma empresa?',
+        explanation: '"Seguir + gerundio (-ando/-iendo)" means "to keep doing" or "to still be doing" something.',
+        hint: 'Seguir + gerundio (-ando).'
+      },
+      {
+        id: 'es_a2_12_q3',
+        type: 'speaking',
+        question: 'Speak aloud this final sentence of the 12-lesson A2 Spanish module:',
+        targetText: 'Acabo de completar todas las lecciones del nivel A2',
+        options: [],
+        correctAnswer: 'Acabo de completar todas las lecciones del nivel A2',
+        explanation: '¡Felicidades! You have completed all 12 comprehensive lessons of Spanish CEFR A2!'
       }
     ]
   }
@@ -1232,7 +1831,13 @@ export const a2EnglishVocab: VocabWord[] = [
   { id: 'v_a2_9', word: 'Headache', translation: 'Dolor de cabeza', example: 'I have a terrible headache, I should rest.', category: 'A2 • Salud y Trabajo', phonetic: '/ˈhedeɪk/', cefrLevel: 'A2' },
   { id: 'v_a2_10', word: 'Achievement', translation: 'Logro / Meta cumplida', example: 'Speaking fluent A2 English is a great achievement.', category: 'A2 • Experiencias', phonetic: '/əˈtʃiːvmənt/', cefrLevel: 'A2' },
   { id: 'v_a2_11', word: 'Crowded', translation: 'Lleno de gente / Concurrido', example: 'The subway was very crowded when I went home.', category: 'A2 • Descripciones', phonetic: '/ˈkraʊdɪd/', cefrLevel: 'A2' },
-  { id: 'v_a2_12', word: 'Schedule', translation: 'Horario / Agenda', example: 'We have to check the schedule before booking.', category: 'A2 • Salud y Trabajo', phonetic: '/ˈskedʒuːl/', cefrLevel: 'A2' }
+  { id: 'v_a2_12', word: 'Schedule', translation: 'Horario / Agenda', example: 'We have to check the schedule before booking.', category: 'A2 • Salud y Trabajo', phonetic: '/ˈskedʒuːl/', cefrLevel: 'A2' },
+  { id: 'v_a2_13', word: 'Advice', translation: 'Consejo (Incontable)', example: 'Let me give you some useful advice.', category: 'A2 • Precisión', phonetic: '/ədˈvaɪs/', cefrLevel: 'A2' },
+  { id: 'v_a2_14', word: 'Look after', translation: 'Cuidar de alguien', example: 'She looks after her younger brother.', category: 'A2 • Phrasal Verbs', phonetic: '/lʊk ˈæftər/', cefrLevel: 'A2' },
+  { id: 'v_a2_15', word: 'Get used to', translation: 'Acostumbrarse a', example: 'I am getting used to waking up early.', category: 'A2 • Hábitos', phonetic: '/ɡet juːzd tuː/', cefrLevel: 'A2' },
+  { id: 'v_a2_16', word: 'Avoid', translation: 'Evitar (+ verbo -ING)', example: 'Try to avoid making the same mistake.', category: 'A2 • Patrones Verbales', phonetic: '/əˈvɔɪd/', cefrLevel: 'A2' },
+  { id: 'v_a2_17', word: 'Across', translation: 'Al otro lado de / Cruzando', example: 'Walk across the bridge to see the museum.', category: 'A2 • Movimiento', phonetic: '/əˈkrɔːs/', cefrLevel: 'A2' },
+  { id: 'v_a2_18', word: 'Enough', translation: 'Suficiente / Suficientemente', example: 'We have enough time to finish the project.', category: 'A2 • Precisión', phonetic: '/ɪˈnʌf/', cefrLevel: 'A2' }
 ];
 
 export const spanishA2Vocab: VocabWord[] = [
@@ -1247,7 +1852,13 @@ export const spanishA2Vocab: VocabWord[] = [
   { id: 'es_a2_v_9', word: 'Inolvidable', translation: 'Unforgettable', example: 'Nuestro viaje por el sur de España fue inolvidable.', category: 'A2 • Experiences', phonetic: 'een-ohl-bee-DAH-bleh', cefrLevel: 'A2' },
   { id: 'es_a2_v_10', word: 'La entrevista', translation: 'Interview', example: 'Mañana voy a tener una entrevista de trabajo importante.', category: 'A2 • Health & Work', phonetic: 'lah ehn-treh-BEES-tah', cefrLevel: 'A2' },
   { id: 'es_a2_v_11', word: 'El billete de ida y vuelta', translation: 'Round-trip ticket', example: 'Compré un billete de ida y vuelta para Sevilla.', category: 'A2 • Travel', phonetic: 'bee-YEH-teh deh EE-dah ee BWEHL-tah', cefrLevel: 'A2' },
-  { id: 'es_a2_v_12', word: 'Acostumbrarse', translation: 'To get used to', example: 'Ya me he acostumbrado al horario de España.', category: 'A2 • Experiences', phonetic: 'ah-kohs-toom-BRAHR-seh', cefrLevel: 'A2' }
+  { id: 'es_a2_v_12', word: 'Acostumbrarse', translation: 'To get used to', example: 'Ya me he acostumbrado al horario de España.', category: 'A2 • Experiences', phonetic: 'ah-kohs-toom-BRAHR-seh', cefrLevel: 'A2' },
+  { id: 'es_a2_v_13', word: 'Acabar de + inf.', translation: 'To have just done something', example: 'Acabo de hablar con la directora.', category: 'A2 • Periphrases', phonetic: 'ah-kah-BAHR deh', cefrLevel: 'A2' },
+  { id: 'es_a2_v_14', word: 'Llevarse bien', translation: 'To get along well', example: 'Me llevo muy bien con mis compañeros.', category: 'A2 • Daily Life', phonetic: 'yeh-BAHR-seh byehn', cefrLevel: 'A2' },
+  { id: 'es_a2_v_15', word: 'Quedar bien', translation: 'To fit / suit well (clothing)', example: 'Esa chaqueta azul te queda muy bien.', category: 'A2 • Daily Life', phonetic: 'keh-DAHR byehn', cefrLevel: 'A2' },
+  { id: 'es_a2_v_16', word: 'Tampoco', translation: 'Neither / Not either', example: 'Yo tampoco conozco a nadie aquí.', category: 'A2 • Precision', phonetic: 'tahm-POH-koh', cefrLevel: 'A2' },
+  { id: 'es_a2_v_17', word: 'Despertarse', translation: 'To wake up (e -> ie)', example: 'Siempre me despierto a las siete.', category: 'A2 • Daily Life', phonetic: 'dehs-pehr-TAHR-seh', cefrLevel: 'A2' },
+  { id: 'es_a2_v_18', word: 'Hay que + inf.', translation: 'One must / It is necessary to', example: 'Hay que reservar mesa con antelación.', category: 'A2 • Periphrases', phonetic: 'ahy keh', cefrLevel: 'A2' }
 ];
 
 // ============================================================================
@@ -1366,6 +1977,62 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     ],
     correctAnswer: 'take / will',
     explanation: 'En el First Conditional, la condición con "If" lleva Present Simple (take) y el resultado lleva "will + verbo".'
+  },
+  {
+    id: 'ex_a2_9',
+    cefrLevel: 'A2',
+    sectionTitle: 'A2 • Gerunds vs. Infinitives',
+    question: 'Would you mind _____ the window? I promise _____ it back in ten minutes.',
+    options: [
+      'opening / to close',
+      'to open / closing',
+      'open / to close',
+      'opening / closing'
+    ],
+    correctAnswer: 'opening / to close',
+    explanation: '"Would you mind" siempre exige verbo en -ING ("opening"), mientras que "promise" exige TO + Infinitivo ("to close").'
+  },
+  {
+    id: 'ex_a2_10',
+    cefrLevel: 'A2',
+    sectionTitle: 'A2 • Quantifiers & Uncountables',
+    question: 'Is this coffee warm _____ for you, or do you want me to heat it up?',
+    options: [
+      'enough',
+      'too',
+      'many',
+      'much'
+    ],
+    correctAnswer: 'enough',
+    explanation: '"Enough" se ubica después del adjetivo ("warm enough") para expresar suficiencia.'
+  },
+  {
+    id: 'ex_a2_11',
+    cefrLevel: 'A2',
+    sectionTitle: 'A2 • Used to vs. Get used to',
+    question: 'I _____ live in a small village, so I am still getting used to _____ in the city traffic.',
+    options: [
+      'used to / driving',
+      'use to / drive',
+      'used to / drive',
+      'was used to / drove'
+    ],
+    correctAnswer: 'used to / driving',
+    explanation: '"Used to + verbo base" indica estado pasado, y "getting used to + -ING" indica el proceso de adaptarse.'
+  },
+  {
+    id: 'ex_a2_12',
+    cefrLevel: 'A2',
+    sectionTitle: 'A2 • Movement & Phrasal Verbs',
+    question: 'Can you _____ my dog while I walk _____ the street to the pharmacy?',
+    options: [
+      'look after / across',
+      'look for / through',
+      'take off / along',
+      'look at / into'
+    ],
+    correctAnswer: 'look after / across',
+    explanation: '"Look after" significa cuidar, y "walk across the street" significa cruzar la calle de un lado al otro.'
   }
 ];
 
@@ -1481,5 +2148,61 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     ],
     correctAnswer: 'por / para',
     explanation: 'We use "POR" for financial exchange/price (por cien dólares) and "PARA" for destination (para Buenos Aires).'
+  },
+  {
+    id: 'es_ex_a2_9',
+    cefrLevel: 'A2',
+    sectionTitle: 'A2 • Reflexive Verbs & Routines',
+    question: 'Todas las mañanas yo _____ a las siete y _____ los dientes.',
+    options: [
+      'me despierto / me lavo',
+      'despierto / lavo mis',
+      'te despiertas / me lavo',
+      'me despierto / lavo mis'
+    ],
+    correctAnswer: 'me despierto / me lavo',
+    explanation: 'Reflexive routine verbs require "me" for Yo and the definite article ("los dientes") instead of "mis".'
+  },
+  {
+    id: 'es_ex_a2_10',
+    cefrLevel: 'A2',
+    sectionTitle: 'A2 • Verbs Like Gustar',
+    question: 'A nosotros _____ _____ mucho los museos de historia antigua.',
+    options: [
+      'nos interesa',
+      'nos interesan',
+      'les interesan',
+      'nos interesamos'
+    ],
+    correctAnswer: 'nos interesan',
+    explanation: '"Los museos" is plural, so the verb agrees in plural ("interesan") with the indirect pronoun "nos".'
+  },
+  {
+    id: 'es_ex_a2_11',
+    cefrLevel: 'A2',
+    sectionTitle: 'A2 • Double Negation',
+    question: 'Es domingo por la noche y no hay _____ en la oficina.',
+    options: [
+      'alguien',
+      'nadie',
+      'algún',
+      'algo'
+    ],
+    correctAnswer: 'nadie',
+    explanation: 'After a negated verb ("no hay"), Spanish requires the negative word "nadie" (no one / anyone).'
+  },
+  {
+    id: 'es_ex_a2_12',
+    cefrLevel: 'A2',
+    sectionTitle: 'A2 • Verbal Periphrases',
+    question: '¡Llegaste justo a tiempo! Nosotros _____ de preparar el café.',
+    options: [
+      'acabamos',
+      'tenemos',
+      'seguimos',
+      'estamos'
+    ],
+    correctAnswer: 'acabamos',
+    explanation: '"Acabar de + infinitive" means "to have just done something" (Acabamos de preparar = We just made).'
   }
 ];

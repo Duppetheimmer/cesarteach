@@ -39,9 +39,9 @@ export function LearningStrategyPanel({
   a2CompletedCount,
   a2TotalCount,
   b1CompletedCount = 0,
-  b1TotalCount = 8,
+  b1TotalCount = 12,
   b2CompletedCount = 0,
-  b2TotalCount = 6,
+  b2TotalCount = 12,
   onNavigate,
   onOpenQuickPractice
 }: LearningStrategyPanelProps) {
