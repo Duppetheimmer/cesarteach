@@ -48,7 +48,7 @@ export function AuthModal({
   const [fullName, setFullName] = useState('');
   const [studentId, setStudentId] = useState('');
   const [targetLanguage, setTargetLanguage] = useState<'en' | 'es'>('en');
-  const [teacherEmail, setTeacherEmail] = useState(MASTER_TEACHER_EMAIL);
+  const [teacherEmail, setTeacherEmail] = useState('');
   const [teacherPin, setTeacherPin] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showTeacherPin, setShowTeacherPin] = useState(false);
@@ -99,7 +99,7 @@ export function AuthModal({
 
     const cleanEmail = email.trim().toLowerCase();
     if (isMasterTeacherEmail(cleanEmail)) {
-      setErrorMsg(`El correo ${MASTER_TEACHER_EMAIL} es del Profesor Titular.`);
+      setErrorMsg('Este correo pertenece al Profesor Titular.');
       return;
     }
 
@@ -277,7 +277,7 @@ export function AuthModal({
         !existingTeacher.authorizedTeacherByMaster
       ) {
         setErrorMsg(
-          `Ningún profesor puede acceder o registrarse sin autorización de ${MASTER_TEACHER_EMAIL}.`
+          'Ningún profesor puede acceder o registrarse sin autorización del Profesor Titular.'
         );
         setIsLoading(false);
         return;
@@ -505,8 +505,7 @@ export function AuthModal({
           {mode === 'teacher' && (
             <form onSubmit={handleTeacherAccess} className="space-y-3.5">
               <div className="p-3.5 rounded-2xl bg-yellow-200 border-2 border-slate-900 text-slate-950 text-xs font-bold">
-                Ningún profesor puede registrarse sin autorización de{' '}
-                <strong>{MASTER_TEACHER_EMAIL}</strong>.
+                Ningún profesor puede registrarse sin autorización del Profesor Titular.
               </div>
 
               <button
@@ -528,6 +527,7 @@ export function AuthModal({
                   required
                   value={teacherEmail}
                   onChange={e => setTeacherEmail(e.target.value)}
+                  placeholder="Introduce tu correo de profesor"
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-700 text-xs font-bold text-slate-900 dark:text-zinc-100"
                 />
               </div>

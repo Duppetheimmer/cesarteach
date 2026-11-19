@@ -46,7 +46,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
   });
 
   // Teacher fields
-  const [teacherEmail, setTeacherEmail] = useState(MASTER_TEACHER_EMAIL);
+  const [teacherEmail, setTeacherEmail] = useState('');
   const [teacherPin, setTeacherPin] = useState('');
   const [reqTeacherName, setReqTeacherName] = useState('');
   const [reqTeacherEmail, setReqTeacherEmail] = useState('');
@@ -57,6 +57,8 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [unauthorizedDomainHost, setUnauthorizedDomainHost] = useState<string | null>(null);
+  const [copiedDomain, setCopiedDomain] = useState(false);
 
   const isSpanishCourse = targetLanguage === 'es'; // Native English speaker learning Spanish
 
@@ -64,6 +66,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
   const handleGoogleSignIn = async (attemptingTeacherLogin: boolean = false) => {
     setErrorMsg(null);
     setSuccessMsg(null);
+    setUnauthorizedDomainHost(null);
     setIsLoading(true);
     try {
       const { profile, courseLanguage } = await signInWithGoogleFirebase(
@@ -81,7 +84,20 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
         onLoginSuccess(profile, courseLanguage);
       }, 350);
     } catch (err: any) {
-      if (err?.code !== 'auth/popup-closed-by-user') {
+      const code = err?.code || '';
+      const msg = String(err?.message || '');
+      if (code === 'auth/unauthorized-domain' || msg.includes('auth/unauthorized-domain')) {
+        const currentHost =
+          typeof window !== 'undefined' && window.location?.hostname
+            ? window.location.hostname
+            : 'ais-pre-4dxpe7lvb4rbufwf77nug4-241148874324.us-east1.run.app';
+        setUnauthorizedDomainHost(currentHost);
+        setErrorMsg(
+          isSpanishCourse
+            ? `Google Popup blocked on domain "${currentHost}" (auth/unauthorized-domain). Your Firebase Firestore database IS connected—use the direct Student or Teacher form right here to enter immediately, or add this domain in Firebase Console > Authentication > Settings > Authorized domains.`
+            : `La ventana de Google pide autorizar el dominio "${currentHost}" (auth/unauthorized-domain). Tu base de datos Firebase Firestore SÍ está conectada y guardando datos: entra AHORA MISMO usando el formulario directo de Alumno o Profesor aquí abajo, o agrega este dominio en Firebase Console > Authentication > Settings > Dominios autorizados.`
+        );
+      } else if (code !== 'auth/popup-closed-by-user') {
         setErrorMsg(
           err.message ||
             (isSpanishCourse
@@ -122,8 +138,8 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
     if (isMasterTeacherEmail(cleanEmail)) {
       setErrorMsg(
         isSpanishCourse
-          ? `The email ${MASTER_TEACHER_EMAIL} belongs to the Head Teacher. Please sign in from the "Teacher" tab.`
-          : `El correo ${MASTER_TEACHER_EMAIL} pertenece al Profesor Titular. Ingresa desde la pestaña "Profesor".`
+          ? 'This email belongs to the Head Teacher. Please sign in from the "Teacher" tab.'
+          : 'Este correo pertenece al Profesor Titular. Ingresa desde la pestaña "Profesor".'
       );
       return;
     }
@@ -329,11 +345,11 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
         return;
       }
 
-      // Case 2: Another teacher checking if they were authorized by spacio.n.blnco@gmail.com
+      // Case 2: Another teacher checking if they were authorized by the Head Teacher
       const existingTeacher = await fetchStudentProfileFromDatabase(cleanTeacherEmail);
       if (!existingTeacher) {
         throw new Error(
-          `Ningún profesor puede registrarse sin autorización de ${MASTER_TEACHER_EMAIL}. Si deseas ser profesor, usa el botón "Pedir Autorización".`
+          'Ningún profesor puede registrarse sin autorización del Profesor Titular. Si deseas ser profesor, usa el botón "Pedir Autorización".'
         );
       }
 
@@ -342,13 +358,13 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
         !existingTeacher.authorizedTeacherByMaster
       ) {
         throw new Error(
-          `Tu solicitud para ser Profesor sigue PENDIENTE de autorización por el Profesor Titular (${MASTER_TEACHER_EMAIL}).`
+          'Tu solicitud para ser Profesor sigue PENDIENTE de autorización por el Profesor Titular.'
         );
       }
 
       if (existingTeacher.role !== 'teacher' || !existingTeacher.authorizedTeacherByMaster) {
         throw new Error(
-          `Esta cuenta no tiene autorización de Profesor. Solo el Profesor Titular (${MASTER_TEACHER_EMAIL}) puede autorizar nuevos profesores.`
+          'Esta cuenta no tiene autorización de Profesor. Solo el Profesor Titular puede autorizar nuevos profesores.'
         );
       }
 
@@ -368,7 +384,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
     }
   };
 
-  // Submit Teacher Registration Request (Requires spacio.n.blnco@gmail.com approval!)
+  // Submit Teacher Registration Request (Requires Head Teacher approval!)
   const handleTeacherRequestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -387,7 +403,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
         accessPin: reqTeacherPin
       });
       setSuccessMsg(
-        `Solicitud enviada. Ningún profesor puede registrarse sin permiso del titular (${MASTER_TEACHER_EMAIL}). Cuando él te autorice en su Panel Docente, podrás iniciar sesión como profesor.`
+        'Solicitud enviada. Ningún profesor puede registrarse sin permiso del Profesor Titular. Cuando te autorice en su Panel Docente, podrás iniciar sesión como profesor.'
       );
       setReqTeacherName('');
       setReqTeacherEmail('');
@@ -624,10 +640,61 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3.5 mb-5 rounded-2xl bg-rose-100 dark:bg-rose-950/80 border-2 border-slate-900 text-slate-950 dark:text-rose-200 text-xs font-bold flex items-start gap-2.5"
+                className="p-3.5 mb-5 rounded-2xl bg-rose-100 dark:bg-rose-950/80 border-2 border-slate-900 text-slate-950 dark:text-rose-200 text-xs font-bold space-y-2.5"
               >
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
-                <span>{errorMsg}</span>
+                <div className="flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
+                  <span>{errorMsg}</span>
+                </div>
+
+                {unauthorizedDomainHost && (
+                  <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border-2 border-slate-900 text-slate-900 dark:text-zinc-100 space-y-2">
+                    <p className="text-[11px] font-black text-emerald-700 dark:text-emerald-400">
+                      {isSpanishCourse
+                        ? '✓ Solution 1 (Immediate): Use the form below — it saves directly to Firebase Cloud Firestore without Google popup!'
+                        : '✓ Solución 1 (Inmediata): Usa el formulario directo aquí abajo — ¡sí guarda todo en Firebase Cloud Firestore sin ventana emergente!'}
+                    </p>
+                    <p className="text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
+                      {isSpanishCourse
+                        ? 'Solution 2 (Enable Google Popup): Copy this domain and paste it in Firebase Console → Authentication → Settings → Authorized domains:'
+                        : 'Solución 2 (Activar botón de Google): Copia este dominio y agrégalo en Firebase Console → Authentication → Settings → Dominios autorizados:'}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <code className="px-2.5 py-1.5 rounded-lg bg-yellow-200 text-slate-950 border border-slate-900 font-mono text-[11px] font-black break-all">
+                        {unauthorizedDomainHost}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (navigator?.clipboard) {
+                            navigator.clipboard.writeText(unauthorizedDomainHost);
+                            setCopiedDomain(true);
+                            setTimeout(() => setCopiedDomain(false), 2500);
+                          }
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-[11px] font-black hover:bg-slate-800 transition-all"
+                      >
+                        {copiedDomain
+                          ? isSpanishCourse
+                            ? '✓ Copied!'
+                            : '✓ ¡Dominio copiado!'
+                          : isSpanishCourse
+                            ? 'Copy Domain'
+                            : 'Copiar Dominio'}
+                      </button>
+                      <a
+                        href="https://console.firebase.google.com/project/arcane-benefit-gkhlb/authentication/settings"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 rounded-lg bg-emerald-300 text-slate-950 border border-slate-900 text-[11px] font-black hover:bg-emerald-400 transition-all"
+                      >
+                        {isSpanishCourse
+                          ? 'Open Firebase Authorized Domains ↗'
+                          : 'Abrir Firebase Dominios Autorizados ↗'}
+                      </a>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -835,7 +902,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
                   </div>
                   <p className="text-[11px] font-bold text-slate-800 dark:text-zinc-300 leading-relaxed">
                     Ningún profesor puede registrarse sin la autorización directa del Profesor
-                    Titular (<strong>{MASTER_TEACHER_EMAIL}</strong>).
+                    Titular.
                   </p>
                 </div>
 
@@ -880,7 +947,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
                       className="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-slate-900 font-black text-xs shadow-[4px_4px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
                     >
                       <ShieldCheck className="w-4 h-4 text-yellow-300" />
-                      <span>Entrar con Google (Titular {MASTER_TEACHER_EMAIL} o Autorizados)</span>
+                      <span>Entrar con Google (Profesor Titular o Autorizados)</span>
                     </button>
 
                     <form onSubmit={handleTeacherLogin} className="space-y-3">
@@ -893,7 +960,7 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
                           required
                           value={teacherEmail}
                           onChange={e => setTeacherEmail(e.target.value)}
-                          placeholder={MASTER_TEACHER_EMAIL}
+                          placeholder="Introduce tu correo de profesor"
                           className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white text-xs font-bold"
                         />
                       </div>
@@ -944,8 +1011,8 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
                 ) : (
                   <form onSubmit={handleTeacherRequestSubmit} className="space-y-3">
                     <p className="text-xs font-semibold text-slate-600 dark:text-zinc-400">
-                      Envía tus datos al Profesor Titular (<strong>{MASTER_TEACHER_EMAIL}</strong>).
-                      No tendrás acceso de docente hasta que él apruebe tu solicitud en su panel.
+                      Envía tus datos al Profesor Titular. No tendrás acceso de docente hasta que
+                      apruebe tu solicitud en su panel.
                     </p>
 
                     <div>
@@ -1015,7 +1082,9 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
         <p className="flex items-center gap-1.5 text-slate-800 dark:text-zinc-300">
           <ShieldCheck className="w-4 h-4 text-emerald-600" />
           <span>
-            {isSpanishCourse ? 'Academic Director:' : 'Dirección Académica:'} {MASTER_TEACHER_EMAIL}
+            {isSpanishCourse
+              ? 'Academic Direction · CesarTeach'
+              : 'Dirección Académica · CesarTeach'}
           </span>
         </p>
       </footer>

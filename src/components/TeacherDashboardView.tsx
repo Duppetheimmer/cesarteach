@@ -108,7 +108,7 @@ export function TeacherDashboardView({
         </h2>
         <p className="text-sm font-semibold text-slate-600 dark:text-zinc-400">
           Ningún profesor puede registrarse o acceder al Panel Docente sin la autorización directa
-          del Profesor Titular (<strong>{MASTER_TEACHER_EMAIL}</strong>).
+          del Profesor Titular.
         </p>
         <button
           type="button"
@@ -335,8 +335,8 @@ export function TeacherDashboardView({
               <ShieldCheck className="w-4 h-4" />
               <span>
                 {isMaster
-                  ? `Profesor Titular Administrador (${MASTER_TEACHER_EMAIL})`
-                  : `Profesor Autorizado por ${MASTER_TEACHER_EMAIL}`}
+                  ? 'Profesor Titular Administrador'
+                  : 'Profesor Autorizado por el Titular'}
               </span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-black text-white font-display">
@@ -469,7 +469,7 @@ export function TeacherDashboardView({
 
             {activeAuthorizedTeachers.length === 0 ? (
               <p className="text-xs font-semibold text-slate-600 dark:text-zinc-400 py-3">
-                Actualmente <strong>solo tú ({MASTER_TEACHER_EMAIL})</strong> tienes acceso de
+                Actualmente <strong>solo tú (Profesor Titular)</strong> tienes acceso de
                 Profesor. Si deseas autorizar a otro docente, usa el botón «+ Autorizar Nuevo
                 Profesor».
               </p>
@@ -1019,7 +1019,7 @@ export function TeacherDashboardView({
                       Arquitectura y Reglas de Permiso en Firebase Firestore
                     </h3>
                     <p className="text-xs text-white/90">
-                      Profesor Titular: {MASTER_TEACHER_EMAIL}
+                      Gestión exclusiva del Profesor Titular
                     </p>
                   </div>
                 </div>

@@ -827,8 +827,8 @@ export default function App() {
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-indigo-900 block">
                     {isSpanishCourse
-                      ? `Priority Note from Your Teacher (${MASTER_TEACHER_EMAIL})`
-                      : `Indicación de Prioridad de tu Profesor (${MASTER_TEACHER_EMAIL})`}
+                      ? 'Priority Note from Your Teacher'
+                      : 'Indicación de Prioridad de tu Profesor'}
                   </span>
                   <p className="text-sm font-extrabold mt-0.5">{currentUser.notesFromTeacher}</p>
                 </div>

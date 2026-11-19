@@ -393,7 +393,7 @@ export async function requestTeacherRegistration(params: {
 
   if (isMasterTeacherEmail(cleanEmail)) {
     throw new Error(
-      `El correo ${MASTER_TEACHER_EMAIL} ya es el Profesor Titular. Inicia sesión directamente con tu clave maestra o Google.`
+      'Esta cuenta ya corresponde al Profesor Titular. Inicia sesión directamente con tu clave maestra o Google.'
     );
   }
 
@@ -565,7 +565,7 @@ export async function signInWithGoogleFirebase(
       accessPin: 'GOOGLE-AUTH'
     });
     throw new Error(
-      `Ningún profesor puede registrarse sin autorización del Profesor Titular (${MASTER_TEACHER_EMAIL}). Hemos enviado tu solicitud al titular para que la apruebe en su Panel de Control.`
+      'Ningún profesor puede registrarse sin autorización del Profesor Titular. Hemos enviado tu solicitud al titular para que la apruebe en su Panel de Control.'
     );
   }
 
@@ -746,7 +746,7 @@ export const SUPABASE_SQL_SETUP_SCRIPT = `// ===================================
 // ARQUITECTURA DE BASE DE DATOS EN FIREBASE CLOUD FIRESTORE
 // Proyecto: ${firebaseConfig.projectId}
 // Base de Datos: ${firebaseConfig.firestoreDatabaseId}
-// Profesor Titular Administrador: ${MASTER_TEACHER_EMAIL}
+// Administración: Profesor Titular Exclusivo
 // ============================================================================
 
 // 1. REGISTRO DE ALUMNOS (ABIERTO E INMEDIATO):
@@ -754,6 +754,6 @@ export const SUPABASE_SQL_SETUP_SCRIPT = `// ===================================
 
 // 2. REGISTRO DE PROFESORES (PROTEGIDO CON AUTORIZACIÓN DEL TITULAR):
 // Ningún profesor puede registrarse por su cuenta.
-// Solo ${MASTER_TEACHER_EMAIL} o cuentas con authorizedTeacherByMaster: true
+// Solo el Profesor Titular o cuentas con authorizedTeacherByMaster: true
 // aprobadas por el Profesor Titular en el Panel de Control obtienen role: "teacher".
 `;
