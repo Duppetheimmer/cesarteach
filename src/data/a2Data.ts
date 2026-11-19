@@ -210,10 +210,10 @@ En la vida real comparamos todo el tiempo: qué apartamento alquilar, qué vuelo
         id: 'a2_3_q1',
         question: 'Elige la opción gramaticalmente correcta:',
         options: [
-          'Traveling by train is more comfortable than traveling by bus.',
           'Traveling by train is comfortabler than traveling by bus.',
           'Traveling by train is more comfortabler than traveling by bus.',
-          'Traveling by train is most comfortable than traveling by bus.'
+          'Traveling by train is most comfortable than traveling by bus.',
+          'Traveling by train is more comfortable than traveling by bus.'
         ],
         correctAnswer: 'Traveling by train is more comfortable than traveling by bus.',
         explanation: '"Comfortable" es un adjetivo largo (3-4 sílabas), por lo que su comparativo se forma con "more ... than".',
@@ -224,8 +224,8 @@ En la vida real comparamos todo el tiempo: qué apartamento alquilar, qué vuelo
         question: 'Completa: This restaurant has _____ pasta in the city, and it is _____ than the place next door.',
         options: [
           'the better / more cheap',
-          'the best / cheaper',
           'the goodest / cheaper',
+          'the best / cheaper',
           'best / cheapest'
         ],
         correctAnswer: 'the best / cheaper',
@@ -294,8 +294,8 @@ En inglés existen dos formas principales de hablar del futuro en nivel A2, y ca
         id: 'a2_4_q2',
         question: 'Completa sobre un plan ya organizado: Next year we _____ open a new office in Mexico City.',
         options: [
-          'going to',
           'are going to',
+          'going to',
           'will to',
           'is going to'
         ],
@@ -372,9 +372,9 @@ El Present Perfect ("He hecho / Has visto") es el puente entre el pasado y el pr
         id: 'a2_5_q2',
         question: '¿Cuál de estas dos oraciones es correcta?',
         options: [
-          'I haven\'t finished my homework yet.',
           'I haven\'t finished yet my homework.',
           'I didn\'t finished my homework yet.',
+          'I haven\'t finished my homework yet.',
           'I have never finish my homework.'
         ],
         correctAnswer: 'I haven\'t finished my homework yet.',
@@ -447,10 +447,10 @@ Se usa para dar tu opinión sobre qué es lo mejor hacer:
         id: 'a2_6_q2',
         question: 'Un amigo tiene dolor de muelas. ¿Qué consejo le das?',
         options: [
-          'You should see a dentist soon.',
           'You should to see a dentist soon.',
           'You mustn\'t see a dentist.',
-          'You have see a dentist.'
+          'You have see a dentist.',
+          'You should see a dentist soon.'
         ],
         correctAnswer: 'You should see a dentist soon.',
         explanation: 'Para dar consejos usamos "should" seguido directamente del verbo en forma base sin "to".',
@@ -672,7 +672,7 @@ Memoriza el grupo "EFAMS":
       {
         id: 'a2_9_q2',
         question: 'Completa la regla de las preposiciones: He left the restaurant without _____ the bill.',
-        options: ['pay', 'to pay', 'paying', 'paid'],
+        options: ['paying', 'pay', 'to pay', 'paid'],
         correctAnswer: 'paying',
         explanation: 'Después de cualquier preposición en inglés (without, before, after, for, about), el verbo SIEMPRE va en -ING ("without paying").',
         hint: 'Without es preposición -> verbo con -ing.'
@@ -745,9 +745,9 @@ Memoriza el grupo "EFAMS":
         question: 'Elige la posición correcta de "enough": This apartment isn\'t _____ for our family.',
         options: [
           'enough big',
-          'big enough',
           'too big enough',
-          'many big'
+          'many big',
+          'big enough'
         ],
         correctAnswer: 'big enough',
         explanation: '"Enough" se coloca SIEMPRE DESPUÉS de los adjetivos (big enough, old enough, warm enough) y ANTES de los sustantivos (enough money).',
@@ -801,8 +801,8 @@ Aquí "used" funciona como adjetivo ("acostumbrado") y "to" es una preposición:
         id: 'a2_11_q1',
         question: 'Elige la forma negativa correcta de un hábito pasado: I _____ like vegetables when I was a child.',
         options: [
-          'didn\'t used to',
           'didn\'t use to',
+          'didn\'t used to',
           'don\'t used to',
           'wasn\'t use to'
         ],
@@ -815,8 +815,8 @@ Aquí "used" funciona como adjetivo ("acostumbrado") y "to" es una preposición:
         question: 'Diferencia clave: "I am getting used to _____ early for my new job."',
         options: [
           'wake up',
-          'waking up',
           'woke up',
+          'waking up',
           'be wake up'
         ],
         correctAnswer: 'waking up',
@@ -982,10 +982,10 @@ In A2 Spanish, you unlock the past tense! The "Pretérito Indefinido" (Preterite
         id: 'es_a2_1_q2',
         question: 'Look at the accent mark! What is the difference between "hablo" and "habló"?',
         options: [
-          '"Hablo" is "I speak" (present) and "habló" is "he/she spoke" (past).',
           'They mean the exact same thing.',
           '"Hablo" is past tense and "habló" is future tense.',
-          '"Habló" means "we speak".'
+          '"Habló" means "we speak".',
+          '"Hablo" is "I speak" (present) and "habló" is "he/she spoke" (past).'
         ],
         correctAnswer: '"Hablo" is "I speak" (present) and "habló" is "he/she spoke" (past).',
         explanation: 'In Spanish, the accent mark on the final "-ó" changes both the stressed syllable and the grammatical tense/person!',
@@ -1056,7 +1056,7 @@ The "Pretérito Imperfecto" is the easiest and most melodic tense in Spanish. We
       {
         id: 'es_a2_2_q2',
         question: 'Which is the correct Imperfect form of "IR" (to go) for "Nosotros"?',
-        options: ['fuimos', 'íbamos', 'vamos', 'iríamos'],
+        options: ['fuimos', 'vamos', 'íbamos', 'iríamos'],
         correctAnswer: 'íbamos',
         explanation: '"Íbamos" means "we used to go" or "we were going" in the Imperfect tense.',
         hint: 'Ir in imperfect: iba, ibas, iba, íbamos, iban.'
@@ -1188,8 +1188,8 @@ Instead of repeating the noun every time, replace it with LO, LA, LOS, LAS befor
         id: 'es_a2_4_q1',
         question: 'How do you answer "¿Tienes las entradas para el concierto?" using a direct object pronoun?',
         options: [
-          'Sí, tengo las.',
           'Sí, las tengo aquí.',
+          'Sí, tengo las.',
           'Sí, los tengo aquí.',
           'Sí, lo tengo aquí.'
         ],
@@ -1200,7 +1200,7 @@ Instead of repeating the noun every time, replace it with LO, LA, LOS, LAS befor
       {
         id: 'es_a2_4_q2',
         question: 'Complete the comparison: El café de Colombia es _____ que el café instantáneo.',
-        options: ['más bueno', 'mejor', 'el más mejor', 'tan mejor'],
+        options: ['más bueno', 'el más mejor', 'mejor', 'tan mejor'],
         correctAnswer: 'mejor',
         explanation: 'The comparative of "bueno" is irregular: "mejor" (better). Never say "más bueno".',
         hint: 'Good -> Better = Bueno -> Mejor.'
@@ -1271,9 +1271,9 @@ Keep the full infinitive (-ar, -er, -ir) and add: -É, -ÁS, -Á, -EMOS, -ÁN:
         question: 'How do you say "Tomorrow I will have more time" using the Futuro Simple?',
         options: [
           'Mañana teneré más tiempo.',
-          'Mañana tendré más tiempo.',
           'Mañana tendrás más tiempo.',
-          'Mañana tuve más tiempo.'
+          'Mañana tuve más tiempo.',
+          'Mañana tendré más tiempo.'
         ],
         correctAnswer: 'Mañana tendré más tiempo.',
         explanation: '"Tener" has an irregular stem in the future tense: "tendr-" + "-é" = "tendré".',
@@ -1417,8 +1417,8 @@ Keep the full infinitive (-ar, -er, -ir) and add: -É, -ÁS, -Á, -EMOS, -ÁN:
         id: 'es_a2_7_q2',
         question: 'Your friend is sick. How do you tell them "Go to the doctor and rest!" using informal commands (Tú)?',
         options: [
-          '¡Vas al médico y descansas!',
           '¡Ve al médico y descansa!',
+          '¡Vas al médico y descansas!',
           '¡Ir al médico y descansar!',
           '¡Fue al médico y descansó!'
         ],
@@ -1495,9 +1495,9 @@ English speakers often translate both "por" and "para" as "for". Here is the cry
         question: 'Complete: Necesito terminar este informe _____ el lunes, así que te llamo _____ teléfono más tarde.',
         options: [
           'por / para',
-          'para / por',
           'para / para',
-          'por / por'
+          'por / por',
+          'para / por'
         ],
         correctAnswer: 'para / por',
         explanation: 'Deadlines take "PARA" (para el lunes = by Monday), while means of communication take "POR" (por teléfono = by phone).',
@@ -1570,8 +1570,8 @@ Because the reflexive pronoun (me, te, se) already tells us whose body or clothe
         id: 'es_a2_9_q2',
         question: 'Complete with the correct stem-changing reflexive form: Normalmente yo _____ (acostarse, o->ue) a las diez y media.',
         options: [
-          'me acuesto',
           'me acosto',
+          'me acuesto',
           'acuesto',
           'se acuesta'
         ],
@@ -1720,8 +1720,8 @@ If the negative word (nada, nadie, nunca, ningún, tampoco) goes AFTER the verb,
         question: 'How do you reply "Me neither" when a friend says "No me gusta el café amargo"?',
         options: [
           'A mí también no.',
-          'A mí tampoco.',
           'Yo también.',
+          'A mí tampoco.',
           'Yo nunca.'
         ],
         correctAnswer: 'A mí tampoco.',
@@ -1793,8 +1793,8 @@ Instead of complicated past tenses, Spanish uses Present of ACABAR + DE + INFINI
         id: 'es_a2_12_q2',
         question: 'Choose the right form to express "Are you still working at the same company?":',
         options: [
-          '¿Sigues trabajando en la misma empresa?',
           '¿Sigues trabajar en la misma empresa?',
+          '¿Sigues trabajando en la misma empresa?',
           '¿Acabas de trabajando en la misma empresa?',
           '¿Hay que trabajando en la misma empresa?'
         ],
@@ -1887,9 +1887,9 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     question: 'While I _____ dinner last night, my friend _____ me on the phone.',
     options: [
       'cooked / was calling',
-      'was cooking / called',
       'were cooking / called',
-      'have cooked / call'
+      'have cooked / call',
+      'was cooking / called'
     ],
     correctAnswer: 'was cooking / called',
     explanation: 'La acción en progreso después de "While" usa Past Continuous (was cooking) y la interrupción usa Past Simple (called).'
@@ -1900,9 +1900,9 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Comparatives & Superlatives',
     question: 'This hotel is _____ than the hostel, and it has _____ view in town.',
     options: [
-      'more comfortable / the best',
       'comfortabler / the better',
       'most comfortable / the goodest',
+      'more comfortable / the best',
       'more comfortable / better'
     ],
     correctAnswer: 'more comfortable / the best',
@@ -1928,9 +1928,9 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Present Perfect Experiences',
     question: 'Have you _____ _____ to Japan? — No, I have _____ been to Asia.',
     options: [
-      'ever been / never',
       'ever went / never',
       'already be / yet',
+      'ever been / never',
       'never been / ever'
     ],
     correctAnswer: 'ever been / never',
@@ -1943,9 +1943,9 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     question: 'The entrance is free today, so you _____ pay anything!',
     options: [
       'mustn\'t',
-      'don\'t have to',
       'shouldn\'t to',
-      'haven\'t to'
+      'haven\'t to',
+      'don\'t have to'
     ],
     correctAnswer: 'don\'t have to',
     explanation: '"Don\'t have to" significa que no es necesario hacer algo.'
@@ -1956,8 +1956,8 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Health & Medical Vocabulary',
     question: 'I can\'t speak very well today because I have a terrible _____.',
     options: [
-      'sore throat',
       'pain neck',
+      'sore throat',
       'stomach hurt',
       'ankle ache'
     ],
@@ -1970,8 +1970,8 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • First Conditional',
     question: 'If we _____ the train at 8:00 AM, we _____ arrive in London before noon.',
     options: [
-      'will take / will',
       'take / will',
+      'will take / will',
       'took / will',
       'takes / would'
     ],
@@ -1984,10 +1984,10 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Gerunds vs. Infinitives',
     question: 'Would you mind _____ the window? I promise _____ it back in ten minutes.',
     options: [
-      'opening / to close',
       'to open / closing',
       'open / to close',
-      'opening / closing'
+      'opening / closing',
+      'opening / to close'
     ],
     correctAnswer: 'opening / to close',
     explanation: '"Would you mind" siempre exige verbo en -ING ("opening"), mientras que "promise" exige TO + Infinitivo ("to close").'
@@ -1998,8 +1998,8 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Quantifiers & Uncountables',
     question: 'Is this coffee warm _____ for you, or do you want me to heat it up?',
     options: [
-      'enough',
       'too',
+      'enough',
       'many',
       'much'
     ],
@@ -2026,9 +2026,9 @@ export const a2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Movement & Phrasal Verbs',
     question: 'Can you _____ my dog while I walk _____ the street to the pharmacy?',
     options: [
-      'look after / across',
       'look for / through',
       'take off / along',
+      'look after / across',
       'look at / into'
     ],
     correctAnswer: 'look after / across',
@@ -2043,8 +2043,8 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Pretérito Indefinido',
     question: 'Complete the sentence in the past: El verano pasado nosotros _____ a Cuzco y _____ Machu Picchu.',
     options: [
-      'fuimos / visitamos',
       'íbamos / visitábamos',
+      'fuimos / visitamos',
       'vamos / visitamos',
       'hemos ido / visitar'
     ],
@@ -2058,9 +2058,9 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     question: 'Mientras yo _____ por el parque ayer, _____ a llover.',
     options: [
       'caminé / empezaba',
-      'caminaba / empezó',
       'caminaba / empezaba',
-      'camino / empezó'
+      'camino / empezó',
+      'caminaba / empezó'
     ],
     correctAnswer: 'caminaba / empezó',
     explanation: '"Caminaba" (Imperfecto) sets the ongoing action in progress, and "empezó" (Indefinido) is the sudden event that interrupted it.'
@@ -2072,8 +2072,8 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     question: '— ¿Compraste las flores para tu madre? — Sí, _____ compré esta mañana.',
     options: [
       'los',
-      'las',
       'la',
+      'las',
       'le'
     ],
     correctAnswer: 'las',
@@ -2099,9 +2099,9 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Pretérito Perfecto',
     question: '¿Qué _____ _____ ustedes esta mañana en la oficina?',
     options: [
-      'han hecho',
       'tienen hecho',
       'han hacido',
+      'han hecho',
       'hemos hecho'
     ],
     correctAnswer: 'han hecho',
@@ -2114,9 +2114,9 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     question: 'No puedo caminar rápido hoy porque me _____ mucho las rodillas.',
     options: [
       'duele',
-      'duelen',
       'duelo',
-      'dolores'
+      'dolores',
+      'duelen'
     ],
     correctAnswer: 'duelen',
     explanation: '"Las rodillas" is plural, so we use the plural form "duelen" (me duelen las rodillas).'
@@ -2127,8 +2127,8 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Imperative Advice',
     question: 'Si tienes fiebre y gripe, ¡_____ en cama y _____ mucha agua!',
     options: [
-      'descansa / bebe',
       'descansas / bebes',
+      'descansa / bebe',
       'descansar / beber',
       'descanse / beban'
     ],
@@ -2141,8 +2141,8 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Por vs. Para',
     question: 'Pagué cien dólares _____ este boleto de avión que sale mañana _____ Buenos Aires.',
     options: [
-      'para / por',
       'por / para',
+      'para / por',
       'por / por',
       'para / para'
     ],
@@ -2155,10 +2155,10 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Reflexive Verbs & Routines',
     question: 'Todas las mañanas yo _____ a las siete y _____ los dientes.',
     options: [
-      'me despierto / me lavo',
       'despierto / lavo mis',
       'te despiertas / me lavo',
-      'me despierto / lavo mis'
+      'me despierto / lavo mis',
+      'me despierto / me lavo'
     ],
     correctAnswer: 'me despierto / me lavo',
     explanation: 'Reflexive routine verbs require "me" for Yo and the definite article ("los dientes") instead of "mis".'
@@ -2183,8 +2183,8 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Double Negation',
     question: 'Es domingo por la noche y no hay _____ en la oficina.',
     options: [
-      'alguien',
       'nadie',
+      'alguien',
       'algún',
       'algo'
     ],
@@ -2197,9 +2197,9 @@ export const spanishA2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'A2 • Verbal Periphrases',
     question: '¡Llegaste justo a tiempo! Nosotros _____ de preparar el café.',
     options: [
-      'acabamos',
       'tenemos',
       'seguimos',
+      'acabamos',
       'estamos'
     ],
     correctAnswer: 'acabamos',

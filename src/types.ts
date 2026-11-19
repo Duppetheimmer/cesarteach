@@ -1,5 +1,6 @@
 export type SectionTab =
   | 'home'
+  | 'playground'
   | 'a1-inicial'
   | 'a1-intermedio'
   | 'a2-plataforma'
@@ -16,17 +17,31 @@ export type CEFRLevel = 'A1' | 'A2' | 'B1' | 'B2';
 
 export type UserRole = 'student' | 'teacher';
 
+export type EnrollmentStatus = 'approved' | 'pending' | 'revoked';
+
 export interface UserProfile {
   id: string;
   email: string;
   fullName: string;
   role: UserRole;
+  requestedRole?: UserRole;
+  authorizedTeacherByMaster?: boolean;
   targetLanguage?: 'en' | 'es';
   avatarUrl?: string;
   createdAt: string;
   lastActiveAt: string;
   notesFromTeacher?: string;
   studentIdNumber?: string;
+  enrollmentStatus?: EnrollmentStatus;
+  approvedByTeacher?: boolean;
+  accessPin?: string;
+}
+
+export interface AcademyEnrollmentConfig {
+  allowCodeRegistration: boolean;
+  invitationCode: string;
+  updatedAt: string;
+  teacherEmail: string;
 }
 
 export type QuestionType = 'multiple-choice' | 'word-order' | 'listening' | 'speaking' | 'fill-blank';
@@ -121,4 +136,3 @@ export interface StudentRecord {
   progress: UserProgress;
   courseLanguage: 'en' | 'es';
 }
-

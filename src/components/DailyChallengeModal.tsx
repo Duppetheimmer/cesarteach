@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { QuizQuestion, UserProgress } from '../types';
 import { a1InicialLessons, a1IntermedioLessons, fluencyLessons } from '../data';
 import { spanishA1InicialLessons, spanishA1IntermedioLessons, spanishFluencyLessons } from '../data/spanishData';
+import { randomizeQuestionsOptions } from '../utils/shuffleOptions';
+import { playTactileSound } from '../utils/soundEffects';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Zap, Trophy, ChevronRight, Volume2, Flame } from 'lucide-react';
 
@@ -13,17 +15,22 @@ interface DailyChallengeModalProps {
   courseLanguage?: 'en' | 'es';
 }
 
-export function DailyChallengeModal({ isOpen, onClose, progress, onCompleteChallenge, courseLanguage = 'en' }: DailyChallengeModalProps) {
+export function DailyChallengeModal({
+  isOpen,
+  onClose,
+  progress,
+  onCompleteChallenge,
+  courseLanguage = 'en'
+}: DailyChallengeModalProps) {
   const isSpanishCourse = courseLanguage === 'es';
 
-  // Select 3 random questions from all lessons of the active course
   const [questions] = useState<QuizQuestion[]>(() => {
-    const allLessons = isSpanishCourse 
+    const allLessons = isSpanishCourse
       ? [...spanishA1InicialLessons, ...spanishA1IntermedioLessons, ...spanishFluencyLessons]
       : [...a1InicialLessons, ...a1IntermedioLessons, ...fluencyLessons];
-    const pool = allLessons.flatMap(l => l.quiz);
+    const pool = allLessons.flatMap(l => l.quiz).filter(q => q.options && q.options.length > 1);
     const shuffled = [...pool].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 3);
+    return randomizeQuestionsOptions(shuffled.slice(0, 3));
   });
 
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -51,17 +58,24 @@ export function DailyChallengeModal({ isOpen, onClose, progress, onCompleteChall
     setSelectedOption(option);
     const isRight = option === currentQ.correctAnswer;
     setStatus(isRight ? 'correct' : 'incorrect');
-    if (isRight) setScore(s => s + 1);
+    if (isRight) {
+      playTactileSound('stamp');
+      setScore(s => s + 1);
+    } else {
+      playTactileSound('error');
+    }
   };
 
   const handleNext = () => {
     if (currentIdx < questions.length - 1) {
+      playTactileSound('flip');
       setCurrentIdx(i => i + 1);
       setSelectedOption(null);
       setStatus('idle');
     } else {
+      playTactileSound('win');
       setIsDone(true);
-      const bonusXp = 50 + score * 20; // 50 base XP + 20 per correct answer
+      const bonusXp = 50 + score * 20;
       onCompleteChallenge(bonusXp);
     }
   };
@@ -70,20 +84,20 @@ export function DailyChallengeModal({ isOpen, onClose, progress, onCompleteChall
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col"
+          initial={{ opacity: 0, scale: 0.94, y: 18, rotate: -0.5 }}
+          animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: 18 }}
+          className="bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 rounded-3xl w-full max-w-lg shadow-[8px_8px_0px_0px_#0f172a] dark:shadow-[8px_8px_0px_0px_#27272a] overflow-hidden flex flex-col"
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-6 text-white flex items-center justify-between">
+          <div className="bg-amber-300 dark:bg-zinc-800 border-b-2 border-slate-900 dark:border-zinc-700 p-5 text-slate-950 dark:text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black shadow-inner">
-                <Flame className="w-6 h-6 text-yellow-300 fill-yellow-300" />
+              <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-900 flex items-center justify-center font-black shadow-[3px_3px_0px_0px_#0f172a]">
+                <Flame className="w-6 h-6 text-amber-500 fill-amber-500" />
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase tracking-wider bg-black/20 px-2.5 py-0.5 rounded-full">
-                  {isSpanishCourse ? 'Speed Workout' : 'Entrenamiento Express'}
+                <span className="text-xs font-extrabold text-slate-700 dark:text-zinc-300">
+                  {isSpanishCourse ? 'Speed Card Workout' : 'Mazo de Entrenamiento Exprés'}
                 </span>
                 <h2 className="text-xl font-black">
                   {isSpanishCourse ? 'Daily A1 Challenge' : 'Desafío Diario A1'}
@@ -91,127 +105,177 @@ export function DailyChallengeModal({ isOpen, onClose, progress, onCompleteChall
               </div>
             </div>
             <button
-              onClick={onClose}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              onClick={() => {
+                playTactileSound('pop');
+                onClose();
+              }}
+              className="p-2 rounded-xl bg-white dark:bg-zinc-900 border-2 border-slate-900 text-slate-950 dark:text-white shadow-[2px_2px_0px_0px_#0f172a] hover:bg-rose-200 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Body */}
-          <div className="p-6 flex-1">
+          <div className="p-6 flex-1 bg-[#FAF6EE] dark:bg-zinc-950">
             {!isDone && currentQ ? (
-              <div>
+              <motion.div
+                key={currentIdx}
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+              >
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                    {isSpanishCourse 
-                      ? `Question ${currentIdx + 1} of ${questions.length}` 
-                      : `Pregunta ${currentIdx + 1} de ${questions.length}`}
+                  <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-900 border-2 border-slate-900 text-xs font-black text-slate-950 dark:text-white tabular-nums">
+                    {isSpanishCourse
+                      ? `Card ${currentIdx + 1} / ${questions.length}`
+                      : `Carta ${currentIdx + 1} / ${questions.length}`}
                   </span>
-                  <div className="flex items-center gap-1 text-xs font-black text-zinc-500">
-                    <Zap className="w-4 h-4 fill-amber-500 text-amber-500" /> +{50 + (currentIdx + 1) * 20} XP
+                  <div className="flex items-center gap-2">
+                    {status === 'correct' && (
+                      <motion.span
+                        initial={{ scale: 1.5, rotate: -12 }}
+                        animate={{ scale: 1, rotate: -4 }}
+                        className="px-2.5 py-0.5 rounded-lg bg-emerald-300 border-2 border-slate-900 text-slate-950 text-xs font-black"
+                      >
+                        ✓ STAMPED!
+                      </motion.span>
+                    )}
+                    <div className="flex items-center gap-1 text-xs font-black text-slate-900 dark:text-amber-300 tabular-nums">
+                      <Zap className="w-4 h-4 fill-amber-500 text-amber-500" /> +{50 + (currentIdx + 1) * 20} XP
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-start justify-between gap-3 mb-6">
-                  <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100">
+                <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_#0f172a] flex items-start justify-between gap-3 mb-5">
+                  <h3 className="text-lg font-black text-slate-950 dark:text-zinc-100">
                     {currentQ.question}
                   </h3>
                   <button
                     onClick={() => speakText(currentQ.question)}
-                    className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-amber-600 transition-colors shrink-0"
+                    className="p-2.5 rounded-xl bg-indigo-600 text-white border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a] shrink-0"
                   >
                     <Volume2 className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {currentQ.options.map((opt, i) => {
                     const isSelected = selectedOption === opt;
                     const isCorrect = opt === currentQ.correctAnswer;
-                    
-                    let btnClass = "w-full text-left p-4 rounded-2xl border-2 font-bold text-sm transition-all ";
-                    
+                    const optionLetter = String.fromCharCode(65 + i);
+
+                    let btnClass =
+                      'w-full text-left p-3.5 rounded-2xl border-2 font-extrabold text-sm transition-all flex items-center justify-between gap-2 ';
+
                     if (status === 'idle') {
-                      btnClass += "border-zinc-200 dark:border-zinc-800 hover:border-amber-400 bg-zinc-50/50 dark:bg-zinc-800/50 text-zinc-800 dark:text-zinc-200";
+                      btnClass +=
+                        'border-slate-900 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-900 dark:text-zinc-100 hover:bg-yellow-100 shadow-[3px_3px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px]';
                     } else if (isSelected && status === 'correct') {
-                      btnClass += "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300";
+                      btnClass +=
+                        'border-slate-900 bg-emerald-300 text-slate-950 shadow-[3px_3px_0px_0px_#0f172a]';
                     } else if (isSelected && status === 'incorrect') {
-                      btnClass += "border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300";
+                      btnClass += 'border-slate-900 bg-rose-300 text-slate-950';
                     } else if (!isSelected && isCorrect && status === 'incorrect') {
-                      btnClass += "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300";
+                      btnClass +=
+                        'border-slate-900 bg-emerald-300 text-slate-950 shadow-[3px_3px_0px_0px_#0f172a]';
                     } else {
-                      btnClass += "border-zinc-200 dark:border-zinc-800 opacity-40 text-zinc-800 dark:text-zinc-200";
+                      btnClass +=
+                        'border-slate-300 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/40 opacity-45 text-slate-500';
                     }
 
                     return (
-                      <button
+                      <motion.button
                         key={i}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={
+                          isSelected && status === 'incorrect'
+                            ? { opacity: 1, y: 0, x: [0, -6, 6, -4, 4, 0] }
+                            : { opacity: 1, y: 0, x: 0 }
+                        }
+                        transition={{ delay: status === 'idle' ? i * 0.04 : 0 }}
                         onClick={() => handleSelectOption(opt)}
                         disabled={status !== 'idle'}
                         className={btnClass}
                       >
-                        {opt}
-                      </button>
+                        <span className="flex items-center gap-2.5">
+                          <span className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-600 text-xs font-black text-slate-950 dark:text-white flex items-center justify-center shrink-0">
+                            {optionLetter}
+                          </span>
+                          <span>{opt}</span>
+                        </span>
+                      </motion.button>
                     );
                   })}
                 </div>
 
                 {status !== 'idle' && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`mt-6 p-4 rounded-2xl text-xs font-semibold ${
-                      status === 'correct' 
-                        ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200 border border-emerald-300' 
-                        : 'bg-rose-100 text-rose-900 dark:bg-rose-950/50 dark:text-rose-200 border border-rose-300'
+                    className={`mt-5 p-4 rounded-2xl text-xs font-bold border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a] ${
+                      status === 'correct'
+                        ? 'bg-emerald-200 text-slate-950'
+                        : 'bg-rose-200 text-slate-950'
                     }`}
                   >
-                    <p className="font-extrabold mb-1">
-                      {status === 'correct' 
-                        ? (isSpanishCourse ? 'Excellent!' : '¡Excelente!') 
-                        : (isSpanishCourse ? 'Incorrect Answer' : 'Respuesta Incorrecta')}
+                    <p className="font-black mb-1">
+                      {status === 'correct'
+                        ? isSpanishCourse
+                          ? '✓ Correct Card!'
+                          : '✓ ¡Carta Correcta!'
+                        : isSpanishCourse
+                          ? 'Check this rule:'
+                          : 'Revisa esta regla:'}
                     </p>
                     <p>{currentQ.explanation}</p>
                   </motion.div>
                 )}
 
-                <button
+                <motion.button
+                  whileHover={status !== 'idle' ? { y: -2 } : undefined}
+                  whileTap={status !== 'idle' ? { scale: 0.98, x: 2, y: 2 } : undefined}
                   onClick={handleNext}
                   disabled={status === 'idle'}
-                  className="mt-6 w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl py-3.5 font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-all"
+                  className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl py-3.5 font-black text-sm border-2 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center gap-2 transition-all"
                 >
                   <span>
-                    {currentIdx < questions.length - 1 
-                      ? (isSpanishCourse ? 'Next Question' : 'Siguiente Pregunta') 
-                      : (isSpanishCourse ? 'Complete Challenge' : 'Completar Desafío')}
+                    {currentIdx < questions.length - 1
+                      ? isSpanishCourse
+                        ? 'Next Card'
+                        : 'Siguiente Carta'
+                      : isSpanishCourse
+                        ? 'Complete & Claim XP'
+                        : 'Completar y Reclamar XP'}
                   </span>
                   <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             ) : (
               <div className="text-center py-6">
-                <div className="w-20 h-20 bg-amber-100 dark:bg-amber-950/80 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-500 shadow-inner">
+                <div className="w-20 h-20 bg-emerald-300 border-2 border-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-950 shadow-[4px_4px_0px_0px_#0f172a]">
                   <Trophy className="w-10 h-10" />
                 </div>
-                <h3 className="text-2xl font-black mb-2 text-zinc-900 dark:text-zinc-100">
-                  {isSpanishCourse ? 'Daily Challenge Complete!' : '¡Desafío Diario Completado!'}
+                <h3 className="text-2xl font-black mb-2 text-slate-950 dark:text-zinc-100">
+                  {isSpanishCourse ? 'Daily Deck Cleared!' : '¡Mazo Diario Completado!'}
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6 font-medium">
-                  {isSpanishCourse 
-                    ? `You got ${score} out of 3 questions correct today!` 
-                    : `Has acertado ${score} de 3 preguntas en el entrenamiento de hoy.`}
+                <p className="text-xs text-slate-600 dark:text-zinc-400 mb-6 font-bold">
+                  {isSpanishCourse
+                    ? `You stamped ${score} out of 3 cards today!`
+                    : `Has sellado ${score} de 3 cartas en el reto de hoy.`}
                 </p>
 
-                <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-500 text-white font-black text-sm mb-6 shadow-md shadow-amber-500/20">
-                  <Zap className="w-4 h-4 fill-white" /> +{50 + score * 20} {isSpanishCourse ? 'XP Added to your profile' : 'XP Añadidos a tu cuenta'}
+                <div className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-yellow-300 text-slate-950 border-2 border-slate-900 font-black text-sm mb-6 shadow-[3px_3px_0px_0px_#0f172a] tabular-nums">
+                  <Zap className="w-4 h-4 fill-slate-950" /> +{50 + score * 20} XP
                 </div>
 
                 <button
-                  onClick={onClose}
-                  className="w-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold py-3.5 rounded-2xl text-sm transition-all"
+                  onClick={() => {
+                    playTactileSound('pop');
+                    onClose();
+                  }}
+                  className="w-full bg-slate-950 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black py-3.5 rounded-2xl text-sm border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0f172a] transition-all"
                 >
-                  {isSpanishCourse ? 'Back to Dashboard' : 'Regresar al Inicio'}
+                  {isSpanishCourse ? 'Back to Card Table' : 'Volver a la Mesa'}
                 </button>
               </div>
             )}

@@ -1,9 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { LessonStep, QuizQuestion } from '../types';
 import { WordOrderExercise } from './WordOrderExercise';
 import { PronunciationPractice } from './PronunciationPractice';
 import { RolePlaySimulator } from './RolePlaySimulator';
 import { playSpeech } from '../utils/speech';
+import { playTactileSound } from '../utils/soundEffects';
+import { randomizeQuestionsOptions, shuffleOptionsList } from '../utils/shuffleOptions';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   CheckCircle2,
@@ -13,14 +15,14 @@ import {
   RefreshCw,
   Volume2,
   Trophy,
-  Heart,
-  Zap,
   Brain,
   AlertTriangle,
   BookOpen,
   HelpCircle,
-  MessageSquare,
-  Target
+  Target,
+  FastForward,
+  Highlighter,
+  Layers
 } from 'lucide-react';
 
 interface QuizItem extends QuizQuestion {
@@ -33,28 +35,89 @@ interface LessonPlayerProps {
   onClose: () => void;
 }
 
+type MarkerColor = 'yellow' | 'mint' | 'coral';
+
+const MARKER_STYLES: Record<MarkerColor, { bg: string; dot: string; labelEs: string; labelEn: string }> = {
+  yellow: {
+    bg: 'bg-yellow-300 text-slate-950 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a]',
+    dot: 'bg-yellow-400',
+    labelEs: 'Amarillo',
+    labelEn: 'Yellow'
+  },
+  mint: {
+    bg: 'bg-emerald-300 text-slate-950 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a]',
+    dot: 'bg-emerald-400',
+    labelEs: 'Menta',
+    labelEn: 'Mint'
+  },
+  coral: {
+    bg: 'bg-rose-300 text-slate-950 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a]',
+    dot: 'bg-rose-400',
+    labelEs: 'Coral',
+    labelEn: 'Coral'
+  }
+};
+
 export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps) {
-  const [step, setStep] = useState<'content' | 'quiz' | 'roleplay' | 'success'>('content');
-  const [quizQueue, setQuizQueue] = useState<QuizItem[]>(() => lesson.quiz.map(q => ({ ...q })));
-  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+  const draftKey = `lingostep_lesson_draft_${lesson.id}`;
+
+  const initialDraft = useMemo(() => {
+    try {
+      const raw = localStorage.getItem(draftKey);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return null;
+  }, [draftKey]);
+
+  const [step, setStep] = useState<'content' | 'quiz' | 'roleplay' | 'success'>(
+    initialDraft?.step && initialDraft.step !== 'success' ? initialDraft.step : 'content'
+  );
+  const [quizQueue, setQuizQueue] = useState<QuizItem[]>(() =>
+    randomizeQuestionsOptions(lesson.quiz.map(q => ({ ...q })))
+  );
+  const [currentQuizIndex, setCurrentQuizIndex] = useState<number>(() => {
+    const savedIdx = Number(initialDraft?.currentQuizIndex || 0);
+    return savedIdx >= 0 && savedIdx < lesson.quiz.length ? savedIdx : 0;
+  });
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [quizStatus, setQuizStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [speechSpeed, setSpeechSpeed] = useState<number>(0.9);
   const [showPreAnswerHint, setShowPreAnswerHint] = useState<boolean>(false);
-  const [firstTryMistakes, setFirstTryMistakes] = useState<number>(0);
+  const [firstTryMistakes, setFirstTryMistakes] = useState<number>(Number(initialDraft?.firstTryMistakes || 0));
   const [confidenceLevel, setConfidenceLevel] = useState<'easy' | 'good' | 'hard'>('good');
+  const [markerColor, setMarkerColor] = useState<MarkerColor>('yellow');
+  const [highlightedLines, setHighlightedLines] = useState<Record<number, MarkerColor>>({});
+
+  // Auto-save partial lesson progress so refreshing or closing never loses student work
+  useEffect(() => {
+    try {
+      if (step === 'success') {
+        localStorage.removeItem(draftKey);
+      } else {
+        localStorage.setItem(
+          draftKey,
+          JSON.stringify({
+            step,
+            currentQuizIndex,
+            firstTryMistakes,
+            updatedAt: new Date().toISOString()
+          })
+        );
+      }
+    } catch {}
+  }, [draftKey, step, currentQuizIndex, firstTryMistakes]);
 
   const isSpanishCourse = lesson.id.startsWith('es_');
   const courseLang = isSpanishCourse ? 'es' : 'en';
   const currentQuestion = quizQueue[currentQuizIndex];
   const cefrBadge = lesson.cefrLevel || (lesson.id.includes('a2') ? 'A2' : 'A1');
 
-  // Parse content into structured interactive blocks so students can listen to individual examples
   const contentBlocks = useMemo(() => {
     return lesson.content.split('\n').filter(line => line.trim().length > 0);
   }, [lesson.content]);
 
   const handleNextQuiz = () => {
+    playTactileSound('flip');
     setShowPreAnswerHint(false);
     if (currentQuizIndex < quizQueue.length - 1) {
       setCurrentQuizIndex(prev => prev + 1);
@@ -64,6 +127,7 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
       if (lesson.dialogue && lesson.dialogue.length > 0) {
         setStep('roleplay');
       } else {
+        playTactileSound('win');
         setStep('success');
       }
     }
@@ -76,16 +140,28 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
     const isCorrect = option === currentQuestion.correctAnswer;
     setQuizStatus(isCorrect ? 'correct' : 'incorrect');
 
-    if (!isCorrect) {
+    if (isCorrect) {
+      playTactileSound('stamp');
+      speakText(option);
+    } else {
+      playTactileSound('error');
       if (!currentQuestion.isRetry) {
         setFirstTryMistakes(m => m + 1);
       }
-      setQuizQueue(prev => [...prev, { ...currentQuestion, isRetry: true }]);
+      const prevCorrectIdx = currentQuestion.options.indexOf(currentQuestion.correctAnswer);
+      const reshuffledOptions = shuffleOptionsList(
+        currentQuestion.options,
+        currentQuestion.correctAnswer,
+        prevCorrectIdx
+      );
+      setQuizQueue(prev => [
+        ...prev,
+        { ...currentQuestion, options: reshuffledOptions, isRetry: true }
+      ]);
     }
   };
 
   const speakText = (text: string) => {
-    // Strip leading bullets or emojis for cleaner TTS
     const clean = text.replace(/^[•\-🎯💡⚠️❌✅1-9.]+\s*/, '');
     playSpeech(clean, {
       courseLanguage: courseLang,
@@ -93,12 +169,31 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
     });
   };
 
+  const toggleLineHighlight = (lineIdx: number, lineText: string) => {
+    playTactileSound('highlight');
+    setHighlightedLines(prev => {
+      const next = { ...prev };
+      if (next[lineIdx] === markerColor) {
+        delete next[lineIdx];
+      } else {
+        next[lineIdx] = markerColor;
+      }
+      return next;
+    });
+    speakText(lineText);
+  };
+
   const saveConfidenceAndFinish = () => {
+    playTactileSound('win');
     try {
+      localStorage.removeItem(draftKey);
       const existing = JSON.parse(localStorage.getItem('lingostep_lesson_confidence') || '{}');
       existing[lesson.id] = {
         confidence: confidenceLevel,
-        accuracy: Math.max(0, Math.round(((lesson.quiz.length - firstTryMistakes) / Math.max(1, lesson.quiz.length)) * 100)),
+        accuracy: Math.max(
+          0,
+          Math.round(((lesson.quiz.length - firstTryMistakes) / Math.max(1, lesson.quiz.length)) * 100)
+        ),
         updatedAt: new Date().toISOString()
       };
       localStorage.setItem('lingostep_lesson_confidence', JSON.stringify(existing));
@@ -107,13 +202,14 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
     onClose();
   };
 
-  const progressPercent = step === 'content'
-    ? 25
-    : step === 'quiz'
-      ? 25 + ((currentQuizIndex + 1) / quizQueue.length) * 50
-      : step === 'roleplay'
-        ? 88
-        : 100;
+  const progressPercent =
+    step === 'content'
+      ? 25
+      : step === 'quiz'
+        ? 25 + ((currentQuizIndex + 1) / quizQueue.length) * 50
+        : step === 'roleplay'
+          ? 88
+          : 100;
 
   const firstTryAccuracy = Math.max(
     0,
@@ -121,181 +217,237 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
   );
 
   return (
-    <div className="fixed inset-0 bg-slate-950/60 dark:bg-black/80 z-50 flex flex-col backdrop-blur-md overflow-hidden">
-      {/* Top Pedagogical Phase Bar */}
-      <div className="bg-white dark:bg-zinc-900 px-4 md:px-8 py-3.5 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-4">
+    <div className="fixed inset-0 bg-[#FAF6EE]/95 dark:bg-zinc-950/95 z-50 flex flex-col backdrop-blur-md overflow-hidden">
+      {/* Top Tactile Pedagogical Phase Bar */}
+      <div className="bg-white dark:bg-zinc-900 px-4 md:px-8 py-3.5 border-b-2 border-slate-900 dark:border-zinc-700 flex items-center justify-between gap-4 shadow-[0_4px_0_0_#0f172a] dark:shadow-[0_4px_0_0_#27272a]">
         <div className="flex items-center gap-3">
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-xl transition-colors text-slate-600 dark:text-zinc-400"
+          <motion.button
+            whileHover={{ scale: 1.06, rotate: -4 }}
+            whileTap={{ scale: 0.94 }}
+            onClick={() => {
+              playTactileSound('pop');
+              onClose();
+            }}
+            className="p-2 bg-amber-100 hover:bg-rose-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border-2 border-slate-900 dark:border-zinc-600 rounded-xl transition-colors text-slate-900 dark:text-zinc-100 shadow-[2px_2px_0px_0px_#0f172a]"
             title={isSpanishCourse ? 'Exit lesson' : 'Salir de la lección'}
           >
             <X className="w-5 h-5" />
-          </button>
-          <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-zinc-400">
-            <span className="font-bold text-slate-900 dark:text-zinc-100">CEFR {cefrBadge}</span>
+          </motion.button>
+          <div className="hidden sm:flex items-center gap-2 text-xs font-extrabold text-slate-700 dark:text-zinc-300">
+            <span className="font-black text-slate-950 dark:text-white">CEFR {cefrBadge}</span>
             <span aria-hidden="true">·</span>
-            <span>{isSpanishCourse ? `Step ${lesson.day}` : `Paso ${lesson.day}`}</span>
+            <span>{isSpanishCourse ? `Card Step ${lesson.day}` : `Carta Paso ${lesson.day}`}</span>
           </div>
         </div>
 
         {/* 4-Phase Pedagogical Progress Indicator */}
         <div className="flex-1 max-w-xl mx-auto flex flex-col gap-1.5">
-          <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-zinc-400 px-1">
-            <span className={step === 'content' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''}>
-              1. {isSpanishCourse ? 'Structured Input' : 'Input Comprensible'}
+          <div className="flex items-center justify-between text-[11px] font-extrabold text-slate-600 dark:text-zinc-400 px-1">
+            <span className={step === 'content' ? 'text-slate-950 dark:text-yellow-300 underline decoration-2' : ''}>
+              1. {isSpanishCourse ? 'Theory Card' : 'Carta de Teoría'}
             </span>
-            <span className={step === 'quiz' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''}>
-              2. {isSpanishCourse ? 'Active Recall' : 'Práctica Activa'}
+            <span className={step === 'quiz' ? 'text-slate-950 dark:text-yellow-300 underline decoration-2' : ''}>
+              2. {isSpanishCourse ? 'Card Challenges' : 'Reto de Cartas'}
             </span>
             {lesson.dialogue && lesson.dialogue.length > 0 && (
-              <span className={step === 'roleplay' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''}>
-                3. {isSpanishCourse ? 'Live Dialogue' : 'Diálogo Real'}
+              <span className={step === 'roleplay' ? 'text-slate-950 dark:text-yellow-300 underline decoration-2' : ''}>
+                3. {isSpanishCourse ? 'Live Dialogue' : 'Diálogo Vivo'}
               </span>
             )}
-            <span className={step === 'success' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : ''}>
-              {lesson.dialogue && lesson.dialogue.length > 0 ? '4.' : '3.'} {isSpanishCourse ? 'Mastery' : 'Dominio'}
+            <span className={step === 'success' ? 'text-emerald-700 dark:text-emerald-400 font-black' : ''}>
+              {lesson.dialogue && lesson.dialogue.length > 0 ? '4.' : '3.'}{' '}
+              {isSpanishCourse ? 'Stamped!' : '¡Sellado!'}
             </span>
           </div>
-          <div className="h-2.5 w-full bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+          <div className="h-3.5 w-full bg-amber-100 dark:bg-zinc-800 rounded-full overflow-hidden border-2 border-slate-900 dark:border-zinc-600 p-0.5">
             <motion.div
-              className="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full"
+              className="h-full bg-emerald-400 dark:bg-emerald-500 rounded-full"
               animate={{ width: `${progressPercent}%` }}
-              transition={{ duration: 0.3 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 24 }}
             />
           </div>
         </div>
 
         {/* Dual-Speed Audio Control */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setSpeechSpeed(s => (s === 0.9 ? 0.7 : 0.9))}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors border whitespace-nowrap shrink-0 ${
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              playTactileSound('pop');
+              setSpeechSpeed(s => (s === 0.9 ? 0.7 : 0.9));
+            }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-black transition-colors border-2 border-slate-900 dark:border-zinc-600 shadow-[2px_2px_0px_0px_#0f172a] whitespace-nowrap shrink-0 ${
               speechSpeed === 0.7
-                ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800'
-                : 'bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-700'
+                ? 'bg-yellow-300 text-slate-950'
+                : 'bg-white dark:bg-zinc-800 text-slate-900 dark:text-zinc-100'
             }`}
           >
             {isSpanishCourse
               ? speechSpeed === 0.7
-                ? 'Slow Audio 0.7x'
-                : 'Normal Audio 0.9x'
+                ? '🐢 Slow 0.7x'
+                : '🔊 Normal 0.9x'
               : speechSpeed === 0.7
-                ? 'Audio Lento 0.7x'
-                : 'Audio Normal 0.9x'}
-          </button>
+                ? '🐢 Lento 0.7x'
+                : '🔊 Normal 0.9x'}
+          </motion.button>
         </div>
       </div>
 
-      {/* Main Content Stage */}
+      {/* Main Animated Card-Table Stage */}
       <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col max-w-3xl mx-auto w-full">
         <AnimatePresence mode="wait">
           {step === 'content' && (
             <motion.div
               key="content"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2 }}
-              className="flex-1 flex flex-col bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-lg"
+              initial={{ opacity: 0, y: 18, rotate: -0.5 }}
+              animate={{ opacity: 1, y: 0, rotate: 0 }}
+              exit={{ opacity: 0, y: -18, rotate: 0.5 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+              className="flex-1 flex flex-col bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-3xl border-2 border-slate-900 dark:border-zinc-700 shadow-[8px_8px_0px_0px_#0f172a] dark:shadow-[8px_8px_0px_0px_#27272a]"
             >
               <div className="flex-1 space-y-6">
                 {/* Header & Full TTS */}
-                <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-zinc-800 pb-5">
+                <div className="flex flex-wrap items-start justify-between gap-4 border-b-2 border-slate-900/15 dark:border-zinc-800 pb-5">
                   <div>
-                    <div className="flex items-center gap-2 text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-1.5">
+                    <div className="flex items-center gap-2 text-xs font-extrabold text-indigo-700 dark:text-indigo-400 mb-1.5">
                       <BookOpen className="w-4 h-4" />
                       <span>
                         {isSpanishCourse
-                          ? `Phase 1: Comprehensible Input · Level ${cefrBadge}`
-                          : `Fase 1: Comprensión Estructurada · Nivel ${cefrBadge}`}
+                          ? `Interactive Study Card · Level ${cefrBadge}`
+                          : `Carta de Estudio Interactiva · Nivel ${cefrBadge}`}
                       </span>
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-zinc-100 tracking-tight">
+                    <h2 className="text-2xl md:text-3xl font-black text-slate-950 dark:text-zinc-100 tracking-tight">
                       {lesson.title}
                     </h2>
-                    <p className="text-slate-600 dark:text-zinc-400 text-sm mt-1">
+                    <p className="text-slate-600 dark:text-zinc-400 text-sm font-medium mt-1">
                       {lesson.description}
                     </p>
                   </div>
-                  <button
-                    onClick={() => speakText(lesson.content)}
-                    title={isSpanishCourse ? 'Listen to full lesson' : 'Escuchar lección completa'}
-                    className="px-3.5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center gap-1.5 transition-colors shrink-0"
+
+                  <motion.button
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.96, x: 2, y: 2 }}
+                    onClick={() => {
+                      playTactileSound('pop');
+                      speakText(lesson.content);
+                    }}
+                    className="px-4 py-2.5 rounded-2xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 font-black text-xs flex items-center gap-1.5 shadow-[3px_3px_0px_0px_#0f172a] shrink-0"
                   >
                     <Volume2 className="w-4 h-4" />
-                    <span>{isSpanishCourse ? 'Listen All' : 'Escuchar Todo'}</span>
-                  </button>
+                    <span>{isSpanishCourse ? 'Listen Full Card' : 'Escuchar Carta Completa'}</span>
+                  </motion.button>
                 </div>
 
-                {/* Pedagogical Scaffolding Cards (Formula, Common Mistake, Strategy Tip) */}
+                {/* Pedagogical Scaffolding Cards (NoDeck Sticky Note Style) */}
                 {(lesson.grammarFocus || lesson.commonMistake || lesson.strategyTip) && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                     {lesson.grammarFocus && (
-                      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-700">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1">
-                          <Target className="w-3.5 h-3.5" />
-                          <span>{isSpanishCourse ? 'Core Pattern' : 'Patrón Estructural'}</span>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.05 }}
+                        className="p-4 rounded-2xl bg-sky-100 dark:bg-sky-950/40 border-2 border-slate-900 dark:border-zinc-700 shadow-[3px_3px_0px_0px_#0f172a]"
+                      >
+                        <div className="flex items-center gap-1.5 text-xs font-black text-slate-950 dark:text-sky-300 mb-1">
+                          <Target className="w-4 h-4" />
+                          <span>{isSpanishCourse ? 'Core Formula' : 'Fórmula Clave'}</span>
                         </div>
-                        <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200 leading-relaxed">
+                        <p className="text-xs font-bold text-slate-900 dark:text-zinc-200 leading-relaxed">
                           {lesson.grammarFocus}
                         </p>
-                      </div>
+                      </motion.div>
                     )}
 
                     {lesson.commonMistake && (
-                      <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/70">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400 mb-1">
-                          <AlertTriangle className="w-3.5 h-3.5" />
-                          <span>{isSpanishCourse ? 'Avoid This Trap' : 'Radar de Error Común'}</span>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="p-4 rounded-2xl bg-amber-200/80 dark:bg-amber-950/40 border-2 border-slate-900 dark:border-zinc-700 shadow-[3px_3px_0px_0px_#0f172a]"
+                      >
+                        <div className="flex items-center gap-1.5 text-xs font-black text-slate-950 dark:text-amber-300 mb-1">
+                          <AlertTriangle className="w-4 h-4" />
+                          <span>{isSpanishCourse ? 'Common Trap' : 'Trampa Común'}</span>
                         </div>
-                        <p className="text-xs font-medium text-amber-950 dark:text-amber-200 leading-relaxed">
+                        <p className="text-xs font-bold text-slate-900 dark:text-amber-100 leading-relaxed">
                           {lesson.commonMistake}
                         </p>
-                      </div>
+                      </motion.div>
                     )}
 
                     {lesson.strategyTip && (
-                      <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/70">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 mb-1">
-                          <Brain className="w-3.5 h-3.5" />
-                          <span>{isSpanishCourse ? 'Memory Strategy' : 'Estrategia Cognitiva'}</span>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 }}
+                        className="p-4 rounded-2xl bg-emerald-200/80 dark:bg-emerald-950/40 border-2 border-slate-900 dark:border-zinc-700 shadow-[3px_3px_0px_0px_#0f172a]"
+                      >
+                        <div className="flex items-center gap-1.5 text-xs font-black text-slate-950 dark:text-emerald-300 mb-1">
+                          <Brain className="w-4 h-4" />
+                          <span>{isSpanishCourse ? 'Memory Trick' : 'Truco de Memoria'}</span>
                         </div>
-                        <p className="text-xs font-medium text-emerald-950 dark:text-emerald-200 leading-relaxed">
+                        <p className="text-xs font-bold text-slate-900 dark:text-emerald-100 leading-relaxed">
                           {lesson.strategyTip}
                         </p>
-                      </div>
+                      </motion.div>
                     )}
                   </div>
                 )}
 
-                {/* Interactive Chunked Content (Click any bullet/example to hear audio) */}
-                <div className="bg-slate-50 dark:bg-zinc-800/40 border border-slate-200 dark:border-zinc-700/60 rounded-2xl p-5 md:p-6 space-y-2.5">
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-zinc-400 pb-2 border-b border-slate-200/70 dark:border-zinc-700/60">
-                    <span>
+                {/* Interactive Chunked Content with Fluorescent Highlighter */}
+                <div className="bg-[#FAF6EE] dark:bg-zinc-800/50 border-2 border-slate-900 dark:border-zinc-700 rounded-2xl p-5 md:p-6 space-y-2.5 shadow-[4px_4px_0px_0px_#0f172a]">
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-700 dark:text-zinc-300 pb-3 mb-1 border-b-2 border-slate-900/10 dark:border-zinc-700">
+                    <span className="font-bold">
                       {isSpanishCourse
-                        ? 'Tip: Click any example line with "•" to practice listening and shadowing.'
-                        : 'Tip Pedagógico: Haz clic en cualquier ejemplo con "•" para escuchar su pronunciación nativa.'}
+                        ? 'Tap any "•" example card to highlight & hear pronunciation:'
+                        : 'Toca cualquier ejemplo con "•" para subrayarlo con marcador y escucharlo:'}
                     </span>
+                    <div className="flex items-center gap-1.5">
+                      <Highlighter className="w-3.5 h-3.5" />
+                      {(['yellow', 'mint', 'coral'] as MarkerColor[]).map(c => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => {
+                            playTactileSound('pop');
+                            setMarkerColor(c);
+                          }}
+                          className={`w-5 h-5 rounded-full border-2 transition-transform ${MARKER_STYLES[c].dot} ${
+                            markerColor === c ? 'border-slate-950 dark:border-white scale-125' : 'border-slate-400 opacity-70'
+                          }`}
+                          title={isSpanishCourse ? MARKER_STYLES[c].labelEn : MARKER_STYLES[c].labelEs}
+                        />
+                      ))}
+                    </div>
                   </div>
 
                   {contentBlocks.map((line, i) => {
                     const isBullet = line.trim().startsWith('•') || line.trim().startsWith('-');
                     const isHeading = /^[0-9]+\.|^🎯|^💡|^⚠️/.test(line.trim());
+                    const appliedHighlight = highlightedLines[i];
 
                     if (isBullet) {
                       return (
-                        <button
+                        <motion.button
                           key={i}
                           type="button"
-                          onClick={() => speakText(line)}
-                          className="w-full text-left flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-900/90 hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 border border-slate-200/70 dark:border-zinc-800 transition-colors group"
+                          whileHover={{ x: 4 }}
+                          whileTap={{ scale: 0.99 }}
+                          onClick={() => toggleLineHighlight(i, line)}
+                          className={`w-full text-left flex items-center justify-between gap-3 px-4 py-3 rounded-xl border-2 transition-all group ${
+                            appliedHighlight
+                              ? MARKER_STYLES[appliedHighlight].bg
+                              : 'bg-white dark:bg-zinc-900 hover:bg-yellow-100/80 dark:hover:bg-zinc-800 border-slate-900/20 dark:border-zinc-700 text-slate-900 dark:text-zinc-100'
+                          }`}
                         >
-                          <span className="text-sm md:text-base font-medium text-slate-800 dark:text-zinc-200 leading-relaxed">
+                          <span className="text-sm md:text-base font-bold leading-relaxed">
                             {line}
                           </span>
-                          <Volume2 className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors" />
-                        </button>
+                          <span className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-zinc-800 border border-slate-900/20 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                            <Volume2 className="w-4 h-4" />
+                          </span>
+                        </motion.button>
                       );
                     }
 
@@ -303,7 +455,7 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
                       return (
                         <h4
                           key={i}
-                          className="text-sm md:text-base font-black text-slate-900 dark:text-zinc-100 pt-3 first:pt-0"
+                          className="text-sm md:text-base font-black text-slate-950 dark:text-zinc-100 pt-3 first:pt-0"
                         >
                           {line}
                         </h4>
@@ -311,7 +463,7 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
                     }
 
                     return (
-                      <p key={i} className="text-sm md:text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
+                      <p key={i} className="text-sm md:text-base font-medium text-slate-800 dark:text-zinc-300 leading-relaxed">
                         {line}
                       </p>
                     );
@@ -319,80 +471,110 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
                 </div>
               </div>
 
-              <button
-                onClick={() => setStep('quiz')}
-                className="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl py-4 font-bold text-base shadow-md flex items-center justify-center gap-2 transition-colors"
+              <motion.button
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98, x: 2, y: 2 }}
+                onClick={() => {
+                  playTactileSound('flip');
+                  setStep('quiz');
+                }}
+                className="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl py-4 font-black text-base border-2 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center gap-2 transition-colors"
               >
+                <Layers className="w-5 h-5" />
                 <span>
                   {isSpanishCourse
-                    ? 'Start Phase 2: Active Recall Practice'
-                    : 'Pasar a Fase 2: Práctica de Recuperación Activa'}
+                    ? 'Deal Exercise Cards (Phase 2)'
+                    : 'Repartir Cartas de Ejercicio (Fase 2)'}
                 </span>
                 <ChevronRight className="w-5 h-5" />
-              </button>
+              </motion.button>
             </motion.div>
           )}
 
           {step === 'quiz' && currentQuestion && (
             <motion.div
               key={`quiz-${currentQuizIndex}`}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2 }}
-              className="flex-1 flex flex-col bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-lg"
+              initial={{ opacity: 0, x: 30, rotate: 1 }}
+              animate={{ opacity: 1, x: 0, rotate: 0 }}
+              exit={{ opacity: 0, x: -30, rotate: -1 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+              className="flex-1 flex flex-col bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-3xl border-2 border-slate-900 dark:border-zinc-700 shadow-[8px_8px_0px_0px_#0f172a] dark:shadow-[8px_8px_0px_0px_#27272a] relative overflow-hidden"
             >
               <div className="flex-1">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                    <span>
-                      {isSpanishCourse ? 'Exercise' : 'Ejercicio'} {currentQuizIndex + 1} {isSpanishCourse ? 'of' : 'de'} {quizQueue.length}
+                {/* Top Card Status Row + Animated Rubber Stamp */}
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-5 pb-3 border-b-2 border-slate-900/10 dark:border-zinc-800">
+                  <div className="flex items-center gap-2 text-xs font-black text-slate-900 dark:text-zinc-200">
+                    <span className="px-2.5 py-1 rounded-lg bg-amber-200 dark:bg-zinc-800 border border-slate-900 dark:border-zinc-600 text-slate-950 dark:text-amber-300 tabular-nums">
+                      {isSpanishCourse ? 'Card' : 'Carta'} {currentQuizIndex + 1} / {quizQueue.length}
                     </span>
                     {currentQuestion.isRetry && (
-                      <>
-                        <span aria-hidden="true">·</span>
-                        <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
-                          <RefreshCw className="w-3.5 h-3.5" />
-                          {isSpanishCourse ? 'Spaced Error Recovery' : 'Recuperación Espaciada de Error'}
-                        </span>
-                      </>
+                      <span className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400 font-extrabold">
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        {isSpanishCourse ? 'Second Chance Card' : 'Carta de Refuerzo'}
+                      </span>
                     )}
                   </div>
 
-                  {/* On-demand Pedagogical Hint Button before answering */}
-                  {quizStatus === 'idle' && (currentQuestion.hint || currentQuestion.explanation) && (
-                    <button
-                      type="button"
-                      onClick={() => setShowPreAnswerHint(h => !h)}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline"
-                    >
-                      <HelpCircle className="w-3.5 h-3.5" />
-                      <span>
-                        {showPreAnswerHint
-                          ? isSpanishCourse ? 'Hide Grammar Clue' : 'Ocultar Pista'
-                          : isSpanishCourse ? 'Need a Grammar Clue?' : '¿Necesitas una Pista Gramatical?'}
-                      </span>
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {/* Animated Stamp when correct */}
+                    <AnimatePresence>
+                      {quizStatus === 'correct' && (
+                        <motion.div
+                          initial={{ scale: 1.6, opacity: 0, rotate: -14 }}
+                          animate={{ scale: 1, opacity: 1, rotate: -4 }}
+                          exit={{ opacity: 0 }}
+                          className="px-3 py-1 rounded-xl border-2 border-slate-900 bg-emerald-300 text-slate-950 font-black text-xs tracking-wide shadow-[2px_2px_0px_0px_#0f172a]"
+                        >
+                          {isSpanishCourse ? '✓ STAMPED! +15 XP' : '✓ ¡SELLADO! +15 XP'}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {quizStatus === 'idle' && (currentQuestion.hint || currentQuestion.explanation) && (
+                      <motion.button
+                        type="button"
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          playTactileSound('pop');
+                          setShowPreAnswerHint(h => !h);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-zinc-800 border border-slate-900 dark:border-zinc-600 text-xs font-extrabold text-slate-900 dark:text-amber-300"
+                      >
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        <span>
+                          {showPreAnswerHint
+                            ? isSpanishCourse
+                              ? 'Hide Clue'
+                              : 'Ocultar Pista'
+                            : isSpanishCourse
+                              ? 'Flip Clue'
+                              : 'Ver Pista'}
+                        </span>
+                      </motion.button>
+                    )}
+                  </div>
                 </div>
 
-                {(currentQuestion.isRetry || showPreAnswerHint) && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex items-start gap-3"
-                  >
-                    <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-xs font-bold text-amber-800 dark:text-amber-300 mb-0.5">
-                        {isSpanishCourse ? 'Cognitive Scaffolding Clue:' : 'Andamiaje Gramatical:'}
-                      </p>
-                      <p className="text-sm text-amber-950 dark:text-amber-200 font-medium">
-                        {currentQuestion.hint || currentQuestion.explanation}
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
+                <AnimatePresence>
+                  {(currentQuestion.isRetry || showPreAnswerHint) && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      className="mb-6 p-4 rounded-2xl bg-yellow-200/90 dark:bg-amber-950/60 border-2 border-slate-900 dark:border-amber-700 shadow-[3px_3px_0px_0px_#0f172a] flex items-start gap-3"
+                    >
+                      <Lightbulb className="w-5 h-5 text-slate-950 dark:text-amber-300 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-black text-slate-950 dark:text-amber-300 mb-0.5">
+                          {isSpanishCourse ? 'Card Clue:' : 'Pista de la Carta:'}
+                        </p>
+                        <p className="text-sm text-slate-950 dark:text-amber-100 font-bold">
+                          {currentQuestion.hint || currentQuestion.explanation}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Question Type: Word Order */}
                 {currentQuestion.type === 'word-order' ? (
@@ -410,74 +592,110 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
                   />
                 ) : currentQuestion.type === 'speaking' ? (
                   <div className="space-y-4">
-                    <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-zinc-100">
+                    <h3 className="text-xl md:text-2xl font-black text-slate-950 dark:text-zinc-100">
                       {currentQuestion.question}
                     </h3>
                     <PronunciationPractice
                       targetPhrase={currentQuestion.targetText || currentQuestion.correctAnswer}
                       courseLanguage={courseLang}
-                      onSuccess={() => setQuizStatus('correct')}
+                      onSuccess={() => {
+                        playTactileSound('stamp');
+                        setQuizStatus('correct');
+                      }}
+                      onSkip={() => {
+                        playTactileSound('pop');
+                        setQuizStatus('correct');
+                      }}
                     />
                   </div>
                 ) : (
-                  /* Standard Multiple Choice */
+                  /* Tactile Animated Multiple Choice Cards */
                   <>
-                    <div className="flex items-start justify-between gap-3 mb-6">
-                      <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-zinc-100 leading-tight">
+                    <div className="p-5 rounded-2xl bg-[#FAF6EE] dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_#0f172a] flex items-start justify-between gap-3 mb-6">
+                      <h3 className="text-xl md:text-2xl font-black text-slate-950 dark:text-zinc-100 leading-tight">
                         {currentQuestion.question}
                       </h3>
-                      <button
-                        onClick={() => speakText(currentQuestion.question)}
+                      <motion.button
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.92 }}
+                        onClick={() => {
+                          playTactileSound('pop');
+                          speakText(currentQuestion.question);
+                        }}
                         title={isSpanishCourse ? 'Listen to question' : 'Escuchar pregunta'}
-                        className="p-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-indigo-600 transition-colors shrink-0"
+                        className="p-3 rounded-xl bg-indigo-600 text-white border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a] shrink-0"
                       >
                         <Volume2 className="w-4 h-4" />
-                      </button>
+                      </motion.button>
                     </div>
 
                     <div className="space-y-3">
                       {currentQuestion.options.map((option, idx) => {
                         const isSelected = selectedOption === option;
                         const isCorrectOption = option === currentQuestion.correctAnswer;
+                        const optionLetter = String.fromCharCode(65 + idx);
 
-                        let btnClass = 'flex-1 text-left p-4 rounded-2xl border font-bold text-base transition-colors ';
+                        let btnClass =
+                          'flex-1 text-left p-4 rounded-2xl border-2 font-extrabold text-base transition-all flex items-center justify-between gap-3 ';
 
                         if (quizStatus === 'idle') {
                           btnClass +=
-                            'border-slate-200 dark:border-zinc-800 hover:border-indigo-500 dark:hover:border-indigo-500 bg-slate-50/60 dark:bg-zinc-800/50 text-slate-800 dark:text-zinc-200 hover:bg-indigo-50/40';
+                            'border-slate-900 dark:border-zinc-700 bg-white dark:bg-zinc-800/90 text-slate-900 dark:text-zinc-100 hover:bg-yellow-100 dark:hover:bg-zinc-800 shadow-[4px_4px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px]';
                         } else if (isSelected && quizStatus === 'correct') {
                           btnClass +=
-                            'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200';
+                            'border-slate-900 bg-emerald-300 dark:bg-emerald-500 text-slate-950 shadow-[4px_4px_0px_0px_#0f172a]';
                         } else if (isSelected && quizStatus === 'incorrect') {
                           btnClass +=
-                            'border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200';
+                            'border-slate-900 bg-rose-300 dark:bg-rose-500 text-slate-950 shadow-[2px_2px_0px_0px_#0f172a]';
                         } else if (!isSelected && isCorrectOption && quizStatus === 'incorrect') {
                           btnClass +=
-                            'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200';
+                            'border-slate-900 bg-emerald-300 dark:bg-emerald-500 text-slate-950 shadow-[4px_4px_0px_0px_#0f172a]';
                         } else {
                           btnClass +=
-                            'border-slate-200 dark:border-zinc-800 bg-slate-50/20 dark:bg-zinc-900/20 opacity-45 text-slate-700 dark:text-zinc-300';
+                            'border-slate-300 dark:border-zinc-800 bg-slate-50/40 dark:bg-zinc-900/30 opacity-45 text-slate-500 dark:text-zinc-400';
                         }
 
                         return (
-                          <div key={idx} className="flex items-center gap-2.5 w-full">
+                          <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={
+                              isSelected && quizStatus === 'incorrect'
+                                ? { opacity: 1, y: 0, x: [0, -8, 8, -5, 5, 0] }
+                                : { opacity: 1, y: 0, x: 0 }
+                            }
+                            transition={{ duration: 0.25, delay: quizStatus === 'idle' ? idx * 0.05 : 0 }}
+                            className="flex items-center gap-2.5 w-full"
+                          >
                             <button
                               type="button"
                               onClick={() => handleOptionSelect(option)}
                               disabled={quizStatus !== 'idle'}
                               className={btnClass}
                             >
-                              <span>{option}</span>
+                              <span className="flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-600 text-xs font-black text-slate-950 dark:text-white flex items-center justify-center shrink-0">
+                                  {optionLetter}
+                                </span>
+                                <span>{option}</span>
+                              </span>
+
+                              {quizStatus !== 'idle' && isCorrectOption && (
+                                <span className="text-xs font-black bg-white text-slate-950 px-2.5 py-1 rounded-lg border-2 border-slate-900 shrink-0">
+                                  ✓ {optionLetter}
+                                </span>
+                              )}
                             </button>
-                            <button
+                            <motion.button
                               type="button"
+                              whileTap={{ scale: 0.92 }}
                               onClick={() => speakText(option)}
                               title={isSpanishCourse ? 'Listen to option' : 'Escuchar opción'}
-                              className="p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-800/40 hover:bg-indigo-50 dark:hover:bg-zinc-800 text-slate-500 hover:text-indigo-600 transition-colors shrink-0"
+                              className="p-4 rounded-2xl border-2 border-slate-900 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-yellow-200 dark:hover:bg-zinc-700 text-slate-900 dark:text-zinc-200 shadow-[3px_3px_0px_0px_#0f172a] transition-colors shrink-0"
                             >
                               <Volume2 className="w-5 h-5" />
-                            </button>
-                          </div>
+                            </motion.button>
+                          </motion.div>
                         );
                       })}
                     </div>
@@ -486,73 +704,96 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
 
                 {quizStatus !== 'idle' && (
                   <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`mt-6 p-5 rounded-2xl border ${
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className={`mt-6 p-5 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0f172a] ${
                       quizStatus === 'correct'
-                        ? 'bg-emerald-50 text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800'
-                        : 'bg-rose-50 text-rose-950 dark:bg-rose-950/50 dark:text-rose-200 border-rose-200 dark:border-rose-800'
+                        ? 'bg-emerald-200/90 text-slate-950 dark:bg-emerald-950/80 dark:text-emerald-100'
+                        : 'bg-rose-200/90 text-slate-950 dark:bg-rose-950/80 dark:text-rose-100'
                     }`}
                   >
-                    <p className="font-bold text-base mb-1 flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    <p className="font-black text-base mb-1 flex items-center gap-2">
+                      <CheckCircle2 className="w-5 h-5 shrink-0" />
                       <span>
                         {quizStatus === 'correct'
                           ? isSpanishCourse
-                            ? 'Correct! Pattern reinforced.'
-                            : '¡Correcto! Patrón gramatical consolidado.'
+                            ? 'Card Cleared! Rule Mastered:'
+                            : '¡Carta Superada! Regla consolidada:'
                           : isSpanishCourse
-                            ? 'Not quite right — let\'s analyze why:'
-                            : 'Respuesta incorrecta — analicemos la regla:'}
+                            ? "Let's check the grammar rule:"
+                            : 'Analicemos la regla de esta carta:'}
                       </span>
                     </p>
-                    <p className="text-sm font-medium leading-relaxed">{currentQuestion.explanation}</p>
+                    <p className="text-sm font-bold leading-relaxed">{currentQuestion.explanation}</p>
                     {quizStatus === 'incorrect' && (
-                      <p className="mt-2 text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
+                      <p className="mt-2 text-xs font-extrabold flex items-center gap-1.5 opacity-90">
                         <RefreshCw className="w-3.5 h-3.5 shrink-0" />
                         {isSpanishCourse
-                          ? 'Added to the end of this session for spaced active recall.'
-                          : 'Se agregó al final de esta sesión para garantizar retención activa.'}
+                          ? 'Shuffled back into the deck with a new option order.'
+                          : 'Se barajó de nuevo al final del mazo con las opciones en otro orden.'}
                       </p>
                     )}
                   </motion.div>
                 )}
               </div>
 
-              <button
-                onClick={handleNextQuiz}
-                disabled={quizStatus === 'idle'}
-                className="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl py-4 font-bold text-base shadow-md flex items-center justify-center gap-2 transition-colors"
-              >
-                <span>
-                  {currentQuizIndex < quizQueue.length - 1
-                    ? isSpanishCourse
-                      ? 'Next Exercise'
-                      : 'Siguiente Ejercicio'
-                    : lesson.dialogue && lesson.dialogue.length > 0
+              <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
+                {currentQuestion.type === 'speaking' && quizStatus === 'idle' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playTactileSound('pop');
+                      setQuizStatus('correct');
+                      handleNextQuiz();
+                    }}
+                    className="w-full sm:w-auto px-5 py-4 rounded-2xl border-2 border-slate-900 dark:border-zinc-700 bg-amber-100 hover:bg-amber-200 dark:bg-zinc-800 text-slate-950 dark:text-zinc-100 font-black text-sm flex items-center justify-center gap-2 shadow-[3px_3px_0px_0px_#0f172a] shrink-0"
+                  >
+                    <FastForward className="w-4 h-4" />
+                    <span>{isSpanishCourse ? 'Skip microphone & continue' : 'Saltar micrófono y avanzar'}</span>
+                  </button>
+                )}
+
+                <motion.button
+                  type="button"
+                  whileHover={quizStatus !== 'idle' ? { y: -2 } : undefined}
+                  whileTap={quizStatus !== 'idle' ? { scale: 0.98, x: 2, y: 2 } : undefined}
+                  onClick={handleNextQuiz}
+                  disabled={quizStatus === 'idle'}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl py-4 font-black text-base border-2 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center gap-2 transition-colors"
+                >
+                  <span>
+                    {currentQuizIndex < quizQueue.length - 1
                       ? isSpanishCourse
-                        ? 'Continue to Phase 3: Real-Life Dialogue'
-                        : 'Continuar a Fase 3: Simulación de Diálogo'
-                      : isSpanishCourse
-                        ? 'Complete Lesson'
-                        : 'Finalizar Lección'}
-                </span>
-                <ChevronRight className="w-5 h-5" />
-              </button>
+                        ? 'Next Exercise Card'
+                        : 'Siguiente Carta de Ejercicio'
+                      : lesson.dialogue && lesson.dialogue.length > 0
+                        ? isSpanishCourse
+                          ? 'Continue to Phase 3: Live Dialogue'
+                          : 'Continuar a Fase 3: Simulación de Diálogo'
+                        : isSpanishCourse
+                          ? 'Finish & Stamp Lesson'
+                          : 'Finalizar y Sellar Lección'}
+                  </span>
+                  <ChevronRight className="w-5 h-5" />
+                </motion.button>
+              </div>
             </motion.div>
           )}
 
           {step === 'roleplay' && lesson.dialogue && (
             <motion.div
               key="roleplay"
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
+              exit={{ opacity: 0, y: -16 }}
             >
               <RolePlaySimulator
                 dialogueLines={lesson.dialogue}
                 courseLanguage={courseLang}
-                onComplete={() => setStep('success')}
+                onComplete={() => {
+                  playTactileSound('win');
+                  setStep('success');
+                }}
               />
             </motion.div>
           )}
@@ -560,68 +801,89 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
           {step === 'success' && (
             <motion.div
               key="success"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex-1 flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-lg"
+              initial={{ opacity: 0, scale: 0.92, rotate: -1 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 20 }}
+              className="flex-1 flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-900 p-8 rounded-3xl border-2 border-slate-900 dark:border-zinc-700 shadow-[8px_8px_0px_0px_#0f172a] dark:shadow-[8px_8px_0px_0px_#27272a]"
             >
-              <div className="w-20 h-20 bg-emerald-600 rounded-2xl flex items-center justify-center mb-5 shadow-md text-white">
+              <motion.div
+                initial={{ scale: 0.5, rotate: -15 }}
+                animate={{ scale: 1, rotate: -3 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+                className="w-20 h-20 bg-emerald-400 border-2 border-slate-900 rounded-2xl flex items-center justify-center mb-5 shadow-[4px_4px_0px_0px_#0f172a] text-slate-950"
+              >
                 <Trophy className="w-10 h-10" />
+              </motion.div>
+
+              <div className="px-3.5 py-1 rounded-xl border-2 border-slate-900 bg-yellow-300 text-slate-950 font-black text-xs mb-3 shadow-[2px_2px_0px_0px_#0f172a]">
+                {isSpanishCourse ? '✓ LESSON DECK COMPLETED!' : '✓ ¡MAZO DE LECCIÓN SELLADO!'}
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-black mb-2 text-slate-900 dark:text-zinc-100">
+              <h2 className="text-2xl md:text-3xl font-black mb-2 text-slate-950 dark:text-zinc-100">
                 {isSpanishCourse ? 'Lesson Mastered!' : '¡Lección Dominada!'}
               </h2>
 
-              <div className="flex items-center gap-3 text-sm font-bold text-slate-600 dark:text-zinc-300 mb-6 tabular-nums">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-sm font-black text-slate-700 dark:text-zinc-300 mb-6 tabular-nums">
                 <span className="text-amber-600 dark:text-amber-400">+60 XP</span>
                 <span aria-hidden="true">·</span>
-                <span className="text-emerald-600 dark:text-emerald-400">
-                  {isSpanishCourse ? `First-Try Accuracy: ${firstTryAccuracy}%` : `Precisión al 1er intento: ${firstTryAccuracy}%`}
+                <span className="text-emerald-700 dark:text-emerald-400">
+                  {isSpanishCourse
+                    ? `First-Try Accuracy: ${firstTryAccuracy}%`
+                    : `Precisión al 1er intento: ${firstTryAccuracy}%`}
                 </span>
                 <span aria-hidden="true">·</span>
                 <span>CEFR {cefrBadge}</span>
               </div>
 
               {/* Metacognitive Self-Assessment */}
-              <div className="w-full max-w-md bg-slate-50 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-700 rounded-2xl p-5 mb-7 text-left">
-                <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 mb-3 flex items-center gap-1.5">
+              <div className="w-full max-w-md bg-[#FAF6EE] dark:bg-zinc-800/70 border-2 border-slate-900 dark:border-zinc-700 rounded-2xl p-5 mb-7 text-left shadow-[4px_4px_0px_0px_#0f172a]">
+                <p className="text-xs font-black text-slate-900 dark:text-zinc-200 mb-3 flex items-center gap-1.5">
                   <Brain className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                   <span>
                     {isSpanishCourse
-                      ? 'Metacognitive Check: How confident do you feel with this topic?'
-                      : 'Autoevaluación Metacognitiva: ¿Qué tan seguro te sientes con este tema?'}
+                      ? 'How confident do you feel with this card deck?'
+                      : '¿Qué tan seguro te sientes con las cartas de esta lección?'}
                   </span>
                 </p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2.5">
                   <button
                     type="button"
-                    onClick={() => setConfidenceLevel('easy')}
-                    className={`p-2.5 rounded-xl text-xs font-bold border transition-colors text-center ${
+                    onClick={() => {
+                      playTactileSound('pop');
+                      setConfidenceLevel('easy');
+                    }}
+                    className={`p-2.5 rounded-xl text-xs font-black border-2 border-slate-900 transition-all text-center ${
                       confidenceLevel === 'easy'
-                        ? 'bg-emerald-600 text-white border-emerald-600'
-                        : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-700'
+                        ? 'bg-emerald-300 text-slate-950 shadow-[2px_2px_0px_0px_#0f172a]'
+                        : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300'
                     }`}
                   >
                     {isSpanishCourse ? 'Mastered' : 'Dominado'}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setConfidenceLevel('good')}
-                    className={`p-2.5 rounded-xl text-xs font-bold border transition-colors text-center ${
+                    onClick={() => {
+                      playTactileSound('pop');
+                      setConfidenceLevel('good');
+                    }}
+                    className={`p-2.5 rounded-xl text-xs font-black border-2 border-slate-900 transition-all text-center ${
                       confidenceLevel === 'good'
-                        ? 'bg-indigo-600 text-white border-indigo-600'
-                        : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-700'
+                        ? 'bg-yellow-300 text-slate-950 shadow-[2px_2px_0px_0px_#0f172a]'
+                        : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300'
                     }`}
                   >
                     {isSpanishCourse ? 'Solid' : 'Bien'}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setConfidenceLevel('hard')}
-                    className={`p-2.5 rounded-xl text-xs font-bold border transition-colors text-center ${
+                    onClick={() => {
+                      playTactileSound('pop');
+                      setConfidenceLevel('hard');
+                    }}
+                    className={`p-2.5 rounded-xl text-xs font-black border-2 border-slate-900 transition-all text-center ${
                       confidenceLevel === 'hard'
-                        ? 'bg-amber-600 text-white border-amber-600'
-                        : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-700'
+                        ? 'bg-rose-300 text-slate-950 shadow-[2px_2px_0px_0px_#0f172a]'
+                        : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300'
                     }`}
                   >
                     {isSpanishCourse ? 'Review Soon' : 'Repasar pronto'}
@@ -629,12 +891,14 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
                 </div>
               </div>
 
-              <button
+              <motion.button
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98, x: 2, y: 2 }}
                 onClick={saveConfidenceAndFinish}
-                className="w-full max-w-md bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl py-4 font-bold text-base shadow-md flex items-center justify-center transition-colors"
+                className="w-full max-w-md bg-emerald-500 hover:bg-emerald-600 text-slate-950 rounded-2xl py-4 font-black text-base border-2 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center transition-colors"
               >
-                {isSpanishCourse ? 'Save Progress & Continue' : 'Guardar Progreso en BD y Continuar'}
-              </button>
+                {isSpanishCourse ? 'Save Progress & Continue' : 'Guardar Progreso y Continuar'}
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>

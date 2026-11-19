@@ -1,0 +1,64 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Student or Teacher profile in CesarTeach Language Academy",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user identifier" },
+        "email": { "type": "string", "description": "User email or username" },
+        "fullName": { "type": "string", "description": "Full name of student or teacher" },
+        "role": { "type": "string", "enum": ["student", "teacher"], "description": "Academic role" },
+        "requestedRole": { "type": "string", "enum": ["student", "teacher"], "description": "Requested role when applying for teacher authorization" },
+        "authorizedTeacherByMaster": { "type": "boolean", "description": "Whether this teacher was explicitly authorized by spacio.n.blnco@gmail.com" },
+        "targetLanguage": { "type": "string", "enum": ["en", "es"], "description": "Active course language" },
+        "avatarUrl": { "type": "string", "description": "Avatar image URL" },
+        "studentIdNumber": { "type": "string", "description": "Enrollment or matricula code" },
+        "notesFromTeacher": { "type": "string", "description": "Pedagogical feedback from teacher" },
+        "enrollmentStatus": { "type": "string", "enum": ["approved", "pending", "revoked"], "description": "Teacher authorization status" },
+        "approvedByTeacher": { "type": "boolean", "description": "Whether teacher registration was authorized by master teacher" },
+        "accessPin": { "type": "string", "description": "Access password or PIN" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp" },
+        "lastActiveAt": { "type": "string", "format": "date-time", "description": "Last activity timestamp" }
+      },
+      "required": ["id", "email", "fullName", "role", "createdAt", "lastActiveAt"]
+    },
+    "StudentProgress": {
+      "title": "StudentProgress",
+      "description": "Comprehensive academic progress across CEFR A1, A2, B1, and B2 levels",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "References UserProfile.id" },
+        "completedLessons": { "type": "array", "items": { "type": "string" }, "description": "Completed lesson IDs across A1-B2" },
+        "masteredWords": { "type": "array", "items": { "type": "string" }, "description": "Mastered vocabulary IDs" },
+        "examScore": { "type": "number", "description": "Highest exam score percentage" },
+        "examPassed": { "type": "boolean", "description": "Whether A1 certification exam is passed" },
+        "examPassedDate": { "type": "string", "description": "Date when exam was passed" },
+        "levelScores": { "type": "object", "description": "Map of CEFR level (A1, A2, B1, B2) to highest exam score percentage" },
+        "certifiedLevels": { "type": "array", "items": { "type": "string" }, "description": "List of certified CEFR levels" },
+        "xp": { "type": "number", "description": "Total experience points earned" },
+        "streakDays": { "type": "number", "description": "Consecutive study days streak" },
+        "lastStudyDate": { "type": "string", "description": "YYYY-MM-DD of last study session" },
+        "unlockedBadges": { "type": "array", "items": { "type": "string" }, "description": "Unlocked achievement & certificate badge IDs" },
+        "wordSRSStatus": { "type": "object", "description": "Spaced repetition status (easy, good, hard) per word ID" },
+        "lessonDates": { "type": "object", "description": "ISO completion timestamp per lesson ID" },
+        "examHistory": { "type": "array", "items": { "type": "object" }, "description": "Historical log of certification exam attempts" },
+        "courseLanguage": { "type": "string", "enum": ["en", "es"], "description": "Active target language" },
+        "totalExercisesDone": { "type": "number", "description": "Total interactive exercises completed" },
+        "timeSpentMinutes": { "type": "number", "description": "Estimated study time in minutes" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last progress sync timestamp" }
+      },
+      "required": ["userId", "completedLessons", "masteredWords", "xp", "streakDays", "unlockedBadges", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Stores student profiles (open registration) and teacher profiles (strictly authorized by spacio.n.blnco@gmail.com)"
+    },
+    "/student_progress/{userId}": {
+      "schema": { "$ref": "#/entities/StudentProgress" },
+      "description": "Stores detailed multi-level CEFR progress, SRS vocabulary metrics, and exam history per student"
+    }
+  }
+}

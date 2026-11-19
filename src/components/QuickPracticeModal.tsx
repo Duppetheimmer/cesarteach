@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Volume2, Sparkles, CheckCircle2, AlertCircle, RefreshCw, Zap, Star, Play, Award } from 'lucide-react';
+import { X, Volume2, CheckCircle2, RefreshCw, Zap, Star, Play } from 'lucide-react';
 import { playSpeech } from '../utils/speech';
-
+import { playTactileSound } from '../utils/soundEffects';
 import { SPANISH_QUICK_QUESTIONS } from '../data/spanishData';
+import { randomizeQuestionsOptions } from '../utils/shuffleOptions';
 
 interface QuickPracticeModalProps {
   isOpen: boolean;
@@ -35,7 +36,12 @@ const QUICK_QUESTIONS: QuickQuestion[] = [
     id: 'q2',
     type: 'listening',
     question: 'Escucha el audio y selecciona la frase que escuchaste:',
-    options: ['Where is the bathroom?', 'Where is the train?', 'Where is the bus?', 'Where is the hotel?'],
+    options: [
+      'Where is the train?',
+      'Where is the bus?',
+      'Where is the bathroom?',
+      'Where is the hotel?'
+    ],
     correct: 'Where is the bathroom?',
     audioText: 'Where is the bathroom?',
     explanation: 'Escuchaste "Where is the bathroom?" (¿Dónde está el baño?).'
@@ -44,7 +50,12 @@ const QUICK_QUESTIONS: QuickQuestion[] = [
     id: 'q3',
     type: 'word-order',
     question: 'Ordena la frase: "Yo tengo dos perros".',
-    options: ['I have two dogs.', 'I two dogs have.', 'Have I two dogs.', 'Two dogs I have.'],
+    options: [
+      'I two dogs have.',
+      'Have I two dogs.',
+      'Two dogs I have.',
+      'I have two dogs.'
+    ],
     correct: 'I have two dogs.',
     explanation: 'Sujeto (I) + Verbo (have) + Objeto (two dogs).'
   },
@@ -52,7 +63,12 @@ const QUICK_QUESTIONS: QuickQuestion[] = [
     id: 'q4',
     type: 'phrase',
     question: '¿Qué frase usas para pedir un café en una cafetería?',
-    options: ['Give me coffee now.', 'Can I get a coffee, please?', 'I want coffee quickly.', 'Coffee is good.'],
+    options: [
+      'Give me coffee now.',
+      'Can I get a coffee, please?',
+      'I want coffee quickly.',
+      'Coffee is good.'
+    ],
     correct: 'Can I get a coffee, please?',
     explanation: '"Can I get a coffee, please?" es la forma más educada y natural.'
   },
@@ -66,15 +82,28 @@ const QUICK_QUESTIONS: QuickQuestion[] = [
   }
 ];
 
-export function QuickPracticeModal({ isOpen, onClose, onAddXP, courseLanguage = 'en' }: QuickPracticeModalProps) {
+export function QuickPracticeModal({
+  isOpen,
+  onClose,
+  onAddXP,
+  courseLanguage = 'en'
+}: QuickPracticeModalProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [score, setScore] = useState(0);
+  const [shuffleSeed, setShuffleSeed] = useState(0);
+
+  const isSpanishCourse = courseLanguage === 'es';
+  const questionsList: QuickQuestion[] = React.useMemo(() => {
+    const raw = isSpanishCourse
+      ? (SPANISH_QUICK_QUESTIONS as QuickQuestion[])
+      : QUICK_QUESTIONS;
+    return randomizeQuestionsOptions(raw);
+  }, [isSpanishCourse, shuffleSeed]);
 
   if (!isOpen) return null;
 
-  const questionsList = courseLanguage === 'es' ? (SPANISH_QUICK_QUESTIONS as any) : QUICK_QUESTIONS;
   const currentQ = questionsList[currentIndex] || questionsList[0];
 
   const speakText = (text: string) => {
@@ -89,27 +118,33 @@ export function QuickPracticeModal({ isOpen, onClose, onAddXP, courseLanguage = 
     setSelectedOption(option);
     const isCorrect = option === currentQ.correct;
     if (isCorrect) {
+      playTactileSound('stamp');
       setStatus('correct');
       setScore(s => s + 1);
       onAddXP(15);
       if (currentQ.audioText) speakText(currentQ.audioText);
     } else {
+      playTactileSound('error');
       setStatus('incorrect');
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < QUICK_QUESTIONS.length - 1) {
+    if (currentIndex < questionsList.length - 1) {
+      playTactileSound('flip');
       setCurrentIndex(i => i + 1);
       setSelectedOption(null);
       setStatus('idle');
     } else {
-      // Completed
+      playTactileSound('win');
+      setCurrentIndex(questionsList.length);
       setStatus('idle');
     }
   };
 
   const handleRestart = () => {
+    playTactileSound('flip');
+    setShuffleSeed(s => s + 1);
     setCurrentIndex(0);
     setSelectedOption(null);
     setStatus('idle');
@@ -120,64 +155,80 @@ export function QuickPracticeModal({ isOpen, onClose, onAddXP, courseLanguage = 
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col"
+          initial={{ opacity: 0, scale: 0.94, y: 18, rotate: -0.5 }}
+          animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: 18 }}
+          className="bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 rounded-3xl w-full max-w-xl shadow-[8px_8px_0px_0px_#0f172a] dark:shadow-[8px_8px_0px_0px_#27272a] overflow-hidden flex flex-col"
         >
           {/* Header */}
-          <div className="p-5 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-                <Zap className="w-5 h-5 text-yellow-200 fill-yellow-200" />
+          <div className="p-5 bg-emerald-300 dark:bg-zinc-800 border-b-2 border-slate-900 dark:border-zinc-700 text-slate-950 dark:text-white flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-900 flex items-center justify-center shadow-[3px_3px_0px_0px_#0f172a]">
+                <Zap className="w-5 h-5 text-amber-500 fill-amber-500" />
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase tracking-wider bg-black/20 px-2.5 py-0.5 rounded-full">
-                  Repaso Exprès 5 Minutos
+                <span className="text-xs font-extrabold text-slate-700 dark:text-zinc-300">
+                  {isSpanishCourse ? '5-Minute Card Sprint' : 'Mazo Rápido 5 Minutos'}
                 </span>
-                <h3 className="text-lg font-black">Práctica Rápida A1</h3>
+                <h3 className="text-lg font-black">
+                  {isSpanishCourse ? 'Spanish Quick Practice' : 'Práctica Rápida en Inglés'}
+                </h3>
               </div>
             </div>
 
             <button
-              onClick={onClose}
-              className="p-1.5 rounded-full hover:bg-white/20 text-white transition-colors"
+              onClick={() => {
+                playTactileSound('pop');
+                onClose();
+              }}
+              className="p-2 rounded-xl bg-white dark:bg-zinc-900 border-2 border-slate-900 text-slate-950 dark:text-white shadow-[2px_2px_0px_0px_#0f172a] hover:bg-rose-200 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Content Body */}
-          <div className="p-6 text-zinc-900 dark:text-zinc-100">
-            {currentIndex < QUICK_QUESTIONS.length ? (
-              <div>
+          <div className="p-6 text-slate-950 dark:text-zinc-100 bg-[#FAF6EE] dark:bg-zinc-950">
+            {currentIndex < questionsList.length ? (
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+              >
                 {/* Progress bar */}
-                <div className="flex items-center justify-between text-xs font-black text-zinc-500 mb-2">
-                  <span>Pregunta {currentIndex + 1} de {QUICK_QUESTIONS.length}</span>
-                  <span className="text-amber-600 dark:text-amber-400 font-extrabold flex items-center gap-1">
-                    <Star className="w-3.5 h-3.5 fill-amber-500" /> +15 XP por acierto
+                <div className="flex items-center justify-between text-xs font-black text-slate-700 dark:text-zinc-300 mb-2">
+                  <span>
+                    {isSpanishCourse
+                      ? `Card ${currentIndex + 1} of ${questionsList.length}`
+                      : `Carta ${currentIndex + 1} de ${questionsList.length}`}
+                  </span>
+                  <span className="text-amber-600 dark:text-amber-400 font-black flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 fill-amber-500" />{' '}
+                    {isSpanishCourse ? '+15 XP per card' : '+15 XP por carta'}
                   </span>
                 </div>
 
-                <div className="h-2.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden mb-6">
-                  <div 
-                    className="h-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-300 rounded-full"
-                    style={{ width: `${((currentIndex + 1) / QUICK_QUESTIONS.length) * 100}%` }}
+                <div className="h-3.5 w-full bg-white dark:bg-zinc-800 rounded-full overflow-hidden mb-6 border-2 border-slate-900 dark:border-zinc-600 p-0.5">
+                  <motion.div
+                    className="h-full bg-emerald-400 rounded-full"
+                    animate={{ width: `${((currentIndex + 1) / questionsList.length) * 100}%` }}
+                    transition={{ type: 'spring', stiffness: 220, damping: 22 }}
                   />
                 </div>
 
-                {/* Question */}
-                <div className="bg-amber-50/60 dark:bg-zinc-800/60 border border-amber-200/60 dark:border-zinc-700 rounded-2xl p-5 mb-5 text-center">
+                {/* Question Card */}
+                <div className="bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 rounded-2xl p-5 mb-5 text-center shadow-[4px_4px_0px_0px_#0f172a]">
                   {currentQ.audioText && (
                     <button
                       onClick={() => speakText(currentQ.audioText!)}
-                      className="mb-3 px-4 py-2 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs inline-flex items-center gap-2 shadow-md transition-all active:scale-95"
+                      className="mb-3 px-4 py-2 rounded-xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 font-black text-xs inline-flex items-center gap-2 shadow-[2px_2px_0px_0px_#0f172a] transition-all active:scale-95"
                     >
                       <Volume2 className="w-4 h-4 animate-bounce" />
-                      <span>Reproducir Audio</span>
+                      <span>{isSpanishCourse ? 'Play Card Audio' : 'Reproducir Audio'}</span>
                     </button>
                   )}
-                  <h4 className="text-base md:text-lg font-black text-zinc-900 dark:text-zinc-100">
+                  <h4 className="text-base md:text-xl font-black text-slate-950 dark:text-zinc-100">
                     {currentQ.question}
                   </h4>
                 </div>
@@ -187,26 +238,41 @@ export function QuickPracticeModal({ isOpen, onClose, onAddXP, courseLanguage = 
                   {currentQ.options.map((option, idx) => {
                     const isSelected = selectedOption === option;
                     const isCorrect = option === currentQ.correct;
-                    let btnStyle = 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 hover:border-amber-400';
+                    const optionLetter = String.fromCharCode(65 + idx);
+                    let btnStyle =
+                      'bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-zinc-100 hover:bg-yellow-100 shadow-[3px_3px_0px_0px_#0f172a]';
 
                     if (status !== 'idle') {
                       if (isCorrect) {
-                        btnStyle = 'bg-emerald-500 text-white border-emerald-500 font-black shadow-md';
+                        btnStyle =
+                          'bg-emerald-300 text-slate-950 border-2 border-slate-900 font-black shadow-[3px_3px_0px_0px_#0f172a]';
                       } else if (isSelected && !isCorrect) {
-                        btnStyle = 'bg-rose-500 text-white border-rose-500 font-black';
+                        btnStyle = 'bg-rose-300 text-slate-950 border-2 border-slate-900 font-black';
+                      } else {
+                        btnStyle = 'bg-white/50 dark:bg-zinc-900/40 border border-slate-300 opacity-45';
                       }
                     }
 
                     return (
-                      <button
+                      <motion.button
                         key={idx}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: status === 'idle' ? idx * 0.04 : 0 }}
                         onClick={() => handleSelectOption(option)}
                         disabled={status !== 'idle'}
-                        className={`p-3.5 rounded-2xl border-2 text-xs md:text-sm font-extrabold transition-all text-left flex items-center justify-between ${btnStyle}`}
+                        className={`p-3.5 rounded-2xl text-xs md:text-sm font-extrabold transition-all text-left flex items-center justify-between gap-2 active:translate-x-[2px] active:translate-y-[2px] ${btnStyle}`}
                       >
-                        <span>{option}</span>
-                        {status !== 'idle' && isCorrect && <CheckCircle2 className="w-4 h-4 shrink-0" />}
-                      </button>
+                        <span className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-lg bg-amber-100 dark:bg-zinc-800 border border-slate-900 text-xs font-black text-slate-950 dark:text-white flex items-center justify-center shrink-0">
+                            {optionLetter}
+                          </span>
+                          <span>{option}</span>
+                        </span>
+                        {status !== 'idle' && isCorrect && (
+                          <CheckCircle2 className="w-4 h-4 shrink-0" />
+                        )}
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -214,55 +280,85 @@ export function QuickPracticeModal({ isOpen, onClose, onAddXP, courseLanguage = 
                 {/* Feedback */}
                 {status !== 'idle' && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`p-4 rounded-2xl mb-5 text-xs md:text-sm font-medium border ${
+                    className={`p-4 rounded-2xl mb-5 text-xs md:text-sm font-bold border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a] ${
                       status === 'correct'
-                        ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 text-emerald-800 dark:text-emerald-200'
-                        : 'bg-rose-50 dark:bg-rose-950/60 border-rose-200 text-rose-800 dark:text-rose-200'
+                        ? 'bg-emerald-200 text-slate-950'
+                        : 'bg-rose-200 text-slate-950'
                     }`}
                   >
-                    <p className="font-extrabold mb-1">
-                      {status === 'correct' ? '¡Correcto! +15 XP' : 'Respuesta correcta: ' + currentQ.correct}
+                    <p className="font-black mb-1">
+                      {status === 'correct'
+                        ? isSpanishCourse
+                          ? '✓ STAMPED! +15 XP'
+                          : '✓ ¡SELLADO! +15 XP'
+                        : isSpanishCourse
+                          ? `Correct answer: ${currentQ.correct}`
+                          : `Respuesta correcta: ${currentQ.correct}`}
                     </p>
-                    <p className="opacity-90">{currentQ.explanation}</p>
+                    <p>{currentQ.explanation}</p>
                   </motion.div>
                 )}
 
                 {/* Next */}
                 {status !== 'idle' && (
-                  <button
+                  <motion.button
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.98, x: 2, y: 2 }}
                     onClick={handleNext}
-                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3.5 rounded-2xl font-black text-sm shadow-md flex items-center justify-center gap-2 hover:from-amber-600 hover:to-orange-600 transition-all"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-2xl font-black text-sm border-2 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center gap-2 transition-all"
                   >
-                    <span>Continuar</span>
+                    <span>{isSpanishCourse ? 'Deal Next Card' : 'Siguiente Carta'}</span>
                     <Play className="w-4 h-4 fill-white" />
-                  </button>
+                  </motion.button>
                 )}
-              </div>
+              </motion.div>
             ) : (
               /* Finish Screen */
               <div className="text-center py-8">
-                <div className="w-16 h-16 rounded-3xl bg-amber-100 dark:bg-amber-950 text-amber-500 flex items-center justify-center mx-auto mb-3 text-3xl shadow-md">
+                <div className="w-16 h-16 rounded-2xl bg-yellow-300 border-2 border-slate-900 text-slate-950 flex items-center justify-center mx-auto mb-3 text-3xl shadow-[4px_4px_0px_0px_#0f172a]">
                   🎉
                 </div>
-                <h4 className="text-xl font-black mb-1">¡Repaso Completado!</h4>
-                <p className="text-xs text-zinc-500 mb-6">
-                  Lograste <strong>{score} de {QUICK_QUESTIONS.length} aciertos</strong>. La constancia es la clave para hablar inglés fluido.
+                <h4 className="text-xl font-black mb-1">
+                  {isSpanishCourse ? 'Card Sprint Completed!' : '¡Mazo Rápido Completado!'}
+                </h4>
+                <p className="text-xs font-bold text-slate-600 dark:text-zinc-400 mb-6">
+                  {isSpanishCourse ? (
+                    <>
+                      You stamped{' '}
+                      <strong>
+                        {score} out of {questionsList.length}
+                      </strong>{' '}
+                      cards.
+                    </>
+                  ) : (
+                    <>
+                      Sellaste{' '}
+                      <strong>
+                        {score} de {questionsList.length} cartas
+                      </strong>
+                      .
+                    </>
+                  )}
                 </p>
 
                 <div className="flex gap-3 justify-center">
                   <button
                     onClick={handleRestart}
-                    className="bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-700 dark:text-zinc-200 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5"
+                    className="bg-white dark:bg-zinc-800 border-2 border-slate-900 text-slate-950 dark:text-zinc-100 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-[3px_3px_0px_0px_#0f172a]"
                   >
-                    <RefreshCw className="w-3.5 h-3.5" /> Repetir
+                    <RefreshCw className="w-3.5 h-3.5" />{' '}
+                    {isSpanishCourse ? 'Shuffle & Repeat' : 'Barajar y Repetir'}
                   </button>
                   <button
-                    onClick={onClose}
-                    className="bg-amber-500 hover:bg-amber-600 text-white font-black px-6 py-2.5 rounded-xl text-xs shadow-md"
+                    onClick={() => {
+                      playTactileSound('pop');
+                      onClose();
+                    }}
+                    className="bg-emerald-400 hover:bg-emerald-500 text-slate-950 border-2 border-slate-900 font-black px-6 py-2.5 rounded-xl text-xs shadow-[3px_3px_0px_0px_#0f172a]"
                   >
-                    ¡Listo!
+                    {isSpanishCourse ? 'Done!' : '¡Listo!'}
                   </button>
                 </div>
               </div>

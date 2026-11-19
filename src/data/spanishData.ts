@@ -47,7 +47,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_1_2',
         question: 'What is the standard response when someone says "Muchas gracias"?',
-        options: ['De nada', 'Por favor', 'Hola', 'Perdón'],
+        options: ['Por favor', 'Hola', 'Perdón', 'De nada'],
         correctAnswer: 'De nada',
         explanation: '"De nada" corresponds to "You\'re welcome" in Spanish.',
         hint: 'Translates literally to "Of nothing".'
@@ -72,7 +72,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_1_5',
         question: 'How do you ask someone "What is your name?" informally?',
-        options: ['¿Dónde vives?', '¿Cómo te llamas?', '¿Cuántos años tienes?', '¿De dónde eres?'],
+        options: ['¿Cómo te llamas?', '¿Dónde vives?', '¿Cuántos años tienes?', '¿De dónde eres?'],
         correctAnswer: '¿Cómo te llamas?',
         explanation: '"¿Cómo te llamas?" is the informal way to ask someone\'s name.',
         hint: 'Literally "How do you call yourself?".'
@@ -110,7 +110,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_2_1',
         question: 'What is the correct way to say "I am 20 years old" in Spanish?',
-        options: ['Soy 20 años', 'Tengo 20 años', 'Estoy 20 años', 'Hago 20 años'],
+        options: ['Soy 20 años', 'Estoy 20 años', 'Tengo 20 años', 'Hago 20 años'],
         correctAnswer: 'Tengo 20 años',
         explanation: 'In Spanish, age always uses the verb TENER ("Tengo ... años").',
         hint: 'You "possess" years in Spanish (Tengo).'
@@ -118,7 +118,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_2_2',
         question: 'How do you write the number 15 in Spanish?',
-        options: ['Diecicinco', 'Cincuenta', 'Quince', 'Veinticinco'],
+        options: ['Diecicinco', 'Cincuenta', 'Veinticinco', 'Quince'],
         correctAnswer: 'Quince',
         explanation: '15 is "Quince". 50 is "Cincuenta".',
         hint: 'Starts with the letter Q.'
@@ -126,7 +126,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_2_3',
         question: 'How do you ask "How much does this cost?" in Spanish?',
-        options: ['¿Cuánto cuesta esto?', '¿Dónde está esto?', '¿Qué es esto?', '¿Cuándo es esto?'],
+        options: ['¿Dónde está esto?', '¿Cuánto cuesta esto?', '¿Qué es esto?', '¿Cuándo es esto?'],
         correctAnswer: '¿Cuánto cuesta esto?',
         explanation: '"¿Cuánto cuesta esto?" is the standard question for prices.',
         hint: 'Uses the verb costar (cuesta).'
@@ -143,7 +143,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_2_5',
         question: 'How do you say the number 50 in Spanish?',
-        options: ['Quince', 'Cincuenta', 'Cuarenta', 'Sesenta'],
+        options: ['Cincuenta', 'Quince', 'Cuarenta', 'Sesenta'],
         correctAnswer: 'Cincuenta',
         explanation: '50 is "Cincuenta" (40 is Cuarenta, 60 is Sesenta).',
         hint: 'Starts with Cinc-.'
@@ -173,7 +173,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_3_1',
         question: 'Which pronoun is used to address an adult or stranger respectfully and formally?',
-        options: ['Tú', 'Usted', 'Él', 'Nosotros'],
+        options: ['Tú', 'Él', 'Nosotros', 'Usted'],
         correctAnswer: 'Usted',
         explanation: '"Usted" is the formal pronoun for "You".',
         hint: 'Formal address in Spanish.'
@@ -207,9 +207,9 @@ export const spanishA1InicialLessons: LessonStep[] = [
         id: 'q_es_a1_3_5',
         question: 'Why do native Spanish speakers often omit pronouns like "Yo" or "Tú"?',
         options: [
-          'Because the verb conjugation already reveals who is doing the action',
           'Because pronouns are impolite in Spanish',
           'Because Spanish has no pronouns',
+          'Because the verb conjugation already reveals who is doing the action',
           'Only children use pronouns'
         ],
         correctAnswer: 'Because the verb conjugation already reveals who is doing the action',
@@ -260,7 +260,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_4_2',
         question: 'How do you say "I am tired" (temporary physical state) in Spanish?',
-        options: ['Soy cansado', 'Estoy cansado', 'Tengo cansado', 'Hago cansado'],
+        options: ['Soy cansado', 'Tengo cansado', 'Hago cansado', 'Estoy cansado'],
         correctAnswer: 'Estoy cansado',
         explanation: 'Physical tiredness is a temporary state, so it requires ESTAR ("Estoy cansado/a").',
         hint: 'Temporary condition uses ESTAR.'
@@ -268,7 +268,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_4_3',
         question: 'How do you ask "Where is the hotel?" in Spanish?',
-        options: ['¿Dónde es el hotel?', '¿Dónde está el hotel?', '¿Dónde tiene el hotel?', '¿Dónde hay el hotel?'],
+        options: ['¿Dónde es el hotel?', '¿Dónde tiene el hotel?', '¿Dónde está el hotel?', '¿Dónde hay el hotel?'],
         correctAnswer: '¿Dónde está el hotel?',
         explanation: 'Geographic location always uses the verb ESTAR ("¿Dónde está...?").',
         hint: 'Location uses ESTAR.'
@@ -285,7 +285,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_4_5',
         question: 'Complete the sentence: "Nosotros ___ en Madrid hoy."',
-        options: ['somos', 'estamos', 'tienen', 'son'],
+        options: ['estamos', 'somos', 'tienen', 'son'],
         correctAnswer: 'estamos',
         explanation: 'Being in Madrid today is a physical location, which requires "estamos" (ESTAR).',
         hint: 'Location in Madrid = estamos.'
@@ -317,7 +317,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_5_1',
         question: 'Which question word means "Where?" in Spanish?',
-        options: ['¿Qué?', '¿Dónde?', '¿Quién?', '¿Cuándo?'],
+        options: ['¿Qué?', '¿Quién?', '¿Dónde?', '¿Cuándo?'],
         correctAnswer: '¿Dónde?',
         explanation: '"¿Dónde?" means "Where?" in Spanish.',
         hint: 'Asks for location.'
@@ -325,7 +325,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_5_2',
         question: 'How do you ask "Why?" in Spanish?',
-        options: ['¿Por qué?', 'Porque', '¿Para qué?', '¿Quién?'],
+        options: ['Porque', '¿Para qué?', '¿Quién?', '¿Por qué?'],
         correctAnswer: '¿Por qué?',
         explanation: '"¿Por qué?" (two words with accent) means "Why?". "Porque" (one word) means "Because".',
         hint: 'Two words with accent mark on qué.'
@@ -350,7 +350,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_5_5',
         question: 'How do you ask "How are you?" to a friend in Spanish?',
-        options: ['¿Cómo te llamas?', '¿Cómo estás?', '¿De dónde eres?', '¿Qué hora es?'],
+        options: ['¿Cómo estás?', '¿Cómo te llamas?', '¿De dónde eres?', '¿Qué hora es?'],
         correctAnswer: '¿Cómo estás?',
         explanation: '"¿Cómo estás?" is the standard greeting to ask how someone is doing.',
         hint: 'Uses the verb estar for emotional/physical state.'
@@ -393,7 +393,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_6_1',
         question: 'How do you say "I speak English and Spanish" in Spanish?',
-        options: ['Hablo inglés y español', 'Digo inglés y español', 'Soy inglés y español', 'Tengo inglés y español'],
+        options: ['Digo inglés y español', 'Soy inglés y español', 'Tengo inglés y español', 'Hablo inglés y español'],
         correctAnswer: 'Hablo inglés y español',
         explanation: '"Hablo" (from hablar) is the verb used to speak languages.',
         hint: 'Verb HABLAR -> Hablo.'
@@ -409,7 +409,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_6_3',
         question: 'How do you ask someone "Where are you from?" in Spanish?',
-        options: ['¿Dónde vives?', '¿De dónde eres?', '¿Cómo te llamas?', '¿Qué idioma hablas?'],
+        options: ['¿De dónde eres?', '¿Dónde vives?', '¿Cómo te llamas?', '¿Qué idioma hablas?'],
         correctAnswer: '¿De dónde eres?',
         explanation: '"¿De dónde eres?" asks for someone\'s origin using SER.',
         hint: 'De dónde + eres.'
@@ -426,7 +426,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_6_5',
         question: 'What is the Spanish name for the United States?',
-        options: ['Inglaterra', 'Estados Unidos', 'Reino Unido', 'Alemania'],
+        options: ['Inglaterra', 'Reino Unido', 'Estados Unidos', 'Alemania'],
         correctAnswer: 'Estados Unidos',
         explanation: '"Estados Unidos" is the United States in Spanish.',
         hint: 'United States = Estados Unidos.'
@@ -470,7 +470,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_7_2',
         question: 'How do you say "My brothers" in Spanish?',
-        options: ['Mi hermanos', 'Mis hermanos', 'Tu hermanos', 'Sus hermanos'],
+        options: ['Mi hermanos', 'Tu hermanos', 'Sus hermanos', 'Mis hermanos'],
         correctAnswer: 'Mis hermanos',
         explanation: 'Possessive adjectives agree in number with the noun: "Mis hermanos".',
         hint: 'Possessive must be plural (Mis).'
@@ -495,7 +495,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_7_5',
         question: 'What is the Spanish word for "Daughter"?',
-        options: ['Hijo', 'Hija', 'Hermana', 'Esposa'],
+        options: ['Hija', 'Hijo', 'Hermana', 'Esposa'],
         correctAnswer: 'Hija',
         explanation: '"Hija" is daughter ("Hijo" is son).',
         hint: 'Feminine ending in -a.'
@@ -529,7 +529,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_8_1',
         question: 'Which definite article is used before the feminine word "casa" (house)?',
-        options: ['El', 'La', 'Los', 'Las'],
+        options: ['El', 'Los', 'La', 'Las'],
         correctAnswer: 'La',
         explanation: '"Casa" is a feminine singular noun, so it uses "La casa".',
         hint: 'Feminine singular article.'
@@ -537,7 +537,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_8_2',
         question: 'How do you say "an apple" in Spanish?',
-        options: ['un manzana', 'una manzana', 'la manzana', 'el manzana'],
+        options: ['un manzana', 'la manzana', 'el manzana', 'una manzana'],
         correctAnswer: 'una manzana',
         explanation: '"Manzana" is feminine, so the indefinite article is "una manzana".',
         hint: 'Feminine indefinite article is "una".'
@@ -545,7 +545,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_8_3',
         question: 'What is the plural of "el libro"?',
-        options: ['los libros', 'las libros', 'unos libro', 'los libro'],
+        options: ['las libros', 'los libros', 'unos libro', 'los libro'],
         correctAnswer: 'los libros',
         explanation: 'The plural of "el libro" is "los libros".',
         hint: 'Both article and noun take -s / -os.'
@@ -562,7 +562,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_8_5',
         question: 'Which of the following is a famous masculine exception ending in -a?',
-        options: ['La mesa', 'El día', 'La puerta', 'La silla'],
+        options: ['El día', 'La mesa', 'La puerta', 'La silla'],
         correctAnswer: 'El día',
         explanation: '"El día" is masculine despite ending in -a ("Buenos días").',
         hint: 'Used in "Buenos días".'
@@ -597,7 +597,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_9_1',
         question: 'You are holding a book in your hand (close & masculine). Which demonstrative do you use?',
-        options: ['Ese libro', 'Este libro', 'Aquel libro', 'Estos libro'],
+        options: ['Ese libro', 'Aquel libro', 'Estos libro', 'Este libro'],
         correctAnswer: 'Este libro',
         explanation: '"Este" is used for masculine objects right next to the speaker.',
         hint: 'This (near me) = Este.'
@@ -613,7 +613,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_9_3',
         question: 'Which demonstrative refers to something far away in the distance ("over there")?',
-        options: ['Este', 'Ese', 'Aquel', 'Esta'],
+        options: ['Aquel', 'Este', 'Ese', 'Esta'],
         correctAnswer: 'Aquel',
         explanation: '"Aquel" / "Aquella" points to objects far from both the speaker and listener.',
         hint: 'Points to "allá" (over there).'
@@ -630,7 +630,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_9_5',
         question: 'What is the plural of "este"?',
-        options: ['estes', 'estos', 'estas', 'esos'],
+        options: ['estes', 'estas', 'estos', 'esos'],
         correctAnswer: 'estos',
         explanation: 'The plural of "este" is "estos" (not estes).',
         hint: 'Irregular vowel shift: este -> estos.'
@@ -676,7 +676,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_10_2',
         question: 'How do you say "on Friday" in Spanish?',
-        options: ['en viernes', 'el viernes', 'a viernes', 'por viernes'],
+        options: ['en viernes', 'a viernes', 'por viernes', 'el viernes'],
         correctAnswer: 'el viernes',
         explanation: 'In Spanish, "on [day]" is expressed with the definite article "el" ("el viernes").',
         hint: 'Uses the article "el".'
@@ -684,7 +684,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_10_3',
         question: 'What is the Spanish word for "Saturday"?',
-        options: ['Domingo', 'Sábado', 'Viernes', 'Jueves'],
+        options: ['Domingo', 'Viernes', 'Sábado', 'Jueves'],
         correctAnswer: 'Sábado',
         explanation: '"Sábado" is Saturday.',
         hint: 'Weekend day starting with S.'
@@ -701,7 +701,7 @@ export const spanishA1InicialLessons: LessonStep[] = [
       {
         id: 'q_es_a1_10_5',
         question: 'How do you tell time for 1:00 PM ("It is one o\'clock")?',
-        options: ['Son las una', 'Es la una', 'Está la una', 'Es una hora'],
+        options: ['Es la una', 'Son las una', 'Está la una', 'Es una hora'],
         correctAnswer: 'Es la una',
         explanation: '1:00 is singular, so it uses "Es la una".',
         hint: 'Singular = Es la una.'
@@ -747,7 +747,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_1_1',
         question: 'How do you conjugate "Yo" for the verb TRABAJAR (to work)?',
-        options: ['Trabajas', 'Trabajo', 'Trabaja', 'Trabajamos'],
+        options: ['Trabajas', 'Trabaja', 'Trabajo', 'Trabajamos'],
         correctAnswer: 'Trabajo',
         explanation: 'All regular verbs in the present tense for "Yo" end in -o (Trabajo).',
         hint: 'Yo ending is -o.'
@@ -755,7 +755,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_1_2',
         question: 'How do you say "She lives in Madrid" (Vivir)?',
-        options: ['Ella vivo en Madrid', 'Ella vives en Madrid', 'Ella vive en Madrid', 'Ella vivan en Madrid'],
+        options: ['Ella vivo en Madrid', 'Ella vives en Madrid', 'Ella vivan en Madrid', 'Ella vive en Madrid'],
         correctAnswer: 'Ella vive en Madrid',
         explanation: 'For -IR verbs with Él/Ella, the ending is -e (Ella vive).',
         hint: '3rd person singular for -IR verbs ends in -e.'
@@ -809,7 +809,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_2_1',
         question: 'What is the Spanish word for "Always"?',
-        options: ['Nunca', 'A veces', 'Siempre', 'Usualmente'],
+        options: ['Nunca', 'A veces', 'Usualmente', 'Siempre'],
         correctAnswer: 'Siempre',
         explanation: '"Siempre" means "Always" in Spanish.',
         hint: '100% frequency.'
@@ -817,7 +817,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_2_2',
         question: 'What is the Spanish word for "Never"?',
-        options: ['Siempre', 'A menudo', 'Nunca', 'Rara vez'],
+        options: ['Siempre', 'Nunca', 'A menudo', 'Rara vez'],
         correctAnswer: 'Nunca',
         explanation: '"Nunca" means "Never".',
         hint: '0% frequency.'
@@ -825,7 +825,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_2_3',
         question: 'How do you say "Sometimes I eat out"?',
-        options: ['Siempre como fuera', 'A veces como fuera', 'Nunca como fuera', 'Casi nunca como fuera'],
+        options: ['A veces como fuera', 'Siempre como fuera', 'Nunca como fuera', 'Casi nunca como fuera'],
         correctAnswer: 'A veces como fuera',
         explanation: '"A veces" translates to "Sometimes".',
         hint: '50% frequency phrase.'
@@ -842,7 +842,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_2_5',
         question: 'How do you ask "¿Con qué frecuencia haces ejercicio?" in English?',
-        options: ['When do you exercise?', 'How often do you exercise?', 'Where do you exercise?', 'Why do you exercise?'],
+        options: ['When do you exercise?', 'Where do you exercise?', 'How often do you exercise?', 'Why do you exercise?'],
         correctAnswer: 'How often do you exercise?',
         explanation: '"¿Con qué frecuencia...?" means "How often...?".',
         hint: 'Asks for regularity.'
@@ -882,8 +882,8 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
         id: 'q_es_a1_int_3_1',
         question: 'Why do we say "Me GUSTAN los libros" instead of "Me gusta los libros"?',
         options: [
-          'Because "los libros" is plural, so the verb must be plural (gustan)',
           'Because "Me" is plural',
+          'Because "los libros" is plural, so the verb must be plural (gustan)',
           'Because it is in the past tense',
           'It is a random exception'
         ],
@@ -894,7 +894,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_3_2',
         question: 'How do you say "I like to dance" in Spanish?',
-        options: ['Me gusta bailar', 'Me gustan bailar', 'Yo gusto bailar', 'Me gusto bailar'],
+        options: ['Me gustan bailar', 'Yo gusto bailar', 'Me gusto bailar', 'Me gusta bailar'],
         correctAnswer: 'Me gusta bailar',
         explanation: 'When followed by an infinitive verb (bailar), always use singular "gusta".',
         hint: 'Verbs in infinitive always use "gusta".'
@@ -902,7 +902,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_3_3',
         question: 'How do you say "We like coffee"?',
-        options: ['Me gusta el café', 'Nos gusta el café', 'Les gusta el café', 'Te gusta el café'],
+        options: ['Me gusta el café', 'Les gusta el café', 'Nos gusta el café', 'Te gusta el café'],
         correctAnswer: 'Nos gusta el café',
         explanation: '"Nos" is the pronoun for "We" with the verb gustar (Nos gusta).',
         hint: 'Pronoun for we is "Nos".'
@@ -919,7 +919,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_3_5',
         question: 'What is the strongest expression for "I love (really like)" a thing in Spanish?',
-        options: ['Me gusta', 'Me encanta', 'No me gusta', 'Me da igual'],
+        options: ['Me encanta', 'Me gusta', 'No me gusta', 'Me da igual'],
         correctAnswer: 'Me encanta',
         explanation: '"Me encanta" means "I love / I am enchanted by".',
         hint: 'Think of "enchanted".'
@@ -954,7 +954,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_4_1',
         question: 'How do you say "There are four chairs in the kitchen" in Spanish?',
-        options: ['Hay cuatro sillas en la cocina', 'Están cuatro sillas en la cocina', 'Tienen cuatro sillas en la cocina', 'Son cuatro sillas'],
+        options: ['Están cuatro sillas en la cocina', 'Tienen cuatro sillas en la cocina', 'Hay cuatro sillas en la cocina', 'Son cuatro sillas'],
         correctAnswer: 'Hay cuatro sillas en la cocina',
         explanation: '"HAY" is used for both singular and plural existence.',
         hint: 'HAY means both there is and there are.'
@@ -962,7 +962,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_4_2',
         question: 'Which word means "Kitchen" in Spanish?',
-        options: ['Baño', 'Dormitorio', 'Cocina', 'Sala'],
+        options: ['Baño', 'Dormitorio', 'Sala', 'Cocina'],
         correctAnswer: 'Cocina',
         explanation: '"Cocina" is kitchen.',
         hint: 'Place where you cook (cocinar).'
@@ -970,7 +970,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_4_3',
         question: 'How do you ask "¿Hay wifi en el hotel?" in English?',
-        options: ['Is there Wi-Fi in the hotel?', 'Where is the Wi-Fi?', 'How much is Wi-Fi?', 'When is Wi-Fi?'],
+        options: ['Where is the Wi-Fi?', 'Is there Wi-Fi in the hotel?', 'How much is Wi-Fi?', 'When is Wi-Fi?'],
         correctAnswer: 'Is there Wi-Fi in the hotel?',
         explanation: '"¿Hay...?" asks "Is there...?" or "Are there...?".',
         hint: 'Asks about existence.'
@@ -987,7 +987,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_4_5',
         question: 'How do you say "There is no hot water"?',
-        options: ['No es agua caliente', 'No hay agua caliente', 'No está agua caliente', 'No tiene agua'],
+        options: ['No hay agua caliente', 'No es agua caliente', 'No está agua caliente', 'No tiene agua'],
         correctAnswer: 'No hay agua caliente',
         explanation: '"No hay..." means "There is no / There isn\'t any...".',
         hint: 'Negation of HAY.'
@@ -1021,7 +1021,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_5_1',
         question: 'How do you conjugate PODER for "Yo" (I can)?',
-        options: ['Podo', 'Puedo', 'Pueblo', 'Podes'],
+        options: ['Podo', 'Pueblo', 'Podes', 'Puedo'],
         correctAnswer: 'Puedo',
         explanation: 'PODER is an o->ue stem-changing verb: Yo puedo.',
         hint: 'Stem change to "pue-".'
@@ -1029,7 +1029,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_5_2',
         question: 'How do you politely ask someone "Can you help me, please?" in Spanish?',
-        options: ['¿Puedes ayudarme, por favor?', '¡Ayúdame ahora!', 'Debes ayudarme.', 'Haces ayuda.'],
+        options: ['¡Ayúdame ahora!', '¿Puedes ayudarme, por favor?', 'Debes ayudarme.', 'Haces ayuda.'],
         correctAnswer: '¿Puedes ayudarme, por favor?',
         explanation: '"¿Puedes ayudarme, por favor?" is the standard polite request.',
         hint: 'Uses puedes + ayudarme.'
@@ -1037,7 +1037,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_5_3',
         question: 'What is the "Nosotros" form of PODER?',
-        options: ['Puedemos', 'Podemos', 'Podimos', 'Pueden'],
+        options: ['Podemos', 'Puedemos', 'Podimos', 'Pueden'],
         correctAnswer: 'Podemos',
         explanation: '"Nosotros" does not take the stem change in regular -ER verbs: "Podemos".',
         hint: 'Keeps the "o": Podemos.'
@@ -1054,7 +1054,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_5_5',
         question: 'How do you say "We cannot come today"?',
-        options: ['No podemos venir hoy', 'No pueden venir hoy', 'No puedo venir hoy', 'No podéis venir hoy'],
+        options: ['No pueden venir hoy', 'No puedo venir hoy', 'No podemos venir hoy', 'No podéis venir hoy'],
         correctAnswer: 'No podemos venir hoy',
         explanation: '"No podemos venir hoy" uses the 1st person plural (Nosotros).',
         hint: 'We = no podemos.'
@@ -1097,7 +1097,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_6_2',
         question: 'What is the polite phrase "Quisiera..." equivalent to in English?',
-        options: ['I want immediately', 'I would like...', 'Give me...', 'I must have...'],
+        options: ['I want immediately', 'Give me...', 'I must have...', 'I would like...'],
         correctAnswer: 'I would like...',
         explanation: '"Quisiera..." (or "Me gustaría...") is the polite form for "I would like...".',
         hint: 'Polite conditional request.'
@@ -1158,9 +1158,9 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
         id: 'q_es_a1_int_7_1',
         question: 'How do you say "My sister is very friendly and smart" in Spanish?',
         options: [
-          'Mi hermana es muy simpática e inteligente',
           'Mi hermana está muy simpática e inteligente',
           'Mi hermana tiene muy simpática e inteligente',
+          'Mi hermana es muy simpática e inteligente',
           'Mi hermana es muy simpático e inteligente'
         ],
         correctAnswer: 'Mi hermana es muy simpática e inteligente',
@@ -1170,7 +1170,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_7_2',
         question: 'Which verb is used to describe eye and hair color ("He has blue eyes")?',
-        options: ['SER', 'ESTAR', 'TENER', 'HACER'],
+        options: ['SER', 'ESTAR', 'HACER', 'TENER'],
         correctAnswer: 'TENER',
         explanation: 'In Spanish, features like eyes and hair use TENER ("Tiene ojos azules").',
         hint: 'You "have" features in Spanish.'
@@ -1178,7 +1178,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_7_3',
         question: 'What is the feminine form of "trabajador" (hardworking)?',
-        options: ['trabajadora', 'trabajador', 'trabajadores', 'trabajadoras'],
+        options: ['trabajador', 'trabajadora', 'trabajadores', 'trabajadoras'],
         correctAnswer: 'trabajadora',
         explanation: 'Adjectives ending in -or add -a in the feminine (trabajador -> trabajadora).',
         hint: 'Adds -a at the end.'
@@ -1195,7 +1195,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_7_5',
         question: 'What is the opposite of "alto" (tall) in Spanish?',
-        options: ['Grande', 'Bajo', 'Delgado', 'Joven'],
+        options: ['Bajo', 'Grande', 'Delgado', 'Joven'],
         correctAnswer: 'Bajo',
         explanation: '"Bajo/a" means short in height.',
         hint: 'Opposite of tall.'
@@ -1233,7 +1233,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_8_1',
         question: 'What is the correct word order in Spanish for "a red dress"?',
-        options: ['un rojo vestido', 'un vestido rojo', 'rojo un vestido', 'vestido el rojo'],
+        options: ['un rojo vestido', 'rojo un vestido', 'vestido el rojo', 'un vestido rojo'],
         correctAnswer: 'un vestido rojo',
         explanation: 'In Spanish, color adjectives almost always follow the noun ("un vestido rojo").',
         hint: 'Noun first, then color.'
@@ -1266,7 +1266,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_8_5',
         question: 'How do you ask "What size is this?" in Spanish?',
-        options: ['¿Qué precio es este?', '¿Qué talla es esta?', '¿Qué color es este?', '¿Dónde está esto?'],
+        options: ['¿Qué precio es este?', '¿Qué color es este?', '¿Qué talla es esta?', '¿Dónde está esto?'],
         correctAnswer: '¿Qué talla es esta?',
         explanation: '"Talla" is clothing size in Spanish.',
         hint: 'Size = Talla.'
@@ -1314,7 +1314,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_9_2',
         question: 'What is the gerund of the verb COMER (to eat)?',
-        options: ['Comando', 'Comiendo', 'Comado', 'Comido'],
+        options: ['Comando', 'Comado', 'Comido', 'Comiendo'],
         correctAnswer: 'Comiendo',
         explanation: '-ER and -IR verbs take the ending "-iendo" (comer -> comiendo).',
         hint: '-ER verbs take -iendo.'
@@ -1322,7 +1322,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_9_3',
         question: 'How do you ask "What are you doing right now?" in Spanish?',
-        options: ['¿Qué haces?', '¿Qué estás haciendo ahora mismo?', '¿Qué vas a hacer?', '¿Dónde estás?'],
+        options: ['¿Qué haces?', '¿Qué vas a hacer?', '¿Qué estás haciendo ahora mismo?', '¿Dónde estás?'],
         correctAnswer: '¿Qué estás haciendo ahora mismo?',
         explanation: '"¿Qué estás haciendo ahora mismo?" uses the present continuous for actions in progress.',
         hint: 'Uses estás + haciendo.'
@@ -1339,7 +1339,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_9_5',
         question: 'Which auxiliary verb is used to form the continuous present in Spanish?',
-        options: ['SER', 'ESTAR', 'HABER', 'TENER'],
+        options: ['ESTAR', 'SER', 'HABER', 'TENER'],
         correctAnswer: 'ESTAR',
         explanation: 'The present continuous is always formed with ESTAR + Gerund (Estoy hablando).',
         hint: 'Always uses ESTAR.'
@@ -1369,7 +1369,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_10_1',
         question: 'Which preposition means "Next to / Beside" in Spanish?',
-        options: ['Debajo de', 'Al lado de', 'Entre', 'Detrás de'],
+        options: ['Debajo de', 'Entre', 'Al lado de', 'Detrás de'],
         correctAnswer: 'Al lado de',
         explanation: '"Al lado de" means "Next to / Beside".',
         hint: 'Side = lado.'
@@ -1377,7 +1377,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_10_2',
         question: 'Which preposition means "Under / Below"?',
-        options: ['Encima de', 'Debajo de', 'Entre', 'Delante de'],
+        options: ['Encima de', 'Entre', 'Delante de', 'Debajo de'],
         correctAnswer: 'Debajo de',
         explanation: '"Debajo de" means "Under / Beneath".',
         hint: 'Under = debajo.'
@@ -1386,8 +1386,8 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
         id: 'q_es_a1_int_10_3',
         question: 'How do you say "The coffee shop is between the bank and the park"?',
         options: [
-          'La cafetería está entre el banco y el parque',
           'La cafetería está al lado del banco',
+          'La cafetería está entre el banco y el parque',
           'La cafetería está debajo del banco',
           'La cafetería está detrás del banco'
         ],
@@ -1407,7 +1407,7 @@ export const spanishA1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_es_a1_int_10_5',
         question: 'When "de" meets the masculine article "el", what contraction is formed?',
-        options: ['de el', 'del', 'd\'el', 'da'],
+        options: ['del', 'de el', 'd\'el', 'da'],
         correctAnswer: 'del',
         explanation: 'In Spanish, "de + el" mandatory merges into the contraction "del" (al lado del banco).',
         hint: 'Mandatory contraction: del.'
@@ -1447,7 +1447,7 @@ export const spanishFluencyLessons: LessonStep[] = [
       {
         id: 'q_es_flu_1_1',
         question: 'How do you politely ask if a seat or chair is occupied in Spanish?',
-        options: ['¿Está ocupado este asiento?', 'Dame esta silla', '¿Quién se sienta aquí?', '¿Es tu silla?'],
+        options: ['Dame esta silla', '¿Quién se sienta aquí?', '¿Es tu silla?', '¿Está ocupado este asiento?'],
         correctAnswer: '¿Está ocupado este asiento?',
         explanation: '"¿Está ocupado este asiento?" is the natural and polite way to ask.',
         hint: 'Ocupado = occupied / taken.'
@@ -1472,7 +1472,7 @@ export const spanishFluencyLessons: LessonStep[] = [
       {
         id: 'q_es_flu_1_4',
         question: 'If asked "¿De dónde eres?", what are they asking you?',
-        options: ['Where do you live?', 'Where are you from?', 'How old are you?', 'What is your job?'],
+        options: ['Where are you from?', 'Where do you live?', 'How old are you?', 'What is your job?'],
         correctAnswer: 'Where are you from?',
         explanation: '"¿De dónde eres?" asks for your place of origin.',
         hint: 'Origin question.'
@@ -1504,7 +1504,7 @@ export const spanishFluencyLessons: LessonStep[] = [
       {
         id: 'q_es_flu_2_1',
         question: 'How do you say "To go (takeout)" in Spanish?',
-        options: ['Para aquí', 'Para llevar', 'Para comer', 'Para pagar'],
+        options: ['Para aquí', 'Para comer', 'Para llevar', 'Para pagar'],
         correctAnswer: 'Para llevar',
         explanation: '"Para llevar" is the standard phrase for "To go / Takeaway".',
         hint: 'Llevar = to carry/take away.'
@@ -1529,7 +1529,7 @@ export const spanishFluencyLessons: LessonStep[] = [
       {
         id: 'q_es_flu_2_4',
         question: 'What does "efectivo" mean in a payment context?',
-        options: ['Credit card', 'Cash', 'Coins only', 'Gift card'],
+        options: ['Credit card', 'Coins only', 'Gift card', 'Cash'],
         correctAnswer: 'Cash',
         explanation: '"Efectivo" means physical cash money.',
         hint: 'Cash payment.'
@@ -1558,7 +1558,7 @@ export const spanishFluencyLessons: LessonStep[] = [
       {
         id: 'q_es_flu_3_1',
         question: 'What does "Doble a la izquierda" mean?',
-        options: ['Turn right', 'Turn left', 'Go straight', 'Stop here'],
+        options: ['Turn right', 'Go straight', 'Turn left', 'Stop here'],
         correctAnswer: 'Turn left',
         explanation: '"Izquierda" is left and "doblar / girar" is to turn.',
         hint: 'Izquierda = left.'
@@ -1566,7 +1566,7 @@ export const spanishFluencyLessons: LessonStep[] = [
       {
         id: 'q_es_flu_3_2',
         question: 'How do you say "Go straight" in Spanish?',
-        options: ['Gire a la derecha', 'Gire a la izquierda', 'Siga todo derecho / recto', 'Pare aquí'],
+        options: ['Siga todo derecho / recto', 'Gire a la derecha', 'Gire a la izquierda', 'Pare aquí'],
         correctAnswer: 'Siga todo derecho / recto',
         explanation: '"Todo derecho" or "recto" means straight ahead.',
         hint: 'Derecho = straight ahead.'
@@ -1583,7 +1583,7 @@ export const spanishFluencyLessons: LessonStep[] = [
       {
         id: 'q_es_flu_3_4',
         question: 'What does "¿Está lejos de aquí?" ask?',
-        options: ['Is it close to here?', 'Is it far from here?', 'Is it open now?', 'How much is the ticket?'],
+        options: ['Is it close to here?', 'Is it open now?', 'Is it far from here?', 'How much is the ticket?'],
         correctAnswer: 'Is it far from here?',
         explanation: '"Lejos" means far and "de aquí" means from here.',
         hint: 'Lejos = far.'
@@ -1614,7 +1614,7 @@ export const spanishFluencyLessons: LessonStep[] = [
       {
         id: 'q_es_flu_4_1',
         question: 'How do you say "I have a reservation under the name of..." in Spanish?',
-        options: ['Tengo una reserva a nombre de...', 'Compro una cama...', 'Mi nombre es hotel...', 'Quiero un cuarto gratis'],
+        options: ['Compro una cama...', 'Mi nombre es hotel...', 'Quiero un cuarto gratis', 'Tengo una reserva a nombre de...'],
         correctAnswer: 'Tengo una reserva a nombre de...',
         explanation: '"Tengo una reserva a nombre de..." is the standard formal hotel phrase.',
         hint: 'Reserva a nombre de.'
@@ -1639,7 +1639,7 @@ export const spanishFluencyLessons: LessonStep[] = [
       {
         id: 'q_es_flu_4_4',
         question: 'What does "el ascensor" mean?',
-        options: ['The stairs', 'The elevator', 'The restaurant', 'The parking lot'],
+        options: ['The elevator', 'The stairs', 'The restaurant', 'The parking lot'],
         correctAnswer: 'The elevator',
         explanation: '"El ascensor" is the elevator / lift.',
         hint: 'Takes you to upper floors.'
@@ -1705,7 +1705,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_1',
     question: '1. How do you correctly say "I am 25 years old" in Spanish?',
-    options: ['Soy 25 años', 'Tengo 25 años', 'Estoy 25 años', 'Hago 25 años'],
+    options: ['Soy 25 años', 'Estoy 25 años', 'Hago 25 años', 'Tengo 25 años'],
     correctAnswer: 'Tengo 25 años',
     explanation: 'In Spanish, age is always expressed with the verb TENER ("Tengo ... años").',
     hint: 'A1 Foundations: Remember to use TENER for age.'
@@ -1735,9 +1735,9 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
     id: 'es_ex_4',
     question: '4. How do you say "Where is the nearest bathroom?" in Spanish?',
     options: [
-      '¿Dónde está el baño más cercano?',
       '¿Dónde es el baño más cercano?',
       '¿Cuándo está el baño?',
+      '¿Dónde está el baño más cercano?',
       '¿Quién es el baño?'
     ],
     correctAnswer: '¿Dónde está el baño más cercano?',
@@ -1747,7 +1747,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_5',
     question: '5. Which definite article is used with the masculine plural noun "libros"?',
-    options: ['El', 'La', 'Los', 'Las'],
+    options: ['El', 'Los', 'La', 'Las'],
     correctAnswer: 'Los',
     explanation: '"Los" is the masculine plural definite article (Los libros).',
     hint: 'A1 Foundations: Masculine plural article.'
@@ -1755,7 +1755,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_6',
     question: '6. What is the polite response when someone says "Muchas gracias"?',
-    options: ['Por favor', 'De nada', 'Disculpe', 'Hasta luego'],
+    options: ['Por favor', 'Disculpe', 'Hasta luego', 'De nada'],
     correctAnswer: 'De nada',
     explanation: '"De nada" corresponds to "You\'re welcome" in Spanish.',
     hint: 'A1 Foundations: Courtesy response.'
@@ -1771,7 +1771,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_8',
     question: '8. Complete the sentence of habit: "Yo ___ tomo café por la mañana." (Always)',
-    options: ['nunca', 'a veces', 'siempre', 'rara vez'],
+    options: ['siempre', 'nunca', 'a veces', 'rara vez'],
     correctAnswer: 'siempre',
     explanation: '"Siempre" means "Always" in Spanish.',
     hint: 'A1 Intermediate: 100% frequency.'
@@ -1779,7 +1779,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_9',
     question: '9. How do you say "I like books" using the verb GUSTAR?',
-    options: ['Me gusta los libros', 'Me gustan los libros', 'Yo gusto los libros', 'Me gusto los libros'],
+    options: ['Me gusta los libros', 'Yo gusto los libros', 'Me gustan los libros', 'Me gusto los libros'],
     correctAnswer: 'Me gustan los libros',
     explanation: 'Because "los libros" is plural, the verb must be plural ("Me gustan").',
     hint: 'A1 Intermediate: Plural subject requires gustan.'
@@ -1787,7 +1787,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_10',
     question: '10. How do you express "There are two bedrooms in the house" using HAY?',
-    options: ['Hay dos dormitorios en la casa', 'Están dos dormitorios', 'Son dos dormitorios', 'Tienen dos dormitorios'],
+    options: ['Están dos dormitorios', 'Son dos dormitorios', 'Tienen dos dormitorios', 'Hay dos dormitorios en la casa'],
     correctAnswer: 'Hay dos dormitorios en la casa',
     explanation: '"HAY" is used for existence in both singular and plural in Spanish.',
     hint: 'A1 Intermediate: Use HAY for there is/are.'
@@ -1803,7 +1803,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_12',
     question: '12. In a restaurant, how do you politely ask for the check / bill?',
-    options: ['El dinero, por favor', 'La cuenta, por favor', 'El menú, por favor', 'El papel, por favor'],
+    options: ['La cuenta, por favor', 'El dinero, por favor', 'El menú, por favor', 'El papel, por favor'],
     correctAnswer: 'La cuenta, por favor',
     explanation: '"La cuenta, por favor" is the standard phrase for the bill.',
     hint: 'Fluency: The bill = la cuenta.'
@@ -1811,7 +1811,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_13',
     question: '13. Which preposition of place means "Next to / Beside"?',
-    options: ['Debajo de', 'Al lado de', 'Entre', 'Detrás de'],
+    options: ['Debajo de', 'Entre', 'Detrás de', 'Al lado de'],
     correctAnswer: 'Al lado de',
     explanation: '"Al lado de" means beside or next to.',
     hint: 'A1 Intermediate: Lado = side.'
@@ -1827,7 +1827,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_15',
     question: '15. What is the meaning of the Spanish verb "Entender"?',
-    options: ['To learn', 'To understand', 'To listen', 'To write'],
+    options: ['To understand', 'To learn', 'To listen', 'To write'],
     correctAnswer: 'To understand',
     explanation: '"Entender" means to understand / comprehend.',
     hint: 'Vocabulary: Core cognitive verb.'
@@ -1835,7 +1835,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_16',
     question: '16. How do you tell time for 2:30 ("It is 2:30") in Spanish?',
-    options: ['Es la dos y media', 'Son las dos y media', 'Está dos y media', 'Tiene dos y media'],
+    options: ['Es la dos y media', 'Está dos y media', 'Son las dos y media', 'Tiene dos y media'],
     correctAnswer: 'Son las dos y media',
     explanation: 'Plural hours use "Son las [hora]".',
     hint: 'A1 Foundations: Plural hours use "Son las...".'
@@ -1843,7 +1843,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_17',
     question: '17. How do you form the present continuous for "Ella ___ (estudiar) ahora mismo"?',
-    options: ['está estudiando', 'es estudiando', 'estudia ahora', 'está estudiado'],
+    options: ['es estudiando', 'está estudiando', 'estudia ahora', 'está estudiado'],
     correctAnswer: 'está estudiando',
     explanation: 'Present continuous is formed with ESTAR + Gerund (-ando): "está estudiando".',
     hint: 'A1 Intermediate: ESTAR + -ando.'
@@ -1851,7 +1851,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_18',
     question: '18. How do you say "on Monday" in Spanish?',
-    options: ['en lunes', 'el lunes', 'a lunes', 'por lunes'],
+    options: ['en lunes', 'a lunes', 'por lunes', 'el lunes'],
     correctAnswer: 'el lunes',
     explanation: 'Days of the week use the article "el" ("el lunes").',
     hint: 'A1 Foundations: Use "el" for days.'
@@ -1859,7 +1859,7 @@ export const spanishFinalExamQuestions: QuizQuestion[] = [
   {
     id: 'es_ex_19',
     question: '19. What is the feminine form of the nationality "español"?',
-    options: ['española', 'españolo', 'españolas', 'españole'],
+    options: ['españolo', 'españolas', 'española', 'españole'],
     correctAnswer: 'española',
     explanation: 'Nationalities ending in a consonant add "-a" for feminine: "española".',
     hint: 'A1 Foundations: Adds -a for feminine.'

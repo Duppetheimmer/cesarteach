@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Volume2, Sparkles, CheckCircle2, AlertCircle, RefreshCw, Zap, BookOpen, Star, Play } from 'lucide-react';
+import { X, Volume2, Sparkles, CheckCircle2, AlertCircle, RefreshCw, Zap, BookOpen, Play } from 'lucide-react';
 import { playSpeech } from '../utils/speech';
+import { playTactileSound } from '../utils/soundEffects';
+import { SPANISH_A1_VERBS, SPANISH_VERB_PRACTICE_QUESTIONS } from '../data/spanishData';
+import { randomizeQuestionsOptions } from '../utils/shuffleOptions';
 
 interface VerbData {
   id: string;
@@ -31,10 +34,10 @@ const A1_VERBS: VerbData[] = [
     tip: '¡El verbo más importante en inglés! Cambia por completo según el sujeto (am, is, are).',
     forms: [
       { pronoun: 'I', present: 'am', negative: 'am not', exampleEn: 'I am a student.', exampleEs: 'Yo soy estudiante.' },
-      { pronoun: 'You', present: 'are', negative: 'are not (aren\'t)', exampleEn: 'You are very kind.', exampleEs: 'Tú eres muy amable.' },
-      { pronoun: 'He / She / It', present: 'is', negative: 'is not (isn\'t)', exampleEn: 'She is at home.', exampleEs: 'Ella está en casa.' },
-      { pronoun: 'We', present: 'are', negative: 'are not (aren\'t)', exampleEn: 'We are ready!', exampleEs: '¡Estamos listos!' },
-      { pronoun: 'They', present: 'are', negative: 'are not (aren\'t)', exampleEn: 'They are happy.', exampleEs: 'Ellos están felices.' },
+      { pronoun: 'You', present: 'are', negative: "are not (aren't)", exampleEn: 'You are very kind.', exampleEs: 'Tú eres muy amable.' },
+      { pronoun: 'He / She / It', present: 'is', negative: "is not (isn't)", exampleEn: 'She is at home.', exampleEs: 'Ella está en casa.' },
+      { pronoun: 'We', present: 'are', negative: "are not (aren't)", exampleEn: 'We are ready!', exampleEs: '¡Estamos listos!' },
+      { pronoun: 'They', present: 'are', negative: "are not (aren't)", exampleEn: 'They are happy.', exampleEs: 'Ellos están felices.' }
     ]
   },
   {
@@ -46,11 +49,11 @@ const A1_VERBS: VerbData[] = [
     type: 'irregular',
     tip: 'Con He, She e It se usa "HAS" (no "haves"). Con los demás pronombres se usa "HAVE".',
     forms: [
-      { pronoun: 'I', present: 'have', negative: 'don\'t have', exampleEn: 'I have a car.', exampleEs: 'Tengo un auto.' },
-      { pronoun: 'You', present: 'have', negative: 'don\'t have', exampleEn: 'You have a nice smile.', exampleEs: 'Tienes una bonita sonrisa.' },
-      { pronoun: 'He / She / It', present: 'has', negative: 'doesn\'t have', exampleEn: 'He has a dog.', exampleEs: 'Él tiene un perro.' },
-      { pronoun: 'We', present: 'have', negative: 'don\'t have', exampleEn: 'We have time.', exampleEs: 'Tenemos tiempo.' },
-      { pronoun: 'They', present: 'have', negative: 'don\'t have', exampleEn: 'They have two children.', exampleEs: 'Tienen dos hijos.' },
+      { pronoun: 'I', present: 'have', negative: "don't have", exampleEn: 'I have a car.', exampleEs: 'Tengo un auto.' },
+      { pronoun: 'You', present: 'have', negative: "don't have", exampleEn: 'You have a nice smile.', exampleEs: 'Tienes una bonita sonrisa.' },
+      { pronoun: 'He / She / It', present: 'has', negative: "doesn't have", exampleEn: 'He has a dog.', exampleEs: 'Él tiene un perro.' },
+      { pronoun: 'We', present: 'have', negative: "don't have", exampleEn: 'We have time.', exampleEs: 'Tenemos tiempo.' },
+      { pronoun: 'They', present: 'have', negative: "don't have", exampleEn: 'They have two children.', exampleEs: 'Tienen dos hijos.' }
     ]
   },
   {
@@ -62,11 +65,11 @@ const A1_VERBS: VerbData[] = [
     type: 'regular',
     tip: 'En Present Simple, agrega una "-s" al verbo cuando hables de He, She o It (He likes).',
     forms: [
-      { pronoun: 'I', present: 'like', negative: 'don\'t like', exampleEn: 'I like coffee.', exampleEs: 'Me gusta el café.' },
-      { pronoun: 'You', present: 'like', negative: 'don\'t like', exampleEn: 'You like music.', exampleEs: 'Te gusta la música.' },
-      { pronoun: 'He / She / It', present: 'likes', negative: 'doesn\'t like', exampleEn: 'She likes pizza.', exampleEs: 'A ella le gusta la pizza.' },
-      { pronoun: 'We', present: 'like', negative: 'don\'t like', exampleEn: 'We like English!', exampleEs: '¡Nos gusta el inglés!' },
-      { pronoun: 'They', present: 'like', negative: 'don\'t like', exampleEn: 'They like sports.', exampleEs: 'A ellos les gustan los deportes.' },
+      { pronoun: 'I', present: 'like', negative: "don't like", exampleEn: 'I like coffee.', exampleEs: 'Me gusta el café.' },
+      { pronoun: 'You', present: 'like', negative: "don't like", exampleEn: 'You like music.', exampleEs: 'Te gusta la música.' },
+      { pronoun: 'He / She / It', present: 'likes', negative: "doesn't like", exampleEn: 'She likes pizza.', exampleEs: 'A ella le gusta la pizza.' },
+      { pronoun: 'We', present: 'like', negative: "don't like", exampleEn: 'We like English!', exampleEs: '¡Nos gusta el inglés!' },
+      { pronoun: 'They', present: 'like', negative: "don't like", exampleEn: 'They like sports.', exampleEs: 'A ellos les gustan los deportes.' }
     ]
   },
   {
@@ -78,11 +81,11 @@ const A1_VERBS: VerbData[] = [
     type: 'regular',
     tip: 'Para expresar un deseo. Si pones otro verbo después, usa "to" (I want to learn).',
     forms: [
-      { pronoun: 'I', present: 'want', negative: 'don\'t want', exampleEn: 'I want water, please.', exampleEs: 'Quiero agua, por favor.' },
-      { pronoun: 'You', present: 'want', negative: 'don\'t want', exampleEn: 'You want to study.', exampleEs: 'Tú quieres estudiar.' },
-      { pronoun: 'He / She / It', present: 'wants', negative: 'doesn\'t want', exampleEn: 'He wants an ice cream.', exampleEs: 'Él quiere un helado.' },
-      { pronoun: 'We', present: 'want', negative: 'don\'t want', exampleEn: 'We want to travel.', exampleEs: 'Queremos viajar.' },
-      { pronoun: 'They', present: 'want', negative: 'don\'t want', exampleEn: 'They want help.', exampleEs: 'Ellos quieren ayuda.' },
+      { pronoun: 'I', present: 'want', negative: "don't want", exampleEn: 'I want water, please.', exampleEs: 'Quiero agua, por favor.' },
+      { pronoun: 'You', present: 'want', negative: "don't want", exampleEn: 'You want to study.', exampleEs: 'Tú quieres estudiar.' },
+      { pronoun: 'He / She / It', present: 'wants', negative: "doesn't want", exampleEn: 'He wants an ice cream.', exampleEs: 'Él quiere un helado.' },
+      { pronoun: 'We', present: 'want', negative: "don't want", exampleEn: 'We want to travel.', exampleEs: 'Queremos viajar.' },
+      { pronoun: 'They', present: 'want', negative: "don't want", exampleEn: 'They want help.', exampleEs: 'Ellos quieren ayuda.' }
     ]
   },
   {
@@ -94,11 +97,11 @@ const A1_VERBS: VerbData[] = [
     type: 'irregular',
     tip: 'Con He/She/It se escribe "GOES" (/ɡoʊz/). El pasado irregular es "WENT".',
     forms: [
-      { pronoun: 'I', present: 'go', negative: 'don\'t go', exampleEn: 'I go to work every day.', exampleEs: 'Voy al trabajo todos los días.' },
-      { pronoun: 'You', present: 'go', negative: 'don\'t go', exampleEn: 'You go to gym.', exampleEs: 'Vas al gimnasio.' },
-      { pronoun: 'He / She / It', present: 'goes', negative: 'doesn\'t go', exampleEn: 'She goes to school.', exampleEs: 'Ella va a la escuela.' },
-      { pronoun: 'We', present: 'go', negative: 'don\'t go', exampleEn: 'We go home now.', exampleEs: 'Vamos a casa ahora.' },
-      { pronoun: 'They', present: 'go', negative: 'don\'t go', exampleEn: 'They go on vacation.', exampleEs: 'Ellos van de vacaciones.' },
+      { pronoun: 'I', present: 'go', negative: "don't go", exampleEn: 'I go to work every day.', exampleEs: 'Voy al trabajo todos los días.' },
+      { pronoun: 'You', present: 'go', negative: "don't go", exampleEn: 'You go to the gym.', exampleEs: 'Vas al gimnasio.' },
+      { pronoun: 'He / She / It', present: 'goes', negative: "doesn't go", exampleEn: 'She goes to school.', exampleEs: 'Ella va a la escuela.' },
+      { pronoun: 'We', present: 'go', negative: "don't go", exampleEn: 'We go home now.', exampleEs: 'Vamos a casa ahora.' },
+      { pronoun: 'They', present: 'go', negative: "don't go", exampleEn: 'They go on vacation.', exampleEs: 'Ellos van de vacaciones.' }
     ]
   },
   {
@@ -110,11 +113,11 @@ const A1_VERBS: VerbData[] = [
     type: 'modal',
     tip: 'Verbo modal: ¡NUNCA cambia! No lleva "-s" con He/She/It y su negativa es "cannot" o "can\'t".',
     forms: [
-      { pronoun: 'I', present: 'can', negative: 'can\'t', exampleEn: 'I can speak English!', exampleEs: '¡Puedo hablar inglés!' },
-      { pronoun: 'You', present: 'can', negative: 'can\'t', exampleEn: 'You can do it.', exampleEs: 'Tú puedes hacerlo.' },
-      { pronoun: 'He / She / It', present: 'can', negative: 'can\'t', exampleEn: 'He can swim fast.', exampleEs: 'Él puede nadar rápido.' },
-      { pronoun: 'We', present: 'can', negative: 'can\'t', exampleEn: 'We can help you.', exampleEs: 'Podemos ayudarte.' },
-      { pronoun: 'They', present: 'can', negative: 'can\'t', exampleEn: 'They can play guitar.', exampleEs: 'Ellos saben tocar guitarra.' },
+      { pronoun: 'I', present: 'can', negative: "can't", exampleEn: 'I can speak English!', exampleEs: '¡Puedo hablar inglés!' },
+      { pronoun: 'You', present: 'can', negative: "can't", exampleEn: 'You can do it.', exampleEs: 'Tú puedes hacerlo.' },
+      { pronoun: 'He / She / It', present: 'can', negative: "can't", exampleEn: 'He can swim fast.', exampleEs: 'Él puede nadar rápido.' },
+      { pronoun: 'We', present: 'can', negative: "can't", exampleEn: 'We can help you.', exampleEs: 'Podemos ayudarte.' },
+      { pronoun: 'They', present: 'can', negative: "can't", exampleEn: 'They can play guitar.', exampleEs: 'Ellos saben tocar guitarra.' }
     ]
   }
 ];
@@ -144,8 +147,8 @@ const VERB_PRACTICE_QUESTIONS: QuizQuestionItem[] = [
   },
   {
     prompt: 'Negativa: They _____ (not / like) cold weather.',
-    options: ['doesn\'t like', 'don\'t like', 'not like', 'no likes'],
-    correct: 'don\'t like',
+    options: ["doesn't like", 'not like', 'no likes', "don't like"],
+    correct: "don't like",
     explanation: 'Para la negativa de They en presente usamos "don\'t" + verbo en infinitivo.',
     verbName: 'To Like'
   },
@@ -158,21 +161,19 @@ const VERB_PRACTICE_QUESTIONS: QuizQuestionItem[] = [
   },
   {
     prompt: 'Completa: He _____ (can / swim) very well.',
-    options: ['can swims', 'cans swim', 'can swim', 'can to swim'],
+    options: ['can swims', 'cans swim', 'can to swim', 'can swim'],
     correct: 'can swim',
     explanation: 'El verbo modal "can" no cambia con He/She/It y va seguido de un verbo sin "to".',
     verbName: 'Can'
   },
   {
     prompt: 'Completa: We _____ (want) a coffee, please.',
-    options: ['wants', 'wanting', 'want', 'wanted'],
+    options: ['wants', 'want', 'wanting', 'wanted'],
     correct: 'want',
     explanation: 'Con el pronombre "We" usas la forma base del verbo "want".',
     verbName: 'To Want'
   }
 ];
-
-import { SPANISH_A1_VERBS, SPANISH_VERB_PRACTICE_QUESTIONS } from '../data/spanishData';
 
 interface VerbTrainerModalProps {
   isOpen: boolean;
@@ -181,14 +182,32 @@ interface VerbTrainerModalProps {
   courseLanguage?: 'en' | 'es';
 }
 
-export function VerbTrainerModal({ isOpen, onClose, onAddXP, courseLanguage = 'en' }: VerbTrainerModalProps) {
+export function VerbTrainerModal({
+  isOpen,
+  onClose,
+  onAddXP,
+  courseLanguage = 'en'
+}: VerbTrainerModalProps) {
   const [activeTab, setActiveTab] = useState<'study' | 'quiz'>('study');
-  const activeVerbs = courseLanguage === 'es' ? (SPANISH_A1_VERBS as any) : A1_VERBS;
-  const activeQuestions = courseLanguage === 'es' ? (SPANISH_VERB_PRACTICE_QUESTIONS as any) : VERB_PRACTICE_QUESTIONS;
+  const [shuffleSeed, setShuffleSeed] = useState(0);
+  const isSpanishCourse = courseLanguage === 'es'; // English speaker learning Spanish
+  const activeVerbs: VerbData[] = isSpanishCourse ? (SPANISH_A1_VERBS as VerbData[]) : A1_VERBS;
+  const activeQuestions: QuizQuestionItem[] = React.useMemo(() => {
+    const raw = isSpanishCourse
+      ? (SPANISH_VERB_PRACTICE_QUESTIONS as QuizQuestionItem[])
+      : VERB_PRACTICE_QUESTIONS;
+    return randomizeQuestionsOptions(raw);
+  }, [isSpanishCourse, shuffleSeed]);
 
   const [selectedVerbId, setSelectedVerbId] = useState<string>(activeVerbs[0]?.id || 'be');
-  
-  // Quiz State
+
+  useEffect(() => {
+    setSelectedVerbId(activeVerbs[0]?.id || 'be');
+    setQuizIndex(0);
+    setSelectedOption(null);
+    setQuizStatus('idle');
+  }, [courseLanguage]);
+
   const [quizIndex, setQuizIndex] = useState<number>(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [quizStatus, setQuizStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
@@ -196,7 +215,7 @@ export function VerbTrainerModal({ isOpen, onClose, onAddXP, courseLanguage = 'e
 
   if (!isOpen) return null;
 
-  const currentVerb = activeVerbs.find((v: any) => v.id === selectedVerbId) || activeVerbs[0];
+  const currentVerb = activeVerbs.find(v => v.id === selectedVerbId) || activeVerbs[0];
   const currentQuestion = activeQuestions[quizIndex] || activeQuestions[0];
 
   const speakText = (text: string) => {
@@ -211,27 +230,33 @@ export function VerbTrainerModal({ isOpen, onClose, onAddXP, courseLanguage = 'e
     setSelectedOption(option);
     const isCorrect = option === currentQuestion.correct;
     if (isCorrect) {
+      playTactileSound('stamp');
       setQuizStatus('correct');
       setScore(s => s + 1);
       onAddXP(20);
-      speakText(courseLanguage === 'es' ? ('¡Correcto! ' + currentQuestion.correct) : ('Correct! ' + currentQuestion.correct));
+      speakText(currentQuestion.correct);
     } else {
+      playTactileSound('error');
       setQuizStatus('incorrect');
     }
   };
 
   const handleNextQuestion = () => {
-    if (quizIndex < VERB_PRACTICE_QUESTIONS.length - 1) {
+    if (quizIndex < activeQuestions.length - 1) {
+      playTactileSound('flip');
       setQuizIndex(i => i + 1);
       setSelectedOption(null);
       setQuizStatus('idle');
     } else {
-      // Finished
+      playTactileSound('win');
+      setQuizIndex(activeQuestions.length);
       setQuizStatus('idle');
     }
   };
 
   const restartQuiz = () => {
+    playTactileSound('flip');
+    setShuffleSeed(s => s + 1);
     setQuizIndex(0);
     setSelectedOption(null);
     setQuizStatus('idle');
@@ -242,148 +267,201 @@ export function VerbTrainerModal({ isOpen, onClose, onAddXP, courseLanguage = 'e
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.95, y: 15, rotate: -0.4 }}
+          animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col my-8 max-h-[90vh]"
+          className="bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 rounded-3xl w-full max-w-3xl shadow-[8px_8px_0px_0px_#0f172a] dark:shadow-[8px_8px_0px_0px_#27272a] overflow-hidden flex flex-col my-8 max-h-[90vh]"
         >
           {/* Header */}
-          <div className="p-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white flex items-center justify-between shrink-0">
+          <div className="p-6 bg-yellow-300 dark:bg-zinc-800 border-b-2 border-slate-900 dark:border-zinc-700 text-slate-950 dark:text-white flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-xl shadow-inner">
+              <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-900 flex items-center justify-center font-black text-xl shadow-[3px_3px_0px_0px_#0f172a]">
                 ⚡
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase tracking-wider bg-black/20 px-2.5 py-0.5 rounded-full">
-                  Entrenador Gramatical A1
+                <span className="text-xs font-extrabold text-slate-700 dark:text-zinc-300">
+                  {isSpanishCourse ? 'Spanish Verb Deck' : 'Mazo de Verbos A1'}
                 </span>
-                <h2 className="text-xl md:text-2xl font-black">Dominio de Verbos Clave</h2>
+                <h2 className="text-xl md:text-2xl font-black">
+                  {isSpanishCourse
+                    ? 'Master Core Spanish Verbs'
+                    : 'Dominio de Verbos Clave en Inglés'}
+                </h2>
               </div>
             </div>
 
             <button
-              onClick={onClose}
-              className="p-2 rounded-full hover:bg-white/20 text-white transition-colors"
+              onClick={() => {
+                playTactileSound('pop');
+                onClose();
+              }}
+              className="p-2 rounded-xl bg-white dark:bg-zinc-900 border-2 border-slate-900 text-slate-950 dark:text-white shadow-[2px_2px_0px_0px_#0f172a] hover:bg-rose-200 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
           {/* Nav Tabs */}
-          <div className="flex border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-2 gap-2 shrink-0">
+          <div className="flex border-b-2 border-slate-900 dark:border-zinc-800 bg-[#FAF6EE] dark:bg-zinc-900/50 p-2 gap-2 shrink-0">
             <button
-              onClick={() => setActiveTab('study')}
+              onClick={() => {
+                playTactileSound('pop');
+                setActiveTab('study');
+              }}
               className={`flex-1 py-3 rounded-2xl font-black text-xs md:text-sm flex items-center justify-center gap-2 transition-all ${
                 activeTab === 'study'
-                  ? 'bg-white dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 shadow-md'
-                  : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  ? 'bg-emerald-300 text-slate-950 border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a]'
+                  : 'text-slate-700 dark:text-zinc-300 hover:text-slate-950'
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              <span>1. Tablas y Reglas de Conjugación</span>
+              <span>
+                {isSpanishCourse
+                  ? '1. Conjugation Cards & Rules'
+                  : '1. Cartas y Reglas de Conjugación'}
+              </span>
             </button>
 
             <button
-              onClick={() => setActiveTab('quiz')}
+              onClick={() => {
+                playTactileSound('pop');
+                setActiveTab('quiz');
+              }}
               className={`flex-1 py-3 rounded-2xl font-black text-xs md:text-sm flex items-center justify-center gap-2 transition-all ${
                 activeTab === 'quiz'
-                  ? 'bg-white dark:bg-zinc-800 text-purple-600 dark:text-purple-400 shadow-md'
-                  : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  ? 'bg-yellow-300 text-slate-950 border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a]'
+                  : 'text-slate-700 dark:text-zinc-300 hover:text-slate-950'
               }`}
             >
-              <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-              <span>2. Test Interactivo de Práctica</span>
+              <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
+              <span>
+                {isSpanishCourse ? '2. Interactive Verb Card Quiz' : '2. Reto de Cartas de Verbos'}
+              </span>
             </button>
           </div>
 
           {/* Modal Content */}
-          <div className="p-6 overflow-y-auto flex-1 text-zinc-900 dark:text-zinc-100">
+          <div className="p-6 overflow-y-auto flex-1 text-slate-950 dark:text-zinc-100 bg-[#FAF6EE] dark:bg-zinc-950">
             {activeTab === 'study' ? (
               <div className="space-y-6">
                 {/* Verb Selector Chips */}
                 <div className="flex flex-wrap gap-2">
-                  {A1_VERBS.map(verb => (
+                  {activeVerbs.map(verb => (
                     <button
                       key={verb.id}
-                      onClick={() => setSelectedVerbId(verb.id)}
-                      className={`px-4 py-2 rounded-2xl text-xs md:text-sm font-black transition-all flex items-center gap-1.5 border ${
+                      onClick={() => {
+                        playTactileSound('flip');
+                        setSelectedVerbId(verb.id);
+                      }}
+                      className={`px-4 py-2 rounded-2xl text-xs md:text-sm font-black transition-all flex items-center gap-1.5 border-2 ${
                         selectedVerbId === verb.id
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-500/25 scale-105'
-                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:border-indigo-300'
+                          ? 'bg-indigo-600 text-white border-slate-950 shadow-[3px_3px_0px_0px_#0f172a]'
+                          : 'bg-white dark:bg-zinc-800 text-slate-900 dark:text-zinc-200 border-slate-900 dark:border-zinc-700 hover:bg-yellow-100'
                       }`}
                     >
                       <span>{verb.infinitive}</span>
-                      <span className="opacity-75 text-[10px]">({verb.translation})</span>
+                      <span className="opacity-80 text-[10px]">({verb.translation})</span>
                     </button>
                   ))}
                 </div>
 
                 {/* Selected Verb Card */}
-                <div className="bg-indigo-50/60 dark:bg-zinc-800/60 border border-indigo-100 dark:border-zinc-700/60 rounded-3xl p-6">
+                <div className="bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 rounded-3xl p-6 shadow-[4px_4px_0px_0px_#0f172a]">
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="text-2xl font-black text-indigo-700 dark:text-indigo-300">
                           {currentVerb.infinitive}
                         </h3>
-                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-200 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200 uppercase">
+                        <span className="text-xs font-black px-2.5 py-0.5 rounded-lg bg-yellow-300 text-slate-950 border border-slate-900 uppercase">
                           {currentVerb.type}
                         </span>
                       </div>
-                      <p className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">
-                        Significado: <strong className="text-zinc-900 dark:text-zinc-100">{currentVerb.translation}</strong>
+                      <p className="text-sm font-bold text-slate-600 dark:text-zinc-400">
+                        {isSpanishCourse ? 'Meaning: ' : 'Significado: '}
+                        <strong className="text-slate-950 dark:text-zinc-100">
+                          {currentVerb.translation}
+                        </strong>
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => speakText(`${currentVerb.infinitive}. ${currentVerb.translation}`)}
-                        className="bg-indigo-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-md hover:bg-indigo-700 transition-colors"
+                        onClick={() => speakText(currentVerb.infinitive)}
+                        className="bg-indigo-600 text-white px-3.5 py-2 rounded-xl text-xs font-black border-2 border-slate-900 flex items-center gap-1.5 shadow-[2px_2px_0px_0px_#0f172a] hover:bg-indigo-700 transition-colors"
                       >
-                        <Volume2 className="w-4 h-4" /> Escuchar
+                        <Volume2 className="w-4 h-4" />{' '}
+                        {isSpanishCourse ? 'Listen' : 'Escuchar'}
                       </button>
                     </div>
                   </div>
 
                   {/* Golden Tip */}
-                  <div className="bg-amber-100/70 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 rounded-2xl p-3.5 text-xs font-medium text-amber-900 dark:text-amber-200 mb-6 flex items-start gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                    <span><strong>Regla A1:</strong> {currentVerb.tip}</span>
+                  <div className="bg-amber-200/80 dark:bg-amber-950/50 border-2 border-slate-900 dark:border-amber-800 rounded-2xl p-3.5 text-xs font-bold text-slate-950 dark:text-amber-200 mb-6 flex items-start gap-2 shadow-[2px_2px_0px_0px_#0f172a]">
+                    <Sparkles className="w-4 h-4 text-slate-950 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <span>
+                      <strong>{isSpanishCourse ? 'Grammar Rule:' : 'Regla A1:'}</strong>{' '}
+                      {currentVerb.tip}
+                    </span>
                   </div>
 
                   {/* Conjugation Table */}
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs md:text-sm">
                       <thead>
-                        <tr className="border-b border-indigo-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 font-extrabold uppercase">
-                          <th className="pb-2">Sujeto</th>
-                          <th className="pb-2">Presente</th>
-                          <th className="pb-2">Negativa</th>
-                          <th className="pb-2">Ejemplo en Uso</th>
+                        <tr className="border-b-2 border-slate-900/20 dark:border-zinc-700 text-slate-600 dark:text-zinc-400 font-black uppercase">
+                          <th className="pb-2">{isSpanishCourse ? 'Subject' : 'Sujeto'}</th>
+                          <th className="pb-2">{isSpanishCourse ? 'Present' : 'Presente'}</th>
+                          <th className="pb-2">{isSpanishCourse ? 'Negative' : 'Negativa'}</th>
+                          <th className="pb-2">
+                            {isSpanishCourse ? 'Example in Context' : 'Ejemplo en Uso'}
+                          </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-indigo-100 dark:divide-zinc-800">
-                        {currentVerb.forms.map((form, idx) => (
-                          <tr key={idx} className="hover:bg-indigo-100/40 dark:hover:bg-zinc-800/40 transition-colors">
-                            <td className="py-3 font-black text-indigo-600 dark:text-indigo-400">{form.pronoun}</td>
-                            <td className="py-3 font-bold text-zinc-900 dark:text-zinc-100">{form.present}</td>
-                            <td className="py-3 font-semibold text-rose-600 dark:text-rose-400">{form.negative}</td>
-                            <td className="py-3">
-                              <div className="flex items-center justify-between gap-2">
-                                <div>
-                                  <p className="font-extrabold text-zinc-900 dark:text-zinc-100">{form.exampleEn}</p>
-                                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">{form.exampleEs}</p>
+                      <tbody className="divide-y divide-slate-200 dark:divide-zinc-800">
+                        {currentVerb.forms.map((form, idx) => {
+                          const primaryTargetSentence = isSpanishCourse
+                            ? form.exampleEs
+                            : form.exampleEn;
+                          const translationSentence = isSpanishCourse
+                            ? form.exampleEn
+                            : form.exampleEs;
+
+                          return (
+                            <tr
+                              key={idx}
+                              className="hover:bg-amber-50 dark:hover:bg-zinc-800/40 transition-colors"
+                            >
+                              <td className="py-3 font-black text-indigo-700 dark:text-indigo-400">
+                                {form.pronoun}
+                              </td>
+                              <td className="py-3 font-black text-slate-950 dark:text-zinc-100">
+                                {form.present}
+                              </td>
+                              <td className="py-3 font-bold text-rose-600 dark:text-rose-400">
+                                {form.negative}
+                              </td>
+                              <td className="py-3">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div>
+                                    <p className="font-black text-slate-950 dark:text-zinc-100">
+                                      {primaryTargetSentence}
+                                    </p>
+                                    <p className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
+                                      {translationSentence}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => speakText(primaryTargetSentence)}
+                                    className="p-2 rounded-xl bg-amber-100 dark:bg-zinc-800 border border-slate-900/30 hover:bg-indigo-600 hover:text-white text-slate-900 dark:text-zinc-200 transition-colors"
+                                  >
+                                    <Volume2 className="w-3.5 h-3.5" />
+                                  </button>
                                 </div>
-                                <button
-                                  onClick={() => speakText(form.exampleEn)}
-                                  className="p-1.5 rounded-lg hover:bg-indigo-200/50 dark:hover:bg-zinc-700 text-indigo-600 dark:text-indigo-300"
-                                >
-                                  <Volume2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -392,17 +470,27 @@ export function VerbTrainerModal({ isOpen, onClose, onAddXP, courseLanguage = 'e
             ) : (
               /* Practice Quiz Tab */
               <div className="space-y-6">
-                {quizIndex < VERB_PRACTICE_QUESTIONS.length ? (
-                  <div className="bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/60 rounded-3xl p-6 md:p-8">
+                {quizIndex < activeQuestions.length ? (
+                  <motion.div
+                    key={quizIndex}
+                    initial={{ opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+                    className="bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 rounded-3xl p-6 md:p-8 shadow-[6px_6px_0px_0px_#0f172a]"
+                  >
                     {/* Header Progress */}
-                    <div className="flex items-center justify-between text-xs font-black text-zinc-500 mb-4">
-                      <span>Pregunta {quizIndex + 1} de {VERB_PRACTICE_QUESTIONS.length}</span>
-                      <span className="bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full">
-                        Score: {score} / {VERB_PRACTICE_QUESTIONS.length}
+                    <div className="flex items-center justify-between text-xs font-black text-slate-700 dark:text-zinc-300 mb-4">
+                      <span className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-zinc-800 border border-slate-900 text-slate-950 dark:text-white tabular-nums">
+                        {isSpanishCourse
+                          ? `Card ${quizIndex + 1} / ${activeQuestions.length}`
+                          : `Carta ${quizIndex + 1} / ${activeQuestions.length}`}
+                      </span>
+                      <span className="bg-yellow-300 text-slate-950 border-2 border-slate-900 px-3 py-1 rounded-xl shadow-[2px_2px_0px_0px_#0f172a] tabular-nums">
+                        Score: {score} / {activeQuestions.length}
                       </span>
                     </div>
 
-                    <h3 className="text-lg md:text-xl font-black mb-6 text-zinc-900 dark:text-zinc-100">
+                    <h3 className="text-lg md:text-2xl font-black mb-6 text-slate-950 dark:text-zinc-100">
                       {currentQuestion.prompt}
                     </h3>
 
@@ -411,28 +499,41 @@ export function VerbTrainerModal({ isOpen, onClose, onAddXP, courseLanguage = 'e
                       {currentQuestion.options.map((option, idx) => {
                         const isSelected = selectedOption === option;
                         const isCorrect = option === currentQuestion.correct;
-                        let btnStyle = 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 hover:border-purple-400';
+                        const optionLetter = String.fromCharCode(65 + idx);
+                        let btnStyle =
+                          'bg-[#FAF6EE] dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-700 text-slate-950 dark:text-zinc-100 hover:bg-yellow-100 shadow-[3px_3px_0px_0px_#0f172a]';
 
                         if (quizStatus !== 'idle') {
                           if (isCorrect) {
-                            btnStyle = 'bg-emerald-500 text-white border-emerald-500 font-black shadow-lg shadow-emerald-500/20';
+                            btnStyle =
+                              'bg-emerald-300 text-slate-950 border-2 border-slate-900 font-black shadow-[3px_3px_0px_0px_#0f172a]';
                           } else if (isSelected && !isCorrect) {
-                            btnStyle = 'bg-rose-500 text-white border-rose-500 font-black';
+                            btnStyle = 'bg-rose-300 text-slate-950 border-2 border-slate-900 font-black';
+                          } else {
+                            btnStyle = 'bg-white/50 dark:bg-zinc-900/40 border border-slate-300 opacity-45';
                           }
                         }
 
                         return (
-                          <button
+                          <motion.button
                             key={idx}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: quizStatus === 'idle' ? idx * 0.04 : 0 }}
                             onClick={() => handleSelectAnswer(option)}
                             disabled={quizStatus !== 'idle'}
-                            className={`p-4 rounded-2xl border-2 text-sm font-extrabold transition-all text-left flex items-center justify-between ${btnStyle}`}
+                            className={`p-4 rounded-2xl text-sm font-extrabold transition-all text-left flex items-center justify-between gap-2 active:translate-x-[2px] active:translate-y-[2px] ${btnStyle}`}
                           >
-                            <span>{option}</span>
+                            <span className="flex items-center gap-2.5">
+                              <span className="w-7 h-7 rounded-lg bg-white dark:bg-zinc-900 border-2 border-slate-900 text-xs font-black text-slate-950 dark:text-white flex items-center justify-center shrink-0">
+                                {optionLetter}
+                              </span>
+                              <span>{option}</span>
+                            </span>
                             {quizStatus !== 'idle' && isCorrect && (
-                              <CheckCircle2 className="w-5 h-5 text-white shrink-0" />
+                              <CheckCircle2 className="w-5 h-5 shrink-0" />
                             )}
-                          </button>
+                          </motion.button>
                         );
                       })}
                     </div>
@@ -442,23 +543,29 @@ export function VerbTrainerModal({ isOpen, onClose, onAddXP, courseLanguage = 'e
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`p-4 rounded-2xl mb-6 text-sm font-medium border ${
+                        className={`p-4 rounded-2xl mb-6 text-sm font-bold border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a] ${
                           quizStatus === 'correct'
-                            ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
-                            : 'bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200'
+                            ? 'bg-emerald-200 text-slate-950'
+                            : 'bg-rose-200 text-slate-950'
                         }`}
                       >
                         <div className="flex items-start gap-2">
                           {quizStatus === 'correct' ? (
-                            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
                           ) : (
-                            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                           )}
                           <div>
-                            <p className="font-extrabold mb-0.5">
-                              {quizStatus === 'correct' ? '¡Excelente! +20 XP' : '¡Casi! Respuesta correcta: ' + currentQuestion.correct}
+                            <p className="font-black mb-0.5">
+                              {quizStatus === 'correct'
+                                ? isSpanishCourse
+                                  ? '✓ STAMPED! +20 XP'
+                                  : '✓ ¡SELLADO! +20 XP'
+                                : isSpanishCourse
+                                  ? `Correct answer: ${currentQuestion.correct}`
+                                  : `Respuesta correcta: ${currentQuestion.correct}`}
                             </p>
-                            <p className="text-xs opacity-90">{currentQuestion.explanation}</p>
+                            <p className="text-xs">{currentQuestion.explanation}</p>
                           </div>
                         </div>
                       </motion.div>
@@ -466,32 +573,56 @@ export function VerbTrainerModal({ isOpen, onClose, onAddXP, courseLanguage = 'e
 
                     {/* Next Button */}
                     {quizStatus !== 'idle' && (
-                      <button
+                      <motion.button
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.98, x: 2, y: 2 }}
                         onClick={handleNextQuestion}
-                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white py-4 rounded-2xl font-black text-sm shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 transition-all"
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-black text-sm border-2 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center gap-2 transition-all"
                       >
-                        <span>Siguiente Pregunta</span>
+                        <span>
+                          {isSpanishCourse ? 'Deal Next Verb Card' : 'Siguiente Carta de Verbo'}
+                        </span>
                         <Play className="w-4 h-4 fill-white" />
-                      </button>
+                      </motion.button>
                     )}
-                  </div>
+                  </motion.div>
                 ) : (
                   /* Completion Screen */
-                  <div className="text-center py-12 bg-zinc-50 dark:bg-zinc-800/50 rounded-3xl p-8 border border-zinc-200 dark:border-zinc-700">
-                    <div className="w-20 h-20 rounded-3xl bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg">
+                  <div className="text-center py-12 bg-white dark:bg-zinc-900 rounded-3xl p-8 border-2 border-slate-900 dark:border-zinc-700 shadow-[6px_6px_0px_0px_#0f172a]">
+                    <div className="w-20 h-20 rounded-2xl bg-emerald-300 border-2 border-slate-900 text-slate-950 flex items-center justify-center mx-auto mb-4 text-3xl shadow-[4px_4px_0px_0px_#0f172a]">
                       🏆
                     </div>
-                    <h3 className="text-2xl font-black mb-2">¡Práctica de Verbos Completada!</h3>
-                    <p className="text-sm font-medium text-zinc-500 mb-6 max-w-md mx-auto">
-                      Obtuviste <strong className="text-zinc-900 dark:text-zinc-100">{score} de {VERB_PRACTICE_QUESTIONS.length} aciertos</strong>. Los verbos son la columna vertebral de tus oraciones A1.
+                    <h3 className="text-2xl font-black mb-2">
+                      {isSpanishCourse
+                        ? 'Verb Deck Completed!'
+                        : '¡Mazo de Verbos Completado!'}
+                    </h3>
+                    <p className="text-sm font-bold text-slate-600 dark:text-zinc-400 mb-6 max-w-md mx-auto">
+                      {isSpanishCourse ? (
+                        <>
+                          You scored{' '}
+                          <strong className="text-slate-950 dark:text-zinc-100">
+                            {score} out of {activeQuestions.length}
+                          </strong>
+                          .
+                        </>
+                      ) : (
+                        <>
+                          Obtuviste{' '}
+                          <strong className="text-slate-950 dark:text-zinc-100">
+                            {score} de {activeQuestions.length} aciertos
+                          </strong>
+                          .
+                        </>
+                      )}
                     </p>
 
                     <button
                       onClick={restartQuiz}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-6 py-3.5 rounded-2xl text-sm shadow-lg transition-transform active:scale-95 inline-flex items-center gap-2"
+                      className="bg-yellow-300 hover:bg-yellow-400 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-sm border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0f172a] transition-transform active:scale-95 inline-flex items-center gap-2"
                     >
                       <RefreshCw className="w-4 h-4" />
-                      <span>Volver a Practicar</span>
+                      <span>{isSpanishCourse ? 'Shuffle & Practice Again' : 'Barajar y Volver a Practicar'}</span>
                     </button>
                   </div>
                 )}

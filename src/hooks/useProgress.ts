@@ -1,10 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { UserProgress, Badge, UserProfile, CEFRLevel } from '../types';
+import { UserProgress, Badge, UserProfile, CEFRLevel, ExamAttemptRecord } from '../types';
 import { 
   fetchStudentProgressFromDatabase, 
   syncStudentProgressToDatabase, 
-  getLocalStudents, 
-  getSupabaseClient 
+  getLocalStudents
 } from '../lib/supabase';
 
 const DEFAULT_PROGRESS_KEY = 'lingostep_progress_v3';
@@ -29,12 +28,14 @@ const defaultProgress: UserProgress = {
   examScore: undefined,
   examPassed: false,
   examPassedDate: undefined,
+  levelScores: {},
   xp: 0,
   streakDays: 1,
   lastStudyDate: new Date().toISOString().split('T')[0],
   unlockedBadges: [],
   wordSRSStatus: {},
   lessonDates: {},
+  examHistory: [],
   totalExercisesDone: 0,
   timeSpentMinutes: 0
 };
@@ -56,24 +57,45 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
 
   const storageKey = currentUser ? `lingostep_progress_${currentUser.id}` : DEFAULT_PROGRESS_KEY;
 
-  // Merge remote and local progress smartly
+  // Merge local and Firebase Firestore progress without losing any multi-level achievements
   const mergeProgress = (local: UserProgress, remote: UserProgress): UserProgress => {
     const unionLessons = Array.from(new Set([...(local.completedLessons || []), ...(remote.completedLessons || [])]));
     const unionWords = Array.from(new Set([...(local.masteredWords || []), ...(remote.masteredWords || [])]));
     const unionBadges = Array.from(new Set([...(local.unlockedBadges || []), ...(remote.unlockedBadges || [])]));
-    
+
+    const mergedLevelScores: Partial<Record<CEFRLevel, number>> = {
+      ...(local.levelScores || {}),
+      ...(remote.levelScores || {})
+    };
+    (['A1', 'A2', 'B1', 'B2'] as CEFRLevel[]).forEach(lvl => {
+      const lScore = local.levelScores?.[lvl] || 0;
+      const rScore = remote.levelScores?.[lvl] || 0;
+      const maxLvlScore = Math.max(lScore, rScore);
+      if (maxLvlScore > 0) {
+        mergedLevelScores[lvl] = maxLvlScore;
+      }
+    });
+
+    // Combine exam history deduplicated by date
+    const historyMap = new Map<string, ExamAttemptRecord>();
+    (local.examHistory || []).forEach(item => historyMap.set(item.date, item));
+    (remote.examHistory || []).forEach(item => historyMap.set(item.date, item));
+    const mergedExamHistory = Array.from(historyMap.values()).slice(-30);
+
     return {
       completedLessons: unionLessons,
       masteredWords: unionWords,
       examScore: Math.max(local.examScore || 0, remote.examScore || 0) || undefined,
-      examPassed: Boolean(local.examPassed || remote.examPassed),
+      examPassed: Boolean(local.examPassed || remote.examPassed || unionBadges.includes('b_cert_a1')),
       examPassedDate: remote.examPassedDate || local.examPassedDate,
+      levelScores: mergedLevelScores,
       xp: Math.max(local.xp || 0, remote.xp || 0),
       streakDays: Math.max(local.streakDays || 1, remote.streakDays || 1),
       lastStudyDate: remote.lastStudyDate || local.lastStudyDate || new Date().toISOString().split('T')[0],
       unlockedBadges: unionBadges,
       wordSRSStatus: { ...(local.wordSRSStatus || {}), ...(remote.wordSRSStatus || {}) },
       lessonDates: { ...(local.lessonDates || {}), ...(remote.lessonDates || {}) },
+      examHistory: mergedExamHistory,
       totalExercisesDone: Math.max(local.totalExercisesDone || 0, remote.totalExercisesDone || 0),
       timeSpentMinutes: Math.max(local.timeSpentMinutes || 0, remote.timeSpentMinutes || 0),
     };
@@ -87,25 +109,29 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
       setIsLoaded(false);
       let initialProg: UserProgress = { ...defaultProgress };
 
-      // 1. Check user-specific localStorage first
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          initialProg = { ...defaultProgress, ...parsed };
-        } catch (e) {
-          console.warn('Failed to parse local progress', e);
+      // 1. Check user-specific localStorage, global fallback, and local student registry, and merge them all
+      try {
+        const storedUser = localStorage.getItem(storageKey);
+        if (storedUser) {
+          initialProg = mergeProgress(initialProg, { ...defaultProgress, ...JSON.parse(storedUser) });
         }
-      } else if (currentUser) {
-        // Check local student registry
-        const localStudents = getLocalStudents();
-        const found = localStudents.find(s => s.profile.id === currentUser.id || s.profile.email.toLowerCase() === currentUser.email.toLowerCase());
-        if (found && found.progress) {
-          initialProg = { ...defaultProgress, ...found.progress };
-        }
+      } catch (e) {
+        console.warn('Failed to parse user local progress', e);
       }
 
-      // Calculate streak
+      if (currentUser) {
+        try {
+          const localStudents = getLocalStudents();
+          const found = localStudents.find(
+            s => s.profile.id === currentUser.id || s.profile.email.toLowerCase() === currentUser.email.toLowerCase()
+          );
+          if (found && found.progress) {
+            initialProg = mergeProgress(initialProg, { ...defaultProgress, ...found.progress });
+          }
+        } catch (e) {}
+      }
+
+      // Calculate daily streak
       const todayStr = new Date().toISOString().split('T')[0];
       let streak = initialProg.streakDays || 1;
       let lastDate = initialProg.lastStudyDate;
@@ -134,10 +160,13 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
 
       if (!isCancelled) {
         setProgress(initialProg);
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(initialProg));
+        } catch {}
         setIsLoaded(true);
       }
 
-      // 2. Fetch latest data from Supabase database if student is logged in
+      // 2. Fetch latest data from Firebase Firestore if user is logged in
       if (currentUser?.id) {
         try {
           setSyncStatus('syncing');
@@ -146,10 +175,13 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
             const merged = mergeProgress(initialProg, remoteProgress);
             setProgress(merged);
             localStorage.setItem(storageKey, JSON.stringify(merged));
+            localStorage.setItem(DEFAULT_PROGRESS_KEY, JSON.stringify(merged));
+            await syncStudentProgressToDatabase(currentUser, merged, courseLanguage);
             setSyncStatus('synced');
             setLastSyncedAt(new Date());
           } else if (!isCancelled) {
-            // First time in Supabase - upload initial progress
+            localStorage.setItem(storageKey, JSON.stringify(initialProg));
+            localStorage.setItem(DEFAULT_PROGRESS_KEY, JSON.stringify(initialProg));
             await syncStudentProgressToDatabase(currentUser, initialProg, courseLanguage);
             setSyncStatus('synced');
             setLastSyncedAt(new Date());
@@ -192,6 +224,11 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
     return Array.from(newlyUnlocked);
   };
 
+  const progressRef = useRef<UserProgress>(progress);
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
   const saveProgress = useCallback((newProgress: UserProgress) => {
     const todayStr = new Date().toISOString().split('T')[0];
     const withUpdatedDate = {
@@ -201,12 +238,19 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
     const badges = evaluateBadges(withUpdatedDate);
     const finalProg: UserProgress = { ...withUpdatedDate, unlockedBadges: badges };
     
-    // 1. Instant local state update
+    // 1. Instant local state & redundant localStorage update
     setProgress(finalProg);
-    const userKey = activeUserRef.current ? `lingostep_progress_${activeUserRef.current.id}` : DEFAULT_PROGRESS_KEY;
-    localStorage.setItem(userKey, JSON.stringify(finalProg));
+    progressRef.current = finalProg;
 
-    // 2. Direct background sync to Supabase database
+    try {
+      const userKey = activeUserRef.current ? `lingostep_progress_${activeUserRef.current.id}` : DEFAULT_PROGRESS_KEY;
+      localStorage.setItem(userKey, JSON.stringify(finalProg));
+      localStorage.setItem(DEFAULT_PROGRESS_KEY, JSON.stringify(finalProg));
+    } catch (e) {
+      console.warn('Error writing to localStorage:', e);
+    }
+
+    // 2. Direct background sync to local student registry + Firebase Firestore
     const user = activeUserRef.current;
     const lang = courseLangRef.current;
     if (user && user.id) {
@@ -226,7 +270,33 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
           setIsSyncing(false);
           setSyncStatus('local_only');
         });
+    } else {
+      setLastSyncedAt(new Date());
     }
+  }, []);
+
+  // Flush progress on tab hide or window unload so progress is never lost
+  useEffect(() => {
+    const handleVisibilityOrUnload = () => {
+      const curr = progressRef.current;
+      const user = activeUserRef.current;
+      const lang = courseLangRef.current;
+      try {
+        const userKey = user ? `lingostep_progress_${user.id}` : DEFAULT_PROGRESS_KEY;
+        localStorage.setItem(userKey, JSON.stringify(curr));
+        localStorage.setItem(DEFAULT_PROGRESS_KEY, JSON.stringify(curr));
+      } catch {}
+      if (user && user.id && document.visibilityState === 'hidden') {
+        syncStudentProgressToDatabase(user, curr, lang).catch(() => {});
+      }
+    };
+
+    window.addEventListener('beforeunload', handleVisibilityOrUnload);
+    document.addEventListener('visibilitychange', handleVisibilityOrUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleVisibilityOrUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityOrUnload);
+    };
   }, []);
 
   const addXP = useCallback((amount: number) => {
@@ -256,6 +326,7 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
         lessonDates,
         xp: (prev.xp || 0) + bonusXP,
         totalExercisesDone: (prev.totalExercisesDone || 0) + 1,
+        timeSpentMinutes: (prev.timeSpentMinutes || 0) + (isAlreadyDone ? 5 : 15),
       };
       saveProgress(updated);
       return updated;
@@ -273,6 +344,7 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
         masteredWords: mastered,
         xp: (prev.xp || 0) + bonusXP,
         totalExercisesDone: (prev.totalExercisesDone || 0) + 1,
+        timeSpentMinutes: (prev.timeSpentMinutes || 0) + 2,
       };
       saveProgress(updated);
       return updated;
@@ -295,6 +367,7 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
         wordSRSStatus: updatedSRS,
         xp: (prev.xp || 0) + 10,
         totalExercisesDone: (prev.totalExercisesDone || 0) + 1,
+        timeSpentMinutes: (prev.timeSpentMinutes || 0) + 2,
       };
       saveProgress(updated);
       return updated;
@@ -318,6 +391,15 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
 
       const bonusXP = passed ? 200 : 30;
 
+      const attemptRecord: ExamAttemptRecord = {
+        date: new Date().toISOString(),
+        score: scorePercent,
+        passed,
+        totalQuestions: 12,
+        correctCount: Math.round((scorePercent / 100) * 12),
+        level
+      };
+
       const updated: UserProgress = {
         ...prev,
         examScore: highestScore,
@@ -327,8 +409,11 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
           ...(prev.levelScores || {}),
           [level]: Math.max(scorePercent, prev.levelScores?.[level] || 0)
         },
+        examHistory: [...(prev.examHistory || []).slice(-29), attemptRecord],
         unlockedBadges: updatedBadges,
         xp: (prev.xp || 0) + bonusXP,
+        totalExercisesDone: (prev.totalExercisesDone || 0) + 12,
+        timeSpentMinutes: (prev.timeSpentMinutes || 0) + 20,
       };
       saveProgress(updated);
       return updated;
@@ -373,4 +458,3 @@ export function useProgress(currentUser?: UserProfile | null, courseLanguage: 'e
     forceSyncToCloud,
   };
 }
-

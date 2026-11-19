@@ -1,33 +1,32 @@
 import React, { useState } from 'react';
-import { UserProfile, UserRole } from '../types';
-import { 
-  getSupabaseClient, 
-  isSupabaseConfigured, 
-  getLocalStudents, 
+import { UserProfile } from '../types';
+import {
+  getLocalStudents,
   setStoredCurrentUser,
   fetchStudentProgressFromDatabase,
-  fetchStudentProfileFromDatabase
+  fetchStudentProfileFromDatabase,
+  syncStudentProgressToDatabase,
+  signInWithGoogleFirebase,
+  requestTeacherRegistration
 } from '../lib/supabase';
-import { verifyTeacherPin } from '../lib/security';
+import {
+  MASTER_TEACHER_EMAIL,
+  isMasterTeacherEmail,
+  verifyTeacherCredentials
+} from '../lib/security';
 import { motion } from 'motion/react';
-import { 
-  GraduationCap, 
-  ShieldCheck, 
-  LogIn, 
-  UserPlus, 
-  Sparkles, 
-  CheckCircle2, 
-  AlertCircle, 
-  Eye, 
-  EyeOff, 
-  BookOpen, 
-  Trophy, 
-  KeyRound, 
-  RefreshCw, 
+import {
+  GraduationCap,
+  ShieldCheck,
+  LogIn,
+  UserPlus,
+  CheckCircle2,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  RefreshCw,
   ArrowRight,
-  Languages,
-  Award,
-  Layers
+  Lock
 } from 'lucide-react';
 
 interface AuthGateViewProps {
@@ -36,123 +35,109 @@ interface AuthGateViewProps {
 
 export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
   const [activeTab, setActiveTab] = useState<'signup' | 'signin' | 'teacher'>('signup');
+  const [teacherSubMode, setTeacherSubMode] = useState<'login' | 'request'>('login');
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [studentId, setStudentId] = useState('');
-  
-  // Default to 'es' (Learn Spanish from English, with English UI by default)
-  const [targetLanguage, setTargetLanguage] = useState<'en' | 'es'>('es');
+  const [targetLanguage, setTargetLanguage] = useState<'en' | 'es'>(() => {
+    return (localStorage.getItem('lingostep_active_course') as 'en' | 'es') || 'en';
+  });
+
+  // Teacher fields
+  const [teacherEmail, setTeacherEmail] = useState(MASTER_TEACHER_EMAIL);
   const [teacherPin, setTeacherPin] = useState('');
+  const [reqTeacherName, setReqTeacherName] = useState('');
+  const [reqTeacherEmail, setReqTeacherEmail] = useState('');
+  const [reqTeacherPin, setReqTeacherPin] = useState('');
+
   const [showPassword, setShowPassword] = useState(false);
   const [showTeacherPin, setShowTeacherPin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Translations dictionary for dynamic language flip
-  const isSpanishTarget = targetLanguage === 'es'; // Learning Spanish -> English UI
+  const isSpanishCourse = targetLanguage === 'es'; // Native English speaker learning Spanish
 
-  const t = {
-    portalBadge: isSpanishTarget ? 'Language Learning Portal' : 'Portal Educativo',
-    portalSub: isSpanishTarget ? 'Comprehensive Spanish & English A1 Platform' : 'Plataforma Integral de Inglés y Español A1',
-    supabaseConnected: isSpanishTarget ? 'Supabase Connected' : 'Supabase Conectado',
-    supabaseChecking: isSpanishTarget ? 'Checking Supabase...' : 'Verificando Supabase...',
-    supabaseLocal: isSpanishTarget ? 'Supabase Local Mode' : 'Supabase en Modo Local',
-    
-    // Switcher
-    activeMode: isSpanishTarget ? 'Target: Spanish A1 (English UI)' : 'Objetivo: Inglés A1 (Interfaz en Español)',
-    btnLearnSpanish: isSpanishTarget ? '🇪🇸 Learn Spanish' : '🇪🇸 Aprender Español',
-    btnLearnEnglish: isSpanishTarget ? '🇬🇧 Learn English' : '🇬🇧 Aprender Inglés',
-
-    // Hero left
-    badgeObligatory: isSpanishTarget ? 'Student Account Required to Save Progress' : 'Acceso Obligatorio con Cuenta para Guardar tu Progreso',
-    heroTitlePrefix: isSpanishTarget ? 'Learn to speak Spanish with confidence from ' : 'Aprende a hablar inglés con confianza desde ',
-    heroTitleHighlight: isSpanishTarget ? 'day one' : 'el primer día',
-    heroTitleSuffix: '.',
-    heroDesc: isSpanishTarget 
-      ? 'Sign up or log in with your student account to access all 30 A1 lessons, interactive exercises, flashcards, AI Tutor, and the official certification exam.'
-      : 'Regístrate o inicia sesión con tu cuenta de estudiante para acceder a todas las lecciones, ejercicios interactivos, tarjetas de memoria y el examen final de certificación A1.',
-
-    // Features
-    feat1Title: isSpanishTarget ? '30 A1 Lessons' : '30 Lecciones A1',
-    feat1Sub: isSpanishTarget ? 'Structured Spanish & English' : 'Inglés y Español estructurado',
-    feat2Title: isSpanishTarget ? 'Exam & Certificate' : 'Examen y Certificado',
-    feat2Sub: isSpanishTarget ? 'Official verified report card' : 'Validación con acta de notas',
-    feat3Title: isSpanishTarget ? 'Teacher Dashboard' : 'Panel de Profesor',
-    feat3Sub: isSpanishTarget ? 'Real-time supervision & grading' : 'Supervisión en tiempo real',
-    feat4Title: isSpanishTarget ? 'Multiplatform' : 'Multiplataforma',
-    feat4Sub: isSpanishTarget ? 'Cloud sync & offline ready' : 'Sincronización y progreso continuo',
-
-    // Card Tabs
-    tabSignUp: isSpanishTarget ? 'Create Account' : 'Crear Cuenta',
-    tabSignIn: isSpanishTarget ? 'Sign In' : 'Iniciar Sesión',
-    tabTeacher: isSpanishTarget ? 'Teacher Portal' : 'Docente',
-
-    // Form fields
-    labelFullName: isSpanishTarget ? 'Student Full Name' : 'Nombre Completo del Estudiante',
-    placeholderFullName: isSpanishTarget ? 'e.g. John Alexander Smith' : 'Ej. María Fernanda Morales',
-    labelTargetLang: isSpanishTarget ? 'Which course do you want to start?' : '¿Qué idioma quieres aprender?',
-    cardOptSpanishTitle: isSpanishTarget ? 'Learn Spanish' : 'Aprender Español',
-    cardOptSpanishSub: isSpanishTarget ? 'Spanish A1 for English Speakers' : 'Español A1 (para angloparlantes)',
-    cardOptEnglishTitle: isSpanishTarget ? 'Learn English' : 'Aprender Inglés',
-    cardOptEnglishSub: isSpanishTarget ? 'English A1 for Spanish Speakers' : 'Inglés A1 (para hispanohablantes)',
-    labelEmail: isSpanishTarget ? 'Username or Email' : 'Usuario o Correo',
-    placeholderEmail: isSpanishTarget ? 'e.g. alex24 or student@email.com' : 'Ej. maria24 o maria@estudiante.edu',
-    labelStudentId: isSpanishTarget ? 'Student ID / Enrollment (Optional)' : 'Matrícula / ID (Opcional)',
-    placeholderStudentId: isSpanishTarget ? 'e.g. STD-2026-01' : 'Ej. EST-2026-99',
-    labelPassword: isSpanishTarget ? 'Password' : 'Contraseña',
-    placeholderPassword: isSpanishTarget ? 'At least 4 characters' : 'Mínimo 4 caracteres',
-    placeholderPasswordSignIn: isSpanishTarget ? 'Enter your password' : 'Introduce tu contraseña',
-    btnCreateAccount: isSpanishTarget ? 'Create Account & Start Learning' : 'Crear Cuenta y Comenzar',
-    btnSignIn: isSpanishTarget ? 'Log In to Course' : 'Ingresar al Curso',
-
-    // Teacher Tab
-    teacherBoxTitle: isSpanishTarget ? 'Teacher Control Panel Access' : 'Acceso al Panel de Control del Docente',
-    teacherBoxDesc: isSpanishTarget 
-      ? 'Enter your teacher security PIN to review student records, academic progress, and official grades.'
-      : 'Ingresa con la clave de seguridad del docente para revisar el registro académico y calificaciones de los estudiantes.',
-    labelTeacherPin: isSpanishTarget ? 'Teacher Security PIN' : 'Clave de Seguridad del Docente',
-    placeholderTeacherPin: isSpanishTarget ? 'Enter teacher security PIN' : 'Introduce la clave del docente',
-    btnValidateTeacher: isSpanishTarget ? 'Validate Teacher Access' : 'Validar Acceso de Docente',
-
-    // Footer
-    footerSystem: isSpanishTarget ? '© 2026 CesarTeach. Accredited Language Learning System.' : '© 2026 CesarTeach. Sistema de Aprendizaje Acreditado.',
-    footerCloud: isSpanishTarget ? 'Secure academic records and certified learning.' : 'Registro académico seguro y aprendizaje certificado.',
-
-    // Errors
-    errFillAll: isSpanishTarget ? 'Please fill in all required fields (Name, Username, and Password).' : 'Por favor completa todos los campos requeridos (Nombre, Usuario y Contraseña).',
-    errPasswordLength: isSpanishTarget ? 'Password must be at least 4 characters.' : 'La contraseña debe tener al menos 4 caracteres.',
-    errEmailPass: isSpanishTarget ? 'Enter your username or email and password.' : 'Introduce tu usuario o correo y tu contraseña.',
-    errTeacherPin: isSpanishTarget ? 'Incorrect teacher PIN. Access denied.' : 'PIN de profesor incorrecto. Acceso denegado.',
-    successCreated: isSpanishTarget ? 'Account created successfully! Entering virtual classroom...' : '¡Cuenta creada con éxito! Ingresando a tu aula virtual...',
-    successWelcome: isSpanishTarget ? 'Welcome back to CesarTeach!' : '¡Bienvenido de nuevo a CesarTeach!',
-    successTeacher: isSpanishTarget ? 'Teacher access authorized.' : 'Acceso de Docente autorizado.'
+  // Google Sign-In (Open for students; protected for teachers)
+  const handleGoogleSignIn = async (attemptingTeacherLogin: boolean = false) => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setIsLoading(true);
+    try {
+      const { profile, courseLanguage } = await signInWithGoogleFirebase(
+        targetLanguage,
+        attemptingTeacherLogin
+      );
+      setSuccessMsg(
+        profile.role === 'teacher'
+          ? `¡Bienvenido Profesor(a) ${profile.fullName}!`
+          : isSpanishCourse
+            ? `Welcome to your Spanish learning path, ${profile.fullName}!`
+            : `¡Bienvenido(a) a tu ruta de estudio, ${profile.fullName}!`
+      );
+      setTimeout(() => {
+        onLoginSuccess(profile, courseLanguage);
+      }, 350);
+    } catch (err: any) {
+      if (err?.code !== 'auth/popup-closed-by-user') {
+        setErrorMsg(
+          err.message ||
+            (isSpanishCourse
+              ? 'Could not complete Google Sign-In.'
+              : 'No se pudo completar el inicio de sesión con Google.')
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Sign up new student with language choice
+  // OPEN STUDENT REGISTRATION: Any student can register freely and start learning immediately
   const handleSignUpStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
 
     if (!fullName.trim() || !email.trim() || !password.trim()) {
-      setErrorMsg(t.errFillAll);
+      setErrorMsg(
+        isSpanishCourse
+          ? 'Please enter your Full Name, Email/Username, and Password.'
+          : 'Por favor completa tu Nombre Completo, Correo/Usuario y Contraseña.'
+      );
       return;
     }
 
-    if (password.length < 4) {
-      setErrorMsg(t.errPasswordLength);
+    if (password.trim().length < 4) {
+      setErrorMsg(
+        isSpanishCourse
+          ? 'Password must be at least 4 characters long.'
+          : 'La contraseña debe tener al menos 4 caracteres.'
+      );
+      return;
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    if (isMasterTeacherEmail(cleanEmail)) {
+      setErrorMsg(
+        isSpanishCourse
+          ? `The email ${MASTER_TEACHER_EMAIL} belongs to the Head Teacher. Please sign in from the "Teacher" tab.`
+          : `El correo ${MASTER_TEACHER_EMAIL} pertenece al Profesor Titular. Ingresa desde la pestaña "Profesor".`
+      );
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const generatedId = `std_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
-      const cleanEmail = email.trim().toLowerCase();
+      const generatedId = `std_${Date.now().toString(36)}_${Math.random()
+        .toString(36)
+        .substring(2, 6)}`;
       const cleanName = fullName.trim();
-      const cleanStudentId = studentId.trim() || `EST-${Math.floor(1000 + Math.random() * 9000)}`;
+      const cleanStudentId = (
+        studentId.trim() || `EST-${Math.floor(1000 + Math.random() * 9000)}`
+      ).toUpperCase();
 
       const newProfile: UserProfile = {
         id: generatedId,
@@ -160,122 +145,68 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
         fullName: cleanName,
         role: 'student',
         studentIdNumber: cleanStudentId,
-        targetLanguage: targetLanguage,
+        targetLanguage,
+        enrollmentStatus: 'approved',
+        approvedByTeacher: true,
+        accessPin: password.trim(),
         createdAt: new Date().toISOString(),
         lastActiveAt: new Date().toISOString(),
-        avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanName)}`
+        avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(
+          cleanName
+        )}`
       };
 
-      const client = getSupabaseClient();
-      if (client) {
-        try {
-          const { data, error } = await client.auth.signUp({
-            email: cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@student.cesarteach.edu`,
-            password: password,
-            options: {
-              data: {
-                full_name: cleanName,
-                role: 'student',
-                student_id_number: cleanStudentId,
-                target_language: targetLanguage
-              }
-            }
-          });
-
-          if (!error && data?.user) {
-            newProfile.id = data.user.id;
-          }
-
-          // Save into profiles table
-          await client.from('profiles').upsert({
-            id: newProfile.id,
-            email: newProfile.email,
-            full_name: newProfile.fullName,
-            role: 'student',
-            student_id_number: newProfile.studentIdNumber || null,
-            avatar_url: newProfile.avatarUrl,
-            created_at: newProfile.createdAt,
-            last_active_at: newProfile.lastActiveAt
-          });
-
-          // Save initial record in student_progress table
-          await client.from('student_progress').upsert({
-            user_id: newProfile.id,
-            completed_lessons: [],
-            mastered_words: [],
-            exam_score: null,
-            exam_passed: false,
-            xp: 0,
-            streak_days: 1,
-            last_study_date: new Date().toISOString().split('T')[0],
-            unlocked_badges: ['b_first_step'],
-            word_srs_status: {},
-            lesson_dates: {},
-            course_language: targetLanguage,
-            total_exercises_done: 0,
-            time_spent_minutes: 0,
-            updated_at: new Date().toISOString()
-          });
-        } catch (supaErr) {
-          console.warn('Notice from Supabase sign up:', supaErr);
-        }
-      }
-
-      // Save to local student registry & user-specific progress key
       const initialProgress = {
         completedLessons: [],
         masteredWords: [],
         examScore: undefined,
         examPassed: false,
+        levelScores: {},
         xp: 0,
         streakDays: 1,
         lastStudyDate: new Date().toISOString().split('T')[0],
         unlockedBadges: ['b_first_step'],
         wordSRSStatus: {},
         lessonDates: {},
+        examHistory: [],
         totalExercisesDone: 0,
         timeSpentMinutes: 0
       };
 
-      try {
-        localStorage.setItem(`lingostep_progress_${newProfile.id}`, JSON.stringify(initialProgress));
-      } catch (e) {}
-
-      const localStudents = getLocalStudents();
-      const existingIdx = localStudents.findIndex(s => s.profile.email.toLowerCase() === cleanEmail || s.profile.id === newProfile.id);
-      if (existingIdx >= 0) {
-        localStudents[existingIdx].profile = newProfile;
-        localStudents[existingIdx].progress = initialProgress;
-        localStudents[existingIdx].courseLanguage = targetLanguage;
-      } else {
-        localStudents.unshift({
-          profile: newProfile,
-          progress: initialProgress,
-          courseLanguage: targetLanguage
-        });
-      }
-      localStorage.setItem('lingostep_students_records_v2', JSON.stringify(localStudents));
-
+      await syncStudentProgressToDatabase(newProfile, initialProgress, targetLanguage);
       setStoredCurrentUser(newProfile);
-      setSuccessMsg(t.successCreated);
+      setSuccessMsg(
+        isSpanishCourse
+          ? 'Student account created! Entering your Spanish Lesson Path...'
+          : '¡Cuenta de estudiante creada! Ingresando a tu Camino de Lecciones...'
+      );
       setTimeout(() => {
         onLoginSuccess(newProfile, targetLanguage);
-      }, 500);
+      }, 400);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error al crear la cuenta de estudiante.');
+      setErrorMsg(
+        err.message ||
+          (isSpanishCourse
+            ? 'Error creating student account.'
+            : 'Error al crear la cuenta de estudiante.')
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Sign in existing student
+  // Sign in existing Student
   const handleSignInStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
 
     if (!email.trim() || !password.trim()) {
-      setErrorMsg(t.errEmailPass);
+      setErrorMsg(
+        isSpanishCourse
+          ? 'Please enter your username/email and password.'
+          : 'Introduce tu usuario/correo y tu contraseña.'
+      );
       return;
     }
 
@@ -283,313 +214,419 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
 
     try {
       const cleanEmail = email.trim().toLowerCase();
-      const client = getSupabaseClient();
 
-      // 1. Try Supabase Auth
-      if (client) {
-        try {
-          const authEmail = cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@student.cesarteach.edu`;
-          const { data, error } = await client.auth.signInWithPassword({
-            email: authEmail,
-            password: password
-          });
-
-          if (!error && data.user) {
-            const userLang = (data.user.user_metadata?.target_language as 'en' | 'es') || targetLanguage || 'es';
-            const profile: UserProfile = {
-              id: data.user.id,
-              email: data.user.email || cleanEmail,
-              fullName: data.user.user_metadata?.full_name || cleanEmail.split('@')[0],
-              role: (data.user.user_metadata?.role as UserRole) || 'student',
-              studentIdNumber: data.user.user_metadata?.student_id_number,
-              targetLanguage: userLang,
-              createdAt: data.user.created_at || new Date().toISOString(),
-              lastActiveAt: new Date().toISOString(),
-              avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(data.user.email || 'user')}`
-            };
-
-            // Fetch remote progress from Supabase
-            const remoteProgress = await fetchStudentProgressFromDatabase(profile.id);
-            if (remoteProgress) {
-              try {
-                localStorage.setItem(`lingostep_progress_${profile.id}`, JSON.stringify(remoteProgress));
-              } catch (e) {}
-            }
-
-            setStoredCurrentUser(profile);
-            setSuccessMsg(t.successWelcome);
-            setTimeout(() => onLoginSuccess(profile, userLang), 400);
-            return;
-          }
-        } catch (supaErr) {
-          console.warn('Supabase sign-in warning:', supaErr);
+      // 1. Query Firebase Firestore users collection
+      const remoteProfile = await fetchStudentProfileFromDatabase(cleanEmail);
+      if (remoteProfile) {
+        if (remoteProfile.accessPin && remoteProfile.accessPin !== password.trim()) {
+          throw new Error(
+            isSpanishCourse
+              ? 'The password entered is incorrect.'
+              : 'La contraseña ingresada es incorrecta.'
+          );
         }
 
-        // 2. Query Supabase profiles table directly
-        try {
-          const remoteProfile = await fetchStudentProfileFromDatabase(cleanEmail);
-          if (remoteProfile) {
-            const userLang = remoteProfile.targetLanguage || targetLanguage || 'es';
-            const remoteProgress = await fetchStudentProgressFromDatabase(remoteProfile.id);
-            if (remoteProgress) {
-              try {
-                localStorage.setItem(`lingostep_progress_${remoteProfile.id}`, JSON.stringify(remoteProgress));
-              } catch (e) {}
-            }
-            setStoredCurrentUser(remoteProfile);
-            setSuccessMsg(t.successWelcome);
-            setTimeout(() => onLoginSuccess(remoteProfile, userLang), 400);
-            return;
-          }
-        } catch (supaProfileErr) {
-          console.warn('Supabase profile query warning:', supaProfileErr);
+        const userLang = remoteProfile.targetLanguage || targetLanguage || 'en';
+        const remoteProgress = await fetchStudentProgressFromDatabase(remoteProfile.id);
+        if (remoteProgress) {
+          try {
+            localStorage.setItem(
+              `lingostep_progress_${remoteProfile.id}`,
+              JSON.stringify(remoteProgress)
+            );
+          } catch (e) {}
         }
-      }
-
-      // 3. Check local registered students
-      const localStudents = getLocalStudents();
-      const matched = localStudents.find(s => 
-        s.profile.email.toLowerCase() === cleanEmail ||
-        s.profile.email.toLowerCase().replace(/@.*$/, '') === cleanEmail ||
-        s.profile.fullName.toLowerCase() === cleanEmail ||
-        (s.profile.studentIdNumber && s.profile.studentIdNumber.toLowerCase() === cleanEmail)
-      );
-
-      if (matched) {
-        const userLang = matched.courseLanguage || matched.profile.targetLanguage || targetLanguage || 'es';
-        const updated = {
-          ...matched.profile,
-          lastActiveAt: new Date().toISOString()
-        };
-        setStoredCurrentUser(updated);
-        setSuccessMsg(t.successWelcome);
-        setTimeout(() => onLoginSuccess(updated, userLang), 400);
+        setStoredCurrentUser(remoteProfile);
+        setSuccessMsg(
+          isSpanishCourse
+            ? `Welcome back, ${remoteProfile.fullName}!`
+            : `¡Bienvenido(a) de nuevo, ${remoteProfile.fullName}!`
+        );
+        setTimeout(() => onLoginSuccess(remoteProfile, userLang), 350);
         return;
       }
 
-      // 4. If account not found, throw error
-      throw new Error(isSpanishTarget ? 'Credenciales incorrectas o el usuario no existe.' : 'Incorrect credentials or user does not exist.');
+      // 2. Check local registered students
+      const localStudents = getLocalStudents();
+      const matched = localStudents.find(
+        s =>
+          s.profile.email.toLowerCase() === cleanEmail ||
+          s.profile.email.toLowerCase().replace(/@.*$/, '') === cleanEmail ||
+          s.profile.fullName.toLowerCase() === cleanEmail ||
+          (s.profile.studentIdNumber &&
+            s.profile.studentIdNumber.toLowerCase() === cleanEmail)
+      );
+
+      if (matched) {
+        const userLang =
+          matched.courseLanguage || matched.profile.targetLanguage || targetLanguage || 'en';
+        const updated: UserProfile = {
+          ...matched.profile,
+          lastActiveAt: new Date().toISOString()
+        };
+        await syncStudentProgressToDatabase(updated, matched.progress, userLang);
+        setStoredCurrentUser(updated);
+        setSuccessMsg(
+          isSpanishCourse
+            ? `Welcome back, ${updated.fullName}!`
+            : `¡Bienvenido(a), ${updated.fullName}!`
+        );
+        setTimeout(() => onLoginSuccess(updated, userLang), 350);
+        return;
+      }
+
+      throw new Error(
+        isSpanishCourse
+          ? 'Student account not found. If you are a new student, register for free in the "Student Sign Up" tab.'
+          : 'No encontramos ese usuario. Si eres nuevo alumno, regístrate gratis en la pestaña "Registro Alumno".'
+      );
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error al iniciar sesión.');
+      setErrorMsg(
+        err.message || (isSpanishCourse ? 'Error signing in.' : 'Error al iniciar sesión.')
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Sign in as Teacher with encrypted hash validation (PIN: 159487123456)
-  const handleTeacherAccess = async (e: React.FormEvent) => {
+  // Sign in as Teacher: ONLY spacio.n.blnco@gmail.com OR a Teacher explicitly authorized by spacio.n.blnco@gmail.com
+  const handleTeacherLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+    setSuccessMsg(null);
     setIsLoading(true);
 
     try {
-      const isValid = await verifyTeacherPin(teacherPin);
-      if (!isValid) {
-        setErrorMsg(t.errTeacherPin);
-        setIsLoading(false);
+      const cleanTeacherEmail = teacherEmail.trim().toLowerCase();
+
+      // Case 1: Master Teacher (spacio.n.blnco@gmail.com)
+      if (isMasterTeacherEmail(cleanTeacherEmail)) {
+        const isValid = await verifyTeacherCredentials(cleanTeacherEmail, teacherPin);
+        if (!isValid) {
+          setErrorMsg('Clave maestra de Profesor Titular incorrecta.');
+          setIsLoading(false);
+          return;
+        }
+
+        const teacherProfile: UserProfile = {
+          id: 'teacher_master_01',
+          email: MASTER_TEACHER_EMAIL,
+          fullName: 'Profesor César (Titular)',
+          role: 'teacher',
+          authorizedTeacherByMaster: true,
+          enrollmentStatus: 'approved',
+          approvedByTeacher: true,
+          targetLanguage,
+          createdAt: new Date().toISOString(),
+          lastActiveAt: new Date().toISOString()
+        };
+
+        setStoredCurrentUser(teacherProfile);
+        setSuccessMsg('Acceso de Profesor Titular verificado.');
+        setTimeout(() => {
+          onLoginSuccess(teacherProfile, targetLanguage);
+        }, 350);
         return;
       }
 
-      const teacherProfile: UserProfile = {
-        id: 'teacher_master_01',
-        email: 'docente@lingostep.edu',
-        fullName: isSpanishTarget ? 'Head Teacher / Professor' : 'Profesor Titular / Docente',
-        role: 'teacher',
-        createdAt: new Date().toISOString(),
-        lastActiveAt: new Date().toISOString()
-      };
+      // Case 2: Another teacher checking if they were authorized by spacio.n.blnco@gmail.com
+      const existingTeacher = await fetchStudentProfileFromDatabase(cleanTeacherEmail);
+      if (!existingTeacher) {
+        throw new Error(
+          `Ningún profesor puede registrarse sin autorización de ${MASTER_TEACHER_EMAIL}. Si deseas ser profesor, usa el botón "Pedir Autorización".`
+        );
+      }
 
-      setStoredCurrentUser(teacherProfile);
-      setSuccessMsg(t.successTeacher);
+      if (
+        existingTeacher.requestedRole === 'teacher' &&
+        !existingTeacher.authorizedTeacherByMaster
+      ) {
+        throw new Error(
+          `Tu solicitud para ser Profesor sigue PENDIENTE de autorización por el Profesor Titular (${MASTER_TEACHER_EMAIL}).`
+        );
+      }
+
+      if (existingTeacher.role !== 'teacher' || !existingTeacher.authorizedTeacherByMaster) {
+        throw new Error(
+          `Esta cuenta no tiene autorización de Profesor. Solo el Profesor Titular (${MASTER_TEACHER_EMAIL}) puede autorizar nuevos profesores.`
+        );
+      }
+
+      if (existingTeacher.accessPin && existingTeacher.accessPin !== teacherPin.trim()) {
+        throw new Error('La clave de acceso del profesor invitado es incorrecta.');
+      }
+
+      setStoredCurrentUser(existingTeacher);
+      setSuccessMsg(`Acceso de Profesor Autorizado concedido: ${existingTeacher.fullName}`);
       setTimeout(() => {
-        onLoginSuccess(teacherProfile);
-      }, 400);
-    } catch (err) {
-      setErrorMsg('Error al verificar la clave de seguridad del docente.');
+        onLoginSuccess(existingTeacher, targetLanguage);
+      }, 350);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Error al verificar acceso de profesor.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Submit Teacher Registration Request (Requires spacio.n.blnco@gmail.com approval!)
+  const handleTeacherRequestSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg(null);
+    setSuccessMsg(null);
+
+    if (!reqTeacherName.trim() || !reqTeacherEmail.trim() || !reqTeacherPin.trim()) {
+      setErrorMsg('Completa tu nombre, correo y la clave que deseas usar.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await requestTeacherRegistration({
+        fullName: reqTeacherName,
+        email: reqTeacherEmail,
+        accessPin: reqTeacherPin
+      });
+      setSuccessMsg(
+        `Solicitud enviada. Ningún profesor puede registrarse sin permiso del titular (${MASTER_TEACHER_EMAIL}). Cuando él te autorice en su Panel Docente, podrás iniciar sesión como profesor.`
+      );
+      setReqTeacherName('');
+      setReqTeacherEmail('');
+      setReqTeacherPin('');
+      setTeacherSubMode('login');
+    } catch (err: any) {
+      setErrorMsg(err.message || 'No se pudo enviar la solicitud de profesor.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-zinc-950 text-white flex flex-col justify-between relative overflow-hidden px-4 py-8">
-      {/* Background glow effects */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-      {/* Top Bar with Brand, Course Language Switcher & Supabase Status Pill */}
-      <header className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
+    <div className="min-h-screen bg-[#FAF8F5] dark:bg-zinc-950 text-slate-900 dark:text-white flex flex-col justify-between px-4 py-6">
+      {/* Top Bar */}
+      <header className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 rounded-2xl px-5 py-3.5 shadow-[4px_4px_0px_0px_#0f172a]">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 via-sky-500 to-emerald-400 p-0.5 shadow-lg shadow-indigo-500/30 flex items-center justify-center">
-            <div className="w-full h-full bg-zinc-950 rounded-[14px] flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-indigo-400" />
-            </div>
+          <div className="w-11 h-11 rounded-xl bg-yellow-300 border-2 border-slate-900 flex items-center justify-center shadow-[2px_2px_0px_0px_#0f172a]">
+            <GraduationCap className="w-6 h-6 text-slate-950" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-black tracking-tight text-white">CesarTeach</h1>
-              <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-black uppercase tracking-wider">
-                {t.portalBadge}
+              <h1 className="text-xl font-black tracking-tight text-slate-950 dark:text-white font-display">
+                CesarTeach
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-lg bg-emerald-300 text-slate-950 border border-slate-900 text-[10px] font-black uppercase">
+                {isSpanishCourse ? 'CEFR A1–B2 Curriculum' : 'Currículo MCER A1–B2'}
               </span>
             </div>
-            <p className="text-xs text-zinc-400">{t.portalSub}</p>
+            <p className="text-xs font-semibold text-slate-600 dark:text-zinc-400">
+              {isSpanishCourse
+                ? 'Open Registration for Students · Teachers Require Head Teacher Approval'
+                : 'Registro libre para Alumnos · Profesores requieren autorización del Titular'}
+            </p>
           </div>
         </div>
 
-        {/* Course Mode Selector */}
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          {/* Main Target Language Switcher on Top */}
-          <div className="bg-zinc-900/90 border border-zinc-700/80 p-1 rounded-2xl flex items-center gap-1 shadow-lg backdrop-blur-md">
-            <button
-              type="button"
-              onClick={() => { setTargetLanguage('es'); setErrorMsg(null); }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-black text-xs transition-all ${
-                targetLanguage === 'es'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/30 ring-2 ring-amber-400/50'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <span>🇪🇸</span>
-              <span>{t.btnLearnSpanish}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => { setTargetLanguage('en'); setErrorMsg(null); }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-black text-xs transition-all ${
-                targetLanguage === 'en'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 ring-2 ring-indigo-400/50'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <span>🇬🇧</span>
-              <span>{t.btnLearnEnglish}</span>
-            </button>
-          </div>
+        {/* Course Selector */}
+        <div className="bg-slate-100 dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-700 p-1 rounded-xl flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => {
+              setTargetLanguage('en');
+              localStorage.setItem('lingostep_active_course', 'en');
+              setErrorMsg(null);
+            }}
+            className={`px-3.5 py-1.5 rounded-lg font-black text-xs transition-all ${
+              targetLanguage === 'en'
+                ? 'bg-yellow-300 text-slate-950 border border-slate-900'
+                : 'text-slate-600 dark:text-zinc-400 hover:text-slate-950'
+            }`}
+          >
+            🇬🇧 Aprender Inglés (A1–B2)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setTargetLanguage('es');
+              localStorage.setItem('lingostep_active_course', 'es');
+              setErrorMsg(null);
+            }}
+            className={`px-3.5 py-1.5 rounded-lg font-black text-xs transition-all ${
+              targetLanguage === 'es'
+                ? 'bg-yellow-300 text-slate-950 border border-slate-900'
+                : 'text-slate-600 dark:text-zinc-400 hover:text-slate-950'
+            }`}
+          >
+            🇪🇸 Learn Spanish (A1–B2)
+          </button>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="max-w-5xl mx-auto w-full my-auto py-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        
-        {/* Left Side: Features Presentation */}
-        <div className="lg:col-span-6 space-y-6 text-left">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            <span>{t.badgeObligatory}</span>
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto w-full my-auto py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        {/* Left Column: Learning Priority Presentation */}
+        <div className="lg:col-span-6 space-y-5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-yellow-300 text-slate-950 border-2 border-slate-900 text-xs font-black shadow-[2px_2px_0px_0px_#0f172a]">
+            <span>
+              {isSpanishCourse
+                ? 'Priority-Ordered Spanish Learning · NoDeck Style'
+                : 'Aprendizaje Ordenado por Prioridades · Estilo NoDeck'}
+            </span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
-            {t.heroTitlePrefix}
-            <span className="bg-gradient-to-r from-indigo-400 via-sky-400 to-emerald-400 bg-clip-text text-transparent">
-              {t.heroTitleHighlight}
-            </span>
-            {t.heroTitleSuffix}
+          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-slate-950 dark:text-white leading-[1.08] font-display">
+            {isSpanishCourse
+              ? 'Sign up as a student and master Spanish step by step from A1 to B2.'
+              : 'Regístrate como alumno y avanza en inglés paso a paso desde A1 hasta B2.'}
           </h2>
 
-          <p className="text-sm sm:text-base text-zinc-300 font-normal leading-relaxed">
-            {t.heroDesc}
+          <p className="text-sm sm:text-base text-slate-700 dark:text-zinc-300 font-semibold leading-relaxed">
+            {isSpanishCourse ? (
+              <>
+                Everything is explained in clear English and organized by your learning priorities:
+                first follow your <strong>Sequential Lesson Path (Priority #1)</strong>, then
+                practice on the <strong>NoDeck Interactive Card Table (Priority #2)</strong>, and
+                finally earn your official CEFR certificates.
+              </>
+            ) : (
+              <>
+                Todo está explicado en español claro y organizado según tus prioridades: primero
+                sigues tu <strong>Camino Secuencial de Lecciones (Prioridad #1)</strong>, luego
+                practicas en la <strong>Mesa de Cartas Interactivas NoDeck (Prioridad #2)</strong>{' '}
+                y finalmente obtienes tus certificados oficiales MCER.
+              </>
+            )}
           </p>
 
-          {/* Key Feature Badges */}
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <div className="p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 flex items-start gap-3 backdrop-blur-sm">
-              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400">
-                <BookOpen className="w-4 h-4" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_#0f172a] flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-yellow-300 text-slate-950 border-2 border-slate-900 font-black text-xs">
+                01
               </div>
               <div>
-                <h4 className="text-xs font-black text-white">{t.feat1Title}</h4>
-                <p className="text-[11px] text-zinc-400">{t.feat1Sub}</p>
+                <h4 className="text-xs font-black text-slate-950 dark:text-white">
+                  {isSpanishCourse ? '1st: Sequential Lesson Path' : '1º Camino de Lecciones'}
+                </h4>
+                <p className="text-[11px] font-semibold text-slate-600 dark:text-zinc-400">
+                  {isSpanishCourse
+                    ? 'Priority #1: Follow structured lessons from A1 to B2 explained in English.'
+                    : 'Prioridad #1: Sigue tus clases en orden de A1 a B2 explicadas en español.'}
+                </p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 flex items-start gap-3 backdrop-blur-sm">
-              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
-                <Trophy className="w-4 h-4" />
+            <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_#0f172a] flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-300 text-slate-950 border-2 border-slate-900 font-black text-xs">
+                02
               </div>
               <div>
-                <h4 className="text-xs font-black text-white">{t.feat2Title}</h4>
-                <p className="text-[11px] text-zinc-400">{t.feat2Sub}</p>
+                <h4 className="text-xs font-black text-slate-950 dark:text-white">
+                  {isSpanishCourse ? '2nd: NoDeck Card Table' : '2º Mesa de Cartas NoDeck'}
+                </h4>
+                <p className="text-[11px] font-semibold text-slate-600 dark:text-zinc-400">
+                  {isSpanishCourse
+                    ? 'Separate practice room with neon highlighter, sentence magnets, and pairs.'
+                    : 'Sala separada con subrayador fluorescente, imanes y pares.'}
+                </p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 flex items-start gap-3 backdrop-blur-sm">
-              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
-                <ShieldCheck className="w-4 h-4" />
+            <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_#0f172a] flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-sky-300 text-slate-950 border-2 border-slate-900 font-black text-xs">
+                03
               </div>
               <div>
-                <h4 className="text-xs font-black text-white">{t.feat3Title}</h4>
-                <p className="text-[11px] text-zinc-400">{t.feat3Sub}</p>
+                <h4 className="text-xs font-black text-slate-950 dark:text-white">
+                  {isSpanishCourse ? '3rd: Open Student Sign-Up' : '3º Alumnos: Registro Libre'}
+                </h4>
+                <p className="text-[11px] font-semibold text-slate-600 dark:text-zinc-400">
+                  {isSpanishCourse
+                    ? 'Create your student account immediately and save your progress in Firebase.'
+                    : 'Crea tu cuenta de estudiante al instante y guarda tu avance en Firebase.'}
+                </p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 flex items-start gap-3 backdrop-blur-sm">
-              <div className="p-2 rounded-xl bg-sky-500/20 text-sky-400">
-                <Layers className="w-4 h-4" />
+            <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_#0f172a] flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-rose-300 text-slate-950 border-2 border-slate-900 font-black text-xs">
+                04
               </div>
               <div>
-                <h4 className="text-xs font-black text-white">{t.feat4Title}</h4>
-                <p className="text-[11px] text-zinc-400">{t.feat4Sub}</p>
+                <h4 className="text-xs font-black text-slate-950 dark:text-white">
+                  {isSpanishCourse ? 'Protected Teacher Access' : 'Docentes Protegidos'}
+                </h4>
+                <p className="text-[11px] font-semibold text-slate-600 dark:text-zinc-400">
+                  {isSpanishCourse
+                    ? 'No teacher can register without direct permission from the Head Teacher.'
+                    : 'Ningún profesor puede registrarse sin autorización del Profesor Titular.'}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Auth Card Form */}
+        {/* Right Column: Auth Card */}
         <div className="lg:col-span-6">
-          <div className="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative">
-            
+          <div className="bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 rounded-3xl p-6 sm:p-8 shadow-[8px_8px_0px_0px_#0f172a] dark:shadow-[8px_8px_0px_0px_#27272a]">
             {/* Mode Switcher Tabs */}
-            <div className="flex rounded-2xl bg-zinc-950 p-1 mb-6 border border-zinc-800">
+            <div className="grid grid-cols-3 gap-1.5 rounded-2xl bg-slate-100 dark:bg-zinc-950 p-1.5 mb-6 border-2 border-slate-900 dark:border-zinc-700">
               <button
                 type="button"
-                onClick={() => { setActiveTab('signup'); setErrorMsg(null); setSuccessMsg(null); }}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
+                onClick={() => {
+                  setActiveTab('signup');
+                  setErrorMsg(null);
+                  setSuccessMsg(null);
+                }}
+                className={`py-2.5 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
                   activeTab === 'signup'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-emerald-400 text-slate-950 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a]'
+                    : 'text-slate-700 dark:text-zinc-400 hover:text-slate-950'
                 }`}
               >
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>{t.tabSignUp}</span>
+                <UserPlus className="w-3.5 h-3.5 shrink-0" />
+                <span>{isSpanishCourse ? 'Student Sign Up' : 'Registro Alumno'}</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => { setActiveTab('signin'); setErrorMsg(null); setSuccessMsg(null); }}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
+                onClick={() => {
+                  setActiveTab('signin');
+                  setErrorMsg(null);
+                  setSuccessMsg(null);
+                }}
+                className={`py-2.5 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
                   activeTab === 'signin'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-indigo-600 text-white border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a]'
+                    : 'text-slate-700 dark:text-zinc-400 hover:text-slate-950'
                 }`}
               >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>{t.tabSignIn}</span>
+                <LogIn className="w-3.5 h-3.5 shrink-0" />
+                <span>{isSpanishCourse ? 'Student Log In' : 'Entrar Alumno'}</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => { setActiveTab('teacher'); setErrorMsg(null); setSuccessMsg(null); }}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
+                onClick={() => {
+                  setActiveTab('teacher');
+                  setErrorMsg(null);
+                  setSuccessMsg(null);
+                }}
+                className={`py-2.5 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
                   activeTab === 'teacher'
-                    ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/30'
-                    : 'text-amber-400 hover:text-amber-300'
+                    ? 'bg-yellow-300 text-slate-950 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a]'
+                    : 'text-amber-700 dark:text-amber-400 hover:text-slate-950'
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>{t.tabTeacher}</span>
+                <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                <span>{isSpanishCourse ? 'Teacher' : 'Profesor'}</span>
               </button>
             </div>
 
-            {/* Error & Success Feedback Alerts */}
             {errorMsg && (
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3.5 mb-5 rounded-2xl bg-rose-950/80 border border-rose-500/40 text-rose-300 text-xs font-semibold flex items-center gap-2.5"
+                className="p-3.5 mb-5 rounded-2xl bg-rose-100 dark:bg-rose-950/80 border-2 border-slate-900 text-slate-950 dark:text-rose-200 text-xs font-bold flex items-start gap-2.5"
               >
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
                 <span>{errorMsg}</span>
               </motion.div>
             )}
@@ -598,119 +635,86 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3.5 mb-5 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-2.5"
+                className="p-3.5 mb-5 rounded-2xl bg-emerald-200 dark:bg-emerald-950/80 border-2 border-slate-900 text-slate-950 dark:text-emerald-200 text-xs font-bold flex items-start gap-2.5"
               >
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-700 mt-0.5" />
                 <span>{successMsg}</span>
               </motion.div>
             )}
 
-            {/* TAB 1: SIGN UP */}
+            {/* TAB 1: OPEN STUDENT SIGN UP */}
             {activeTab === 'signup' && (
               <form onSubmit={handleSignUpStudent} className="space-y-4">
-                {/* Idioma a Aprender Selector */}
                 <div>
-                  <label className="block text-xs font-bold text-zinc-300 mb-1.5 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <Languages className="w-3.5 h-3.5 text-indigo-400" />
-                      <span>{t.labelTargetLang}</span> <span className="text-rose-400">*</span>
-                    </span>
-                  </label>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <button
-                      type="button"
-                      onClick={() => setTargetLanguage('es')}
-                      className={`p-3 rounded-2xl border flex items-center gap-3 transition-all text-left ${
-                        targetLanguage === 'es'
-                          ? 'bg-amber-500/20 border-amber-500 ring-2 ring-amber-500/40 text-white'
-                          : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700'
-                      }`}
-                    >
-                      <span className="text-2xl">🇪🇸</span>
-                      <div>
-                        <div className="text-xs font-black text-white">{t.cardOptSpanishTitle}</div>
-                        <div className="text-[10px] text-zinc-400">{t.cardOptSpanishSub}</div>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setTargetLanguage('en')}
-                      className={`p-3 rounded-2xl border flex items-center gap-3 transition-all text-left ${
-                        targetLanguage === 'en'
-                          ? 'bg-indigo-600/20 border-indigo-500 ring-2 ring-indigo-500/40 text-white'
-                          : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700'
-                      }`}
-                    >
-                      <span className="text-2xl">🇺🇸</span>
-                      <div>
-                        <div className="text-xs font-black text-white">{t.cardOptEnglishTitle}</div>
-                        <div className="text-[10px] text-zinc-400">{t.cardOptEnglishSub}</div>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-zinc-300 mb-1.5">
-                    {t.labelFullName} <span className="text-rose-400">*</span>
+                  <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1.5">
+                    {isSpanishCourse
+                      ? 'Student Full Name *'
+                      : 'Nombre Completo del Estudiante *'}
                   </label>
                   <input
                     type="text"
                     required
                     value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder={t.placeholderFullName}
-                    className="w-full px-4 py-2.5 rounded-2xl bg-zinc-950 border border-zinc-800 text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600"
+                    onChange={e => setFullName(e.target.value)}
+                    placeholder={
+                      isSpanishCourse ? 'e.g. Alex Johnson' : 'Ej. María Fernanda Morales'
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white text-xs font-bold"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-zinc-300 mb-1.5">
-                      {t.labelEmail} <span className="text-rose-400">*</span>
+                    <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1.5">
+                      {isSpanishCourse ? 'Email or Username *' : 'Correo o Usuario *'}
                     </label>
                     <input
                       type="text"
                       required
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={t.placeholderEmail}
-                      className="w-full px-4 py-2.5 rounded-2xl bg-zinc-950 border border-zinc-800 text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600"
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder={
+                        isSpanishCourse
+                          ? 'e.g. alex24 or alex@email.com'
+                          : 'Ej. maria24 o maria@correo.com'
+                      }
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white text-xs font-bold"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-zinc-300 mb-1.5">
-                      {t.labelStudentId}
+                    <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1.5">
+                      {isSpanishCourse ? 'Student ID (Optional)' : 'Matrícula / ID (Opcional)'}
                     </label>
                     <input
                       type="text"
                       value={studentId}
-                      onChange={(e) => setStudentId(e.target.value)}
-                      placeholder={t.placeholderStudentId}
-                      className="w-full px-4 py-2.5 rounded-2xl bg-zinc-950 border border-zinc-800 text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600"
+                      onChange={e => setStudentId(e.target.value)}
+                      placeholder={isSpanishCourse ? 'e.g. STD-2026-01' : 'Ej. EST-2026-01'}
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white text-xs font-bold"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-zinc-300 mb-1.5">
-                    {t.labelPassword} <span className="text-rose-400">*</span>
+                  <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1.5">
+                    {isSpanishCourse ? 'Password *' : 'Contraseña *'}
                   </label>
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder={t.placeholderPassword}
-                      className="w-full px-4 py-2.5 pr-10 rounded-2xl bg-zinc-950 border border-zinc-800 text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600"
+                      onChange={e => setPassword(e.target.value)}
+                      placeholder={
+                        isSpanishCourse ? 'At least 4 characters' : 'Mínimo 4 caracteres'
+                      }
+                      className="w-full px-4 py-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white text-xs font-bold"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -720,54 +724,75 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-sky-600 to-emerald-500 hover:from-indigo-500 hover:to-emerald-400 text-white font-black text-sm shadow-xl shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 transform active:scale-[0.99]"
+                  className="w-full py-3.5 px-4 rounded-xl bg-emerald-400 hover:bg-emerald-500 text-slate-950 border-2 border-slate-900 font-black text-sm shadow-[4px_4px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
                   ) : (
                     <>
-                      <span>{t.btnCreateAccount}</span>
+                      <span>
+                        {isSpanishCourse
+                          ? 'Create Student Account & Start Spanish'
+                          : 'Crear Cuenta de Alumno y Comenzar'}
+                      </span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
+
+                <button
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() => handleGoogleSignIn(false)}
+                  className="w-full py-3 px-4 rounded-xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 font-black text-xs shadow-[3px_3px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
+                >
+                  <span>
+                    {isSpanishCourse
+                      ? 'Sign Up or Log In with Google (Students)'
+                      : 'Registrarse o Entrar con Google (Alumnos)'}
+                  </span>
+                </button>
               </form>
             )}
 
-            {/* TAB 2: SIGN IN */}
+            {/* TAB 2: STUDENT SIGN IN */}
             {activeTab === 'signin' && (
               <form onSubmit={handleSignInStudent} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-zinc-300 mb-1.5">
-                    {t.labelEmail}
+                  <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1.5">
+                    {isSpanishCourse
+                      ? 'Email, Username, or Student ID'
+                      : 'Correo Electrónico, Usuario o Matrícula'}
                   </label>
                   <input
                     type="text"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t.placeholderEmail}
-                    className="w-full px-4 py-2.5 rounded-2xl bg-zinc-950 border border-zinc-800 text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600"
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder={isSpanishCourse ? 'e.g. alex24 or STD-1234' : 'Ej. maria24 o EST-1234'}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white text-sm font-bold"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-zinc-300 mb-1.5">
-                    {t.labelPassword}
+                  <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1.5">
+                    {isSpanishCourse ? 'Password' : 'Contraseña'}
                   </label>
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder={t.placeholderPasswordSignIn}
-                      className="w-full px-4 py-2.5 pr-10 rounded-2xl bg-zinc-950 border border-zinc-800 text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600"
+                      onChange={e => setPassword(e.target.value)}
+                      placeholder={
+                        isSpanishCourse ? 'Enter your password' : 'Introduce tu contraseña'
+                      }
+                      className="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white text-sm font-bold"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -777,83 +802,221 @@ export function AuthGateView({ onLoginSuccess }: AuthGateViewProps) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm shadow-xl shadow-indigo-600/30 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-slate-900 font-black text-sm shadow-[4px_4px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
                   ) : (
                     <>
                       <LogIn className="w-4 h-4" />
-                      <span>{t.btnSignIn}</span>
+                      <span>{isSpanishCourse ? 'Enter Course' : 'Ingresar al Curso'}</span>
                     </>
                   )}
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() => handleGoogleSignIn(false)}
+                  className="w-full py-3 px-4 rounded-xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 font-black text-xs shadow-[3px_3px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
+                >
+                  <span>{isSpanishCourse ? 'Continue with Google' : 'Continuar con Google'}</span>
                 </button>
               </form>
             )}
 
-            {/* TAB 3: TEACHER ACCESS */}
+            {/* TAB 3: TEACHER ACCESS (NO TEACHER CAN REGISTER WITHOUT MASTER TEACHER AUTHORIZATION) */}
             {activeTab === 'teacher' && (
-              <form onSubmit={handleTeacherAccess} className="space-y-4">
-                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1">
-                  <div className="flex items-center gap-2 text-amber-400 text-xs font-black">
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>{t.teacherBoxTitle}</span>
+              <div className="space-y-4">
+                <div className="p-3.5 rounded-2xl bg-yellow-200 dark:bg-amber-950/60 border-2 border-slate-900 space-y-1">
+                  <div className="flex items-center gap-2 text-slate-950 dark:text-amber-300 text-xs font-black">
+                    <Lock className="w-4 h-4 shrink-0" />
+                    <span>Registro de Profesores Restringido</span>
                   </div>
-                  <p className="text-[11px] text-zinc-300">
-                    {t.teacherBoxDesc}
+                  <p className="text-[11px] font-bold text-slate-800 dark:text-zinc-300 leading-relaxed">
+                    Ningún profesor puede registrarse sin la autorización directa del Profesor
+                    Titular (<strong>{MASTER_TEACHER_EMAIL}</strong>).
                   </p>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-zinc-300 mb-1.5">
-                    {t.labelTeacherPin}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showTeacherPin ? 'text' : 'password'}
-                      required
-                      value={teacherPin}
-                      onChange={(e) => setTeacherPin(e.target.value)}
-                      placeholder={t.placeholderTeacherPin}
-                      className="w-full px-4 py-2.5 pr-10 rounded-2xl bg-zinc-950 border border-zinc-800 text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder-zinc-600"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowTeacherPin(!showTeacherPin)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
-                      title={showTeacherPin ? 'Ocultar PIN' : 'Ver PIN'}
-                    >
-                      {showTeacherPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
+                {/* Sub-switcher: Entrar como Profesor Autorizado vs Solicitar Autorización al Titular */}
+                <div className="grid grid-cols-2 gap-1.5 bg-slate-100 dark:bg-zinc-950 p-1 rounded-xl border-2 border-slate-900">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTeacherSubMode('login');
+                      setErrorMsg(null);
+                    }}
+                    className={`py-2 rounded-lg text-xs font-black transition-all ${
+                      teacherSubMode === 'login'
+                        ? 'bg-white text-slate-950 border border-slate-900'
+                        : 'text-slate-600 dark:text-zinc-400'
+                    }`}
+                  >
+                    Profesor Autorizado
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTeacherSubMode('request');
+                      setErrorMsg(null);
+                    }}
+                    className={`py-2 rounded-lg text-xs font-black transition-all ${
+                      teacherSubMode === 'request'
+                        ? 'bg-white text-slate-950 border border-slate-900'
+                        : 'text-slate-600 dark:text-zinc-400'
+                    }`}
+                  >
+                    Pedir Autorización
+                  </button>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-zinc-950 font-black text-sm shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
-                >
-                  {isLoading ? (
-                    <RefreshCw className="w-4 h-4 animate-spin text-zinc-950" />
-                  ) : (
-                    <>
-                      <ShieldCheck className="w-4 h-4" />
-                      <span>{t.btnValidateTeacher}</span>
-                    </>
-                  )}
-                </button>
-              </form>
+                {teacherSubMode === 'login' ? (
+                  <div className="space-y-3.5">
+                    <button
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => handleGoogleSignIn(true)}
+                      className="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-slate-900 font-black text-xs shadow-[4px_4px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-yellow-300" />
+                      <span>Entrar con Google (Titular {MASTER_TEACHER_EMAIL} o Autorizados)</span>
+                    </button>
+
+                    <form onSubmit={handleTeacherLogin} className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1">
+                          Correo del Profesor Autorizado
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={teacherEmail}
+                          onChange={e => setTeacherEmail(e.target.value)}
+                          placeholder={MASTER_TEACHER_EMAIL}
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white text-xs font-bold"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1">
+                          Clave de Seguridad de Profesor
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showTeacherPin ? 'text' : 'password'}
+                            required
+                            value={teacherPin}
+                            onChange={e => setTeacherPin(e.target.value)}
+                            placeholder="Introduce tu clave de profesor"
+                            className="w-full px-4 py-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white text-xs font-bold"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowTeacherPin(!showTeacherPin)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900"
+                          >
+                            {showTeacherPin ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full py-3.5 px-4 rounded-xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 font-black text-xs shadow-[4px_4px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
+                      >
+                        {isLoading ? (
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <ShieldCheck className="w-4 h-4" />
+                            <span>Ingresar al Panel Docente</span>
+                          </>
+                        )}
+                      </button>
+                    </form>
+                  </div>
+                ) : (
+                  <form onSubmit={handleTeacherRequestSubmit} className="space-y-3">
+                    <p className="text-xs font-semibold text-slate-600 dark:text-zinc-400">
+                      Envía tus datos al Profesor Titular (<strong>{MASTER_TEACHER_EMAIL}</strong>).
+                      No tendrás acceso de docente hasta que él apruebe tu solicitud en su panel.
+                    </p>
+
+                    <div>
+                      <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1">
+                        Nombre Completo del Profesor Solicitante *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={reqTeacherName}
+                        onChange={e => setReqTeacherName(e.target.value)}
+                        placeholder="Ej. Prof. Laura Gómez"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 text-xs font-bold"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1">
+                        Correo Electrónico *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={reqTeacherEmail}
+                        onChange={e => setReqTeacherEmail(e.target.value)}
+                        placeholder="profesor@institucion.edu"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 text-xs font-bold"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-black text-slate-900 dark:text-zinc-200 mb-1">
+                        Clave deseada (para cuando seas aprobado) *
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={reqTeacherPin}
+                        onChange={e => setReqTeacherPin(e.target.value)}
+                        placeholder="Mínimo 4 caracteres"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border-2 border-slate-900 text-xs font-bold"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full py-3.5 px-4 rounded-xl bg-amber-300 hover:bg-amber-400 text-slate-950 border-2 border-slate-900 font-black text-xs shadow-[4px_4px_0px_0px_#0f172a]"
+                    >
+                      Enviar Solicitud de Profesor al Titular
+                    </button>
+                  </form>
+                )}
+              </div>
             )}
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="max-w-6xl mx-auto w-full text-center text-xs text-zinc-500 py-4 relative z-10 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-zinc-800/60">
-        <p>{t.footerSystem}</p>
-        <p className="flex items-center gap-1.5 text-zinc-400">
-          <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-          <span>{t.footerCloud}</span>
+      <footer className="max-w-6xl mx-auto w-full text-xs font-bold text-slate-600 dark:text-zinc-400 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 border-t-2 border-slate-900/15 dark:border-zinc-800">
+        <p>
+          {isSpanishCourse
+            ? '© 2026 CesarTeach · CEFR A1–B2 Language Platform'
+            : '© 2026 CesarTeach · Plataforma Curricular MCER A1–B2'}
+        </p>
+        <p className="flex items-center gap-1.5 text-slate-800 dark:text-zinc-300">
+          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <span>
+            {isSpanishCourse ? 'Academic Director:' : 'Dirección Académica:'} {MASTER_TEACHER_EMAIL}
+          </span>
         </p>
       </footer>
     </div>

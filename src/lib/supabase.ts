@@ -1,66 +1,50 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { UserProfile, UserProgress, StudentRecord, UserRole } from '../types';
+import {
+  UserProfile,
+  UserProgress,
+  StudentRecord,
+  UserRole,
+  CEFRLevel,
+  EnrollmentStatus
+} from '../types';
+import {
+  db,
+  auth,
+  googleProvider,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  getDocFromServer,
+  signInWithPopup,
+  handleFirestoreError,
+  OperationType
+} from './firebase';
+import { MASTER_TEACHER_EMAIL, isMasterTeacherEmail } from './security';
+import firebaseConfig from '../../firebase-applet-config.json';
 
-const LOCAL_STORAGE_SUPABASE_URL_KEY = 'lingostep_supabase_url_custom';
-const LOCAL_STORAGE_SUPABASE_KEY_KEY = 'lingostep_supabase_anon_key_custom';
+export const isSupabaseConfigured = Boolean(firebaseConfig.projectId && firebaseConfig.firestoreDatabaseId);
 
 export function getSupabaseCredentials(): { url: string; anonKey: string; isCustom: boolean } {
-  try {
-    const customUrl = localStorage.getItem(LOCAL_STORAGE_SUPABASE_URL_KEY);
-    const customKey = localStorage.getItem(LOCAL_STORAGE_SUPABASE_KEY_KEY);
-    if (customUrl && customKey) {
-      return { url: customUrl.trim(), anonKey: customKey.trim(), isCustom: true };
-    }
-  } catch (e) {}
-
-  const envUrl = (import.meta.env.VITE_SUPABASE_URL || 'https://jleloxpjsqpvqnhyjqco.supabase.co').trim();
-  const envKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_mClhlK4tYEbPaYWKqO0Buw_hRClp85r').trim();
-  return { url: envUrl, anonKey: envKey, isCustom: false };
+  return {
+    url: `firestore://${firebaseConfig.projectId}/${firebaseConfig.firestoreDatabaseId}`,
+    anonKey: firebaseConfig.apiKey,
+    isCustom: false
+  };
 }
 
-export function saveCustomSupabaseCredentials(url: string, anonKey: string) {
-  try {
-    if (url && anonKey) {
-      localStorage.setItem(LOCAL_STORAGE_SUPABASE_URL_KEY, url.trim());
-      localStorage.setItem(LOCAL_STORAGE_SUPABASE_KEY_KEY, anonKey.trim());
-    } else {
-      localStorage.removeItem(LOCAL_STORAGE_SUPABASE_URL_KEY);
-      localStorage.removeItem(LOCAL_STORAGE_SUPABASE_KEY_KEY);
-    }
-  } catch (e) {
-    console.error('Error saving custom supabase credentials:', e);
-  }
+export function saveCustomSupabaseCredentials(_url: string, _anonKey: string) {}
+
+export function getSupabaseClient(): null {
+  return null;
 }
 
-const currentCreds = getSupabaseCredentials();
+export const supabase = null;
 
-export const isSupabaseConfigured = Boolean(
-  currentCreds.url && 
-  currentCreds.anonKey && 
-  currentCreds.url !== 'https://your-project-id.supabase.co' &&
-  !currentCreds.url.includes('your-project-id')
-);
-
-export function getSupabaseClient(): SupabaseClient | null {
-  const creds = getSupabaseCredentials();
-  const isConfigured = Boolean(
-    creds.url && 
-    creds.anonKey && 
-    creds.url !== 'https://your-project-id.supabase.co' &&
-    !creds.url.includes('your-project-id')
-  );
-  if (!isConfigured) return null;
-  try {
-    return createClient(creds.url, creds.anonKey);
-  } catch (e) {
-    console.error('Failed to create Supabase client:', e);
-    return null;
-  }
-}
-
-export const supabase: SupabaseClient | null = getSupabaseClient();
-
-// Test live Supabase connection
 export async function testSupabaseConnection(): Promise<{
   connected: boolean;
   status: 'connected' | 'not_configured' | 'error';
@@ -68,78 +52,36 @@ export async function testSupabaseConnection(): Promise<{
   url?: string;
   latencyMs?: number;
 }> {
-  const creds = getSupabaseCredentials();
-  if (!creds.url || !creds.anonKey || creds.url.includes('your-project-id')) {
-    return {
-      connected: false,
-      status: 'not_configured',
-      message: 'Supabase no tiene URL o Anon Key configurados en .env o ajustes.',
-      url: creds.url || undefined
-    };
-  }
-
-  const client = getSupabaseClient();
-  if (!client) {
-    return {
-      connected: false,
-      status: 'error',
-      message: 'No se pudo inicializar el cliente de Supabase.',
-      url: creds.url
-    };
-  }
-
   const start = performance.now();
   try {
-    const { error } = await client.from('profiles').select('id').limit(1);
+    await getDocFromServer(doc(db, 'test', 'connection'));
     const latencyMs = Math.round(performance.now() - start);
-
-    if (error) {
-      if (error.code === '42P01' || error.message?.toLowerCase().includes('does not exist') || error.message?.toLowerCase().includes('relation')) {
-        return {
-          connected: true,
-          status: 'connected',
-          message: 'Conexión a Supabase exitosa (requiere ejecutar el script SQL para crear las tablas).',
-          url: creds.url,
-          latencyMs
-        };
-      }
-      return {
-        connected: false,
-        status: 'error',
-        message: `Error al consultar Supabase: ${error.message}`,
-        url: creds.url,
-        latencyMs
-      };
-    }
-
     return {
       connected: true,
       status: 'connected',
-      message: `¡Conexión a Supabase activa y verificada! (${latencyMs}ms)`,
-      url: creds.url,
+      message: `¡Conexión a Firebase Firestore activa y verificada! (${latencyMs}ms)`,
+      url: `${firebaseConfig.projectId} (${firebaseConfig.firestoreDatabaseId})`,
       latencyMs
     };
   } catch (err: any) {
+    const latencyMs = Math.round(performance.now() - start);
     return {
       connected: false,
       status: 'error',
-      message: `Error de red al conectar a Supabase: ${err.message || err}`,
-      url: creds.url
+      message: `Error al conectar con Firebase Firestore: ${err.message || err}`,
+      url: firebaseConfig.projectId,
+      latencyMs
     };
   }
 }
 
-// Clean local registry without hardcoded demo accounts
 const LOCAL_STORAGE_STUDENTS_KEY = 'lingostep_students_records_v2';
 const LOCAL_STORAGE_CURRENT_USER_KEY = 'lingostep_current_user_v2';
 
-// Get local students store
 export function getLocalStudents(): StudentRecord[] {
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_STUDENTS_KEY);
-    if (!raw) {
-      return [];
-    }
+    if (!raw) return [];
     return JSON.parse(raw);
   } catch (e) {
     return [];
@@ -154,12 +96,21 @@ export function saveLocalStudents(students: StudentRecord[]) {
   }
 }
 
-// Current logged in user
 export function getStoredCurrentUser(): UserProfile | null {
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_CURRENT_USER_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    const parsed: UserProfile = JSON.parse(raw);
+    // Security check: Nobody can hold role === 'teacher' unless they are spacio.n.blnco@gmail.com OR explicitly authorizedTeacherByMaster === true
+    if (
+      parsed.role === 'teacher' &&
+      !isMasterTeacherEmail(parsed.email) &&
+      !parsed.authorizedTeacherByMaster
+    ) {
+      localStorage.removeItem(LOCAL_STORAGE_CURRENT_USER_KEY);
+      return null;
+    }
+    return parsed;
   } catch (e) {
     return null;
   }
@@ -168,7 +119,16 @@ export function getStoredCurrentUser(): UserProfile | null {
 export function setStoredCurrentUser(user: UserProfile | null) {
   try {
     if (user) {
-      localStorage.setItem(LOCAL_STORAGE_CURRENT_USER_KEY, JSON.stringify(user));
+      const isAllowedTeacher =
+        isMasterTeacherEmail(user.email) ||
+        (user.role === 'teacher' && user.authorizedTeacherByMaster === true);
+      const sanitizedRole: UserRole = isAllowedTeacher ? 'teacher' : 'student';
+      const sanitizedUser: UserProfile = {
+        ...user,
+        role: sanitizedRole,
+        authorizedTeacherByMaster: isAllowedTeacher
+      };
+      localStorage.setItem(LOCAL_STORAGE_CURRENT_USER_KEY, JSON.stringify(sanitizedUser));
     } else {
       localStorage.removeItem(LOCAL_STORAGE_CURRENT_USER_KEY);
     }
@@ -177,75 +137,134 @@ export function setStoredCurrentUser(user: UserProfile | null) {
   }
 }
 
-// Fetch student progress directly from Supabase
+function buildAcademicTelemetry(progress: UserProgress) {
+  const completed = Array.isArray(progress.completedLessons) ? progress.completedLessons : [];
+  const badges = Array.isArray(progress.unlockedBadges) ? progress.unlockedBadges : [];
+  const srs = progress.wordSRSStatus || {};
+
+  const certifiedLevels: CEFRLevel[] = [];
+  if (progress.examPassed || badges.includes('b_cert_a1')) certifiedLevels.push('A1');
+  if (badges.includes('b_cert_a2')) certifiedLevels.push('A2');
+  if (badges.includes('b_cert_b1')) certifiedLevels.push('B1');
+  if (badges.includes('b_cert_b2')) certifiedLevels.push('B2');
+
+  const lessonsByLevel = {
+    A1: completed.filter(id => !id.includes('a2_') && !id.includes('b1_') && !id.includes('b2_')).length,
+    A2: completed.filter(id => id.includes('a2_')).length,
+    B1: completed.filter(id => id.includes('b1_')).length,
+    B2: completed.filter(id => id.includes('b2_')).length
+  };
+
+  const srsValues = Object.values(srs);
+  const srsBreakdown = {
+    easy: srsValues.filter(v => v === 'easy').length,
+    good: srsValues.filter(v => v === 'good').length,
+    hard: srsValues.filter(v => v === 'hard').length
+  };
+
+  return {
+    certifiedLevels,
+    lessonsByLevel,
+    srsBreakdown
+  };
+}
+
+function mapDocToUserProfile(d: Record<string, any>): UserProfile {
+  const email = (d.email || '').toLowerCase();
+  const isAuthorizedTeacher =
+    isMasterTeacherEmail(email) ||
+    (d.role === 'teacher' && d.authorizedTeacherByMaster === true);
+  const role: UserRole = isAuthorizedTeacher ? 'teacher' : 'student';
+  const enrollmentStatus: EnrollmentStatus =
+    d.enrollmentStatus === 'pending' || d.enrollmentStatus === 'revoked'
+      ? d.enrollmentStatus
+      : 'approved';
+
+  return {
+    id: d.id,
+    email,
+    fullName: d.fullName || email.split('@')[0] || 'Estudiante',
+    role,
+    requestedRole: d.requestedRole || undefined,
+    authorizedTeacherByMaster: isAuthorizedTeacher,
+    targetLanguage: d.targetLanguage || 'en',
+    avatarUrl:
+      d.avatarUrl ||
+      `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(email)}`,
+    studentIdNumber: d.studentIdNumber || undefined,
+    notesFromTeacher: d.notesFromTeacher || undefined,
+    enrollmentStatus,
+    approvedByTeacher: enrollmentStatus === 'approved',
+    accessPin: d.accessPin || undefined,
+    createdAt: d.createdAt || new Date().toISOString(),
+    lastActiveAt: d.lastActiveAt || new Date().toISOString()
+  };
+}
+
 export async function fetchStudentProgressFromDatabase(userId: string): Promise<UserProgress | null> {
-  const client = getSupabaseClient();
-  if (!client || !userId) return null;
-
+  if (!userId) return null;
+  const path = `student_progress/${userId}`;
   try {
-    const { data, error } = await client
-      .from('student_progress')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    if (!error && data) {
+    const snap = await getDoc(doc(db, 'student_progress', userId));
+    if (snap.exists()) {
+      const data = snap.data();
       return {
-        completedLessons: Array.isArray(data.completed_lessons) ? data.completed_lessons : [],
-        masteredWords: Array.isArray(data.mastered_words) ? data.mastered_words : [],
-        examScore: data.exam_score !== null && data.exam_score !== undefined ? Number(data.exam_score) : undefined,
-        examPassed: Boolean(data.exam_passed),
-        examPassedDate: data.exam_passed_date || undefined,
+        completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
+        masteredWords: Array.isArray(data.masteredWords) ? data.masteredWords : [],
+        examScore: typeof data.examScore === 'number' ? data.examScore : undefined,
+        examPassed: Boolean(data.examPassed),
+        examPassedDate: data.examPassedDate || undefined,
+        levelScores: typeof data.levelScores === 'object' && data.levelScores ? data.levelScores : {},
         xp: Number(data.xp || 0),
-        streakDays: Number(data.streak_days || 1),
-        lastStudyDate: data.last_study_date || new Date().toISOString().split('T')[0],
-        unlockedBadges: Array.isArray(data.unlocked_badges) ? data.unlocked_badges : [],
-        wordSRSStatus: typeof data.word_srs_status === 'object' && data.word_srs_status ? data.word_srs_status : {},
-        lessonDates: typeof data.lesson_dates === 'object' && data.lesson_dates ? data.lesson_dates : {},
-        totalExercisesDone: Number(data.total_exercises_done || 0),
-        timeSpentMinutes: Number(data.time_spent_minutes || 0)
+        streakDays: Number(data.streakDays || 1),
+        lastStudyDate: data.lastStudyDate || new Date().toISOString().split('T')[0],
+        unlockedBadges: Array.isArray(data.unlockedBadges) ? data.unlockedBadges : [],
+        wordSRSStatus: typeof data.wordSRSStatus === 'object' && data.wordSRSStatus ? data.wordSRSStatus : {},
+        lessonDates: typeof data.lessonDates === 'object' && data.lessonDates ? data.lessonDates : {},
+        examHistory: Array.isArray(data.examHistory) ? data.examHistory : [],
+        totalExercisesDone: Number(data.totalExercisesDone || 0),
+        timeSpentMinutes: Number(data.timeSpentMinutes || 0)
       };
     }
-  } catch (err: any) {
-    console.warn('Error fetching student progress from Supabase:', err.message || err);
+  } catch (err) {
+    handleFirestoreError(err, OperationType.GET, path);
   }
   return null;
 }
 
-// Fetch user profile from Supabase by email, student id, or user id
 export async function fetchStudentProfileFromDatabase(identifier: string): Promise<UserProfile | null> {
-  const client = getSupabaseClient();
-  if (!client || !identifier) return null;
-
+  if (!identifier) return null;
   const clean = identifier.trim().toLowerCase();
-  try {
-    const { data, error } = await client
-      .from('profiles')
-      .select('*')
-      .or(`id.eq.${identifier},email.ilike.${clean},student_id_number.ilike.${clean}`)
-      .limit(1)
-      .maybeSingle();
 
-    if (!error && data) {
-      return {
-        id: data.id,
-        email: data.email,
-        fullName: data.full_name || data.email.split('@')[0],
-        role: (data.role as UserRole) || 'student',
-        avatarUrl: data.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(data.email)}`,
-        studentIdNumber: data.student_id_number,
-        notesFromTeacher: data.notes_from_teacher,
-        createdAt: data.created_at || new Date().toISOString(),
-        lastActiveAt: data.last_active_at || new Date().toISOString()
-      };
+  try {
+    // 1. Direct lookup by document ID
+    const directSnap = await getDoc(doc(db, 'users', identifier.trim()));
+    if (directSnap.exists()) {
+      return mapDocToUserProfile(directSnap.data());
     }
-  } catch (err: any) {
-    console.warn('Error querying Supabase profiles:', err.message || err);
+
+    // 2. Lookup by email
+    const emailQuery = query(collection(db, 'users'), where('email', '==', clean));
+    const emailSnap = await getDocs(emailQuery);
+    if (!emailSnap.empty) {
+      return mapDocToUserProfile(emailSnap.docs[0].data());
+    }
+
+    // 3. Lookup by studentIdNumber
+    const idQuery = query(
+      collection(db, 'users'),
+      where('studentIdNumber', '==', identifier.trim().toUpperCase())
+    );
+    const idSnap = await getDocs(idQuery);
+    if (!idSnap.empty) {
+      return mapDocToUserProfile(idSnap.docs[0].data());
+    }
+  } catch (err) {
+    handleFirestoreError(err, OperationType.LIST, 'users');
   }
   return null;
 }
 
-// Sync progress to cloud (Supabase) and local store
 export async function syncStudentProgressToDatabase(
   user: UserProfile,
   progress: UserProgress,
@@ -255,15 +274,28 @@ export async function syncStudentProgressToDatabase(
     return { success: false, message: 'Usuario no identificado' };
   }
 
-  // 1. Update local database cache
-  const students = getLocalStudents();
-  const index = students.findIndex(s => s.profile.id === user.id || s.profile.email.toLowerCase() === user.email.toLowerCase());
+  const nowIso = new Date().toISOString();
+  const isAuthorizedTeacher =
+    isMasterTeacherEmail(user.email) ||
+    (user.role === 'teacher' && user.authorizedTeacherByMaster === true);
+  const enforcedRole: UserRole = isAuthorizedTeacher ? 'teacher' : 'student';
 
   const updatedProfile: UserProfile = {
     ...user,
+    email: user.email.toLowerCase(),
+    role: enforcedRole,
+    authorizedTeacherByMaster: isAuthorizedTeacher,
+    enrollmentStatus: user.enrollmentStatus || 'approved',
+    approvedByTeacher: (user.enrollmentStatus || 'approved') === 'approved',
     targetLanguage: courseLanguage,
-    lastActiveAt: new Date().toISOString()
+    lastActiveAt: nowIso
   };
+
+  // 1. Update local cache immediately
+  const students = getLocalStudents();
+  const index = students.findIndex(
+    s => s.profile.id === user.id || s.profile.email.toLowerCase() === user.email.toLowerCase()
+  );
 
   const studentRecord: StudentRecord = {
     profile: updatedProfile,
@@ -274,7 +306,11 @@ export async function syncStudentProgressToDatabase(
   if (index >= 0) {
     students[index] = {
       ...students[index],
-      profile: updatedProfile,
+      profile: {
+        ...updatedProfile,
+        notesFromTeacher: updatedProfile.notesFromTeacher ?? students[index].profile.notesFromTeacher,
+        accessPin: updatedProfile.accessPin ?? students[index].profile.accessPin
+      },
       progress,
       courseLanguage
     };
@@ -283,130 +319,406 @@ export async function syncStudentProgressToDatabase(
   }
 
   saveLocalStudents(students);
-  setStoredCurrentUser(updatedProfile);
   try {
     localStorage.setItem(`lingostep_progress_${user.id}`, JSON.stringify(progress));
   } catch (e) {}
 
-  // 2. If Supabase is connected, sync to remote tables
-  const client = getSupabaseClient();
-  if (client) {
-    try {
-      // Upsert profile
-      const { error: profError } = await client.from('profiles').upsert({
-        id: user.id,
-        email: user.email,
-        full_name: user.fullName,
-        role: user.role || 'student',
-        avatar_url: user.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.email)}`,
-        last_active_at: new Date().toISOString(),
-        student_id_number: user.studentIdNumber || null,
-        notes_from_teacher: user.notesFromTeacher || null
-      });
+  // 2. Sync to Firebase Firestore
+  try {
+    const profileDoc: Record<string, any> = {
+      id: user.id,
+      email: user.email.toLowerCase(),
+      fullName: user.fullName,
+      role: enforcedRole,
+      requestedRole: user.requestedRole || '',
+      authorizedTeacherByMaster: isAuthorizedTeacher,
+      enrollmentStatus: user.enrollmentStatus || 'approved',
+      approvedByTeacher: (user.enrollmentStatus || 'approved') === 'approved',
+      accessPin: user.accessPin || '',
+      targetLanguage: courseLanguage,
+      avatarUrl:
+        user.avatarUrl ||
+        `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.email)}`,
+      studentIdNumber: user.studentIdNumber || '',
+      notesFromTeacher: user.notesFromTeacher || '',
+      createdAt: user.createdAt || nowIso,
+      lastActiveAt: nowIso
+    };
 
-      if (profError) {
-        console.warn('Supabase profile upsert notice:', profError.message);
-      }
+    await setDoc(doc(db, 'users', user.id), profileDoc, { merge: true });
 
-      // Upsert student progress
-      const { error: progError } = await client.from('student_progress').upsert({
-        user_id: user.id,
-        completed_lessons: Array.isArray(progress.completedLessons) ? progress.completedLessons : [],
-        mastered_words: Array.isArray(progress.masteredWords) ? progress.masteredWords : [],
-        exam_score: typeof progress.examScore === 'number' ? progress.examScore : null,
-        exam_passed: Boolean(progress.examPassed),
-        exam_passed_date: progress.examPassedDate || null,
-        xp: Number(progress.xp || 0),
-        streak_days: Number(progress.streakDays || 1),
-        last_study_date: progress.lastStudyDate || new Date().toISOString().split('T')[0],
-        unlocked_badges: Array.isArray(progress.unlockedBadges) ? progress.unlockedBadges : [],
-        word_srs_status: progress.wordSRSStatus || {},
-        lesson_dates: progress.lessonDates || {},
-        course_language: courseLanguage,
-        total_exercises_done: Number(progress.totalExercisesDone || 0),
-        time_spent_minutes: Number(progress.timeSpentMinutes || 0),
-        updated_at: new Date().toISOString()
-      });
+    const telemetry = buildAcademicTelemetry(progress);
+    const progressDoc: Record<string, any> = {
+      userId: user.id,
+      completedLessons: Array.isArray(progress.completedLessons) ? progress.completedLessons : [],
+      masteredWords: Array.isArray(progress.masteredWords) ? progress.masteredWords : [],
+      examScore: typeof progress.examScore === 'number' ? progress.examScore : 0,
+      examPassed: Boolean(progress.examPassed),
+      examPassedDate: progress.examPassedDate || '',
+      levelScores: progress.levelScores || {},
+      certifiedLevels: telemetry.certifiedLevels,
+      lessonsByLevel: telemetry.lessonsByLevel,
+      srsBreakdown: telemetry.srsBreakdown,
+      xp: Number(progress.xp || 0),
+      streakDays: Number(progress.streakDays || 1),
+      lastStudyDate: progress.lastStudyDate || nowIso.split('T')[0],
+      unlockedBadges: Array.isArray(progress.unlockedBadges) ? progress.unlockedBadges : [],
+      wordSRSStatus: progress.wordSRSStatus || {},
+      lessonDates: progress.lessonDates || {},
+      examHistory: Array.isArray(progress.examHistory) ? progress.examHistory : [],
+      courseLanguage,
+      totalExercisesDone: Number(progress.totalExercisesDone || 0),
+      timeSpentMinutes: Number(progress.timeSpentMinutes || 0),
+      updatedAt: nowIso
+    };
 
-      if (progError) {
-        console.warn('Supabase progress upsert notice:', progError.message);
-      }
+    await setDoc(doc(db, 'student_progress', user.id), progressDoc, { merge: true });
 
-      return { success: true, message: 'Progreso sincronizado en Supabase y localmente.' };
-    } catch (err: any) {
-      console.warn('Supabase sync warning (saved locally):', err.message);
-      return { success: true, message: 'Guardado localmente. Supabase sync pendiente.' };
-    }
+    return { success: true, message: 'Progreso sincronizado en Firebase Firestore.' };
+  } catch (err: any) {
+    handleFirestoreError(err, OperationType.WRITE, `student_progress/${user.id}`);
+    return { success: false, message: 'Guardado localmente. Sincronización con Firebase pendiente.' };
   }
-
-  return { success: true, message: 'Progreso guardado con éxito.' };
 }
 
-// Fetch all students for the Teacher Dashboard
-export async function fetchAllStudentsForTeacher(): Promise<StudentRecord[]> {
+// Submit a Teacher Registration Request (Blocked until spacio.n.blnco@gmail.com approves it!)
+export async function requestTeacherRegistration(params: {
+  fullName: string;
+  email: string;
+  accessPin: string;
+}): Promise<UserProfile> {
+  const nowIso = new Date().toISOString();
+  const cleanEmail = params.email.trim().toLowerCase();
+  const cleanName = params.fullName.trim();
+
+  if (isMasterTeacherEmail(cleanEmail)) {
+    throw new Error(
+      `El correo ${MASTER_TEACHER_EMAIL} ya es el Profesor Titular. Inicia sesión directamente con tu clave maestra o Google.`
+    );
+  }
+
+  const existing = await fetchStudentProfileFromDatabase(cleanEmail);
+  if (existing && existing.role === 'teacher' && existing.authorizedTeacherByMaster) {
+    throw new Error('Este correo ya está autorizado como Profesor. Inicia sesión directamente.');
+  }
+
+  const userId =
+    existing?.id || `tch_req_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
+
+  const pendingTeacherProfile: UserProfile = {
+    id: userId,
+    email: cleanEmail,
+    fullName: cleanName,
+    role: 'student', // Remains 'student' until Master Teacher approves!
+    requestedRole: 'teacher',
+    authorizedTeacherByMaster: false,
+    enrollmentStatus: 'pending',
+    approvedByTeacher: false,
+    accessPin: params.accessPin.trim(),
+    targetLanguage: 'en',
+    avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanName)}`,
+    createdAt: existing?.createdAt || nowIso,
+    lastActiveAt: nowIso
+  };
+
+  const emptyProgress: UserProgress = {
+    completedLessons: [],
+    masteredWords: [],
+    examScore: undefined,
+    examPassed: false,
+    levelScores: {},
+    xp: 0,
+    streakDays: 1,
+    lastStudyDate: nowIso.split('T')[0],
+    unlockedBadges: [],
+    wordSRSStatus: {},
+    lessonDates: {},
+    examHistory: [],
+    totalExercisesDone: 0,
+    timeSpentMinutes: 0
+  };
+
+  await syncStudentProgressToDatabase(pendingTeacherProfile, emptyProgress, 'en');
+  return pendingTeacherProfile;
+}
+
+// Master Teacher (spacio.n.blnco@gmail.com) directly creates or authorizes a Teacher account
+export async function authorizeTeacherByMaster(params: {
+  fullName: string;
+  email: string;
+  accessPin: string;
+}): Promise<UserProfile> {
+  const nowIso = new Date().toISOString();
+  const cleanEmail = params.email.trim().toLowerCase();
+  const cleanName = params.fullName.trim();
+
+  const existing = await fetchStudentProfileFromDatabase(cleanEmail);
+  const teacherId =
+    existing?.id || `tch_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
+
+  const profile: UserProfile = {
+    id: teacherId,
+    email: cleanEmail,
+    fullName: cleanName,
+    role: 'teacher',
+    requestedRole: 'teacher',
+    authorizedTeacherByMaster: true,
+    enrollmentStatus: 'approved',
+    approvedByTeacher: true,
+    accessPin: params.accessPin.trim(),
+    targetLanguage: existing?.targetLanguage || 'en',
+    avatarUrl:
+      existing?.avatarUrl ||
+      `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanName)}`,
+    createdAt: existing?.createdAt || nowIso,
+    lastActiveAt: nowIso
+  };
+
+  const existingProgress = existing ? await fetchStudentProgressFromDatabase(teacherId) : null;
+  const initialProgress: UserProgress = existingProgress || {
+    completedLessons: [],
+    masteredWords: [],
+    examScore: undefined,
+    examPassed: false,
+    levelScores: {},
+    xp: 0,
+    streakDays: 1,
+    lastStudyDate: nowIso.split('T')[0],
+    unlockedBadges: ['b_first_step'],
+    wordSRSStatus: {},
+    lessonDates: {},
+    examHistory: [],
+    totalExercisesDone: 0,
+    timeSpentMinutes: 0
+  };
+
+  await syncStudentProgressToDatabase(profile, initialProgress, 'en');
+  return profile;
+}
+
+// Master Teacher approves or revokes a Teacher's authorization
+export async function setTeacherAuthorizationStatus(
+  userId: string,
+  authorizeAsTeacher: boolean
+): Promise<boolean> {
+  try {
+    await updateDoc(doc(db, 'users', userId), {
+      role: authorizeAsTeacher ? 'teacher' : 'student',
+      requestedRole: authorizeAsTeacher ? 'teacher' : '',
+      authorizedTeacherByMaster: authorizeAsTeacher,
+      enrollmentStatus: 'approved',
+      approvedByTeacher: true,
+      lastActiveAt: new Date().toISOString()
+    });
+    return true;
+  } catch (err) {
+    handleFirestoreError(err, OperationType.UPDATE, `users/${userId}`);
+    return false;
+  }
+}
+
+export async function deleteUserRecordFromDatabase(userId: string): Promise<boolean> {
+  const students = getLocalStudents().filter(s => s.profile.id !== userId);
+  saveLocalStudents(students);
+  try {
+    localStorage.removeItem(`lingostep_progress_${userId}`);
+  } catch {}
+
+  try {
+    await deleteDoc(doc(db, 'users', userId));
+    await deleteDoc(doc(db, 'student_progress', userId));
+    return true;
+  } catch (err) {
+    handleFirestoreError(err, OperationType.DELETE, `users/${userId}`);
+    return false;
+  }
+}
+
+// Sign in with Google via Firebase Authentication:
+// - Students register and sign in freely!
+// - Teachers: Only spacio.n.blnco@gmail.com or users with authorizedTeacherByMaster === true get role === 'teacher'!
+export async function signInWithGoogleFirebase(
+  preferredLanguage: 'en' | 'es' = 'en',
+  attemptingTeacherLogin: boolean = false
+): Promise<{ profile: UserProfile; courseLanguage: 'en' | 'es' }> {
+  const credential = await signInWithPopup(auth, googleProvider);
+  const fbUser = credential.user;
+  const nowIso = new Date().toISOString();
+  const cleanEmail = (fbUser.email || '').trim().toLowerCase();
+
+  // Check if profile already exists by UID or email
+  let existingProfile = await fetchStudentProfileFromDatabase(fbUser.uid);
+  if (!existingProfile && cleanEmail) {
+    existingProfile = await fetchStudentProfileFromDatabase(cleanEmail);
+  }
+
+  const isMaster = isMasterTeacherEmail(cleanEmail);
+  const isPreAuthorizedTeacher =
+    isMaster || Boolean(existingProfile?.role === 'teacher' && existingProfile?.authorizedTeacherByMaster);
+
+  // If the user clicked "Entrar como Profesor con Google" and is NOT authorized by spacio.n.blnco@gmail.com:
+  if (attemptingTeacherLogin && !isPreAuthorizedTeacher) {
+    // Record their pending teacher request so spacio.n.blnco@gmail.com can see and approve/reject it
+    await requestTeacherRegistration({
+      fullName: fbUser.displayName || cleanEmail.split('@')[0] || 'Solicitante Profesor',
+      email: cleanEmail || `${fbUser.uid}@cesarteach.edu`,
+      accessPin: 'GOOGLE-AUTH'
+    });
+    throw new Error(
+      `Ningún profesor puede registrarse sin autorización del Profesor Titular (${MASTER_TEACHER_EMAIL}). Hemos enviado tu solicitud al titular para que la apruebe en su Panel de Control.`
+    );
+  }
+
+  const resolvedLanguage = existingProfile?.targetLanguage || preferredLanguage;
+  const existingProgress = existingProfile
+    ? await fetchStudentProgressFromDatabase(existingProfile.id)
+    : null;
+
+  const profile: UserProfile = {
+    id: existingProfile?.id || fbUser.uid,
+    email: cleanEmail || `${fbUser.uid}@cesarteach.edu`,
+    fullName:
+      existingProfile?.fullName ||
+      fbUser.displayName ||
+      cleanEmail.split('@')[0] ||
+      'Estudiante',
+    role: isPreAuthorizedTeacher ? 'teacher' : 'student',
+    authorizedTeacherByMaster: isPreAuthorizedTeacher,
+    enrollmentStatus: 'approved',
+    approvedByTeacher: true,
+    targetLanguage: resolvedLanguage,
+    studentIdNumber:
+      existingProfile?.studentIdNumber || `EST-${Math.floor(1000 + Math.random() * 9000)}`,
+    notesFromTeacher: existingProfile?.notesFromTeacher || '',
+    avatarUrl:
+      fbUser.photoURL ||
+      existingProfile?.avatarUrl ||
+      `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(fbUser.uid)}`,
+    createdAt: existingProfile?.createdAt || nowIso,
+    lastActiveAt: nowIso
+  };
+
+  const initialOrMergedProgress: UserProgress = existingProgress || {
+    completedLessons: [],
+    masteredWords: [],
+    examScore: undefined,
+    examPassed: false,
+    levelScores: {},
+    xp: 0,
+    streakDays: 1,
+    lastStudyDate: nowIso.split('T')[0],
+    unlockedBadges: ['b_first_step'],
+    wordSRSStatus: {},
+    lessonDates: {},
+    examHistory: [],
+    totalExercisesDone: 0,
+    timeSpentMinutes: 0
+  };
+
+  await syncStudentProgressToDatabase(profile, initialOrMergedProgress, resolvedLanguage);
+  setStoredCurrentUser(profile);
+  return { profile, courseLanguage: resolvedLanguage };
+}
+
+// Fetch all students AND teacher requests/authorized teachers for the Teacher Dashboard
+export async function fetchAllUsersForTeacherDashboard(): Promise<{
+  students: StudentRecord[];
+  teachersAndRequests: UserProfile[];
+}> {
   const localList = getLocalStudents();
-  const client = getSupabaseClient();
 
-  if (client) {
-    try {
-      const { data: profiles, error: profileError } = await client
-        .from('profiles')
-        .select('*')
-        .eq('role', 'student');
+  try {
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const progressSnap = await getDocs(collection(db, 'student_progress'));
 
-      if (!profileError && profiles && profiles.length > 0) {
-        const { data: progressList } = await client
-          .from('student_progress')
-          .select('*');
+    const progressMap = new Map<string, any>();
+    progressSnap.forEach(docSnap => {
+      progressMap.set(docSnap.id, docSnap.data());
+    });
 
-        const merged: StudentRecord[] = profiles.map((p: any) => {
-          const prog = progressList?.find((pr: any) => pr.user_id === p.id);
-          return {
-            profile: {
-              id: p.id,
-              email: p.email,
-              fullName: p.full_name || p.email.split('@')[0],
-              role: p.role || 'student',
-              avatarUrl: p.avatar_url,
-              createdAt: p.created_at || new Date().toISOString(),
-              lastActiveAt: p.last_active_at || new Date().toISOString(),
-              studentIdNumber: p.student_id_number,
-              notesFromTeacher: p.notes_from_teacher
-            },
-            progress: {
-              completedLessons: prog?.completed_lessons || [],
-              masteredWords: prog?.mastered_words || [],
-              examScore: prog?.exam_score,
-              examPassed: prog?.exam_passed || false,
-              examPassedDate: prog?.exam_passed_date,
-              xp: prog?.xp || 0,
-              streakDays: prog?.streak_days || 0,
-              lastStudyDate: prog?.last_study_date,
-              unlockedBadges: prog?.unlocked_badges || [],
-              wordSRSStatus: prog?.word_srs_status || {},
-              lessonDates: prog?.lesson_dates || {},
-              totalExercisesDone: prog?.total_exercises_done || 0,
-              timeSpentMinutes: prog?.time_spent_minutes || 0
-            },
-            courseLanguage: prog?.course_language || 'en'
-          };
-        });
+    const remoteStudents: StudentRecord[] = [];
+    const teachersAndRequests: UserProfile[] = [];
 
-        // Merge with local records
-        const map = new Map<string, StudentRecord>();
-        localList.forEach(s => map.set(s.profile.id, s));
-        merged.forEach(s => map.set(s.profile.id, s));
-        return Array.from(map.values());
+    usersSnap.forEach(userSnap => {
+      const p = userSnap.data();
+      const profile = mapDocToUserProfile(p);
+
+      // Separate Teacher accounts & Pending Teacher Requests from normal students
+      if (
+        profile.role === 'teacher' ||
+        p.requestedRole === 'teacher'
+      ) {
+        if (!isMasterTeacherEmail(profile.email)) {
+          teachersAndRequests.push({
+            ...profile,
+            requestedRole: p.requestedRole || profile.role
+          });
+        }
+        return;
       }
-    } catch (e) {
-      console.warn('Error querying Supabase students, returning local list:', e);
-    }
-  }
 
-  return localList;
+      const prog = progressMap.get(p.id);
+      remoteStudents.push({
+        profile,
+        progress: {
+          completedLessons: Array.isArray(prog?.completedLessons) ? prog.completedLessons : [],
+          masteredWords: Array.isArray(prog?.masteredWords) ? prog.masteredWords : [],
+          examScore:
+            typeof prog?.examScore === 'number' && prog.examScore > 0
+              ? prog.examScore
+              : undefined,
+          examPassed: Boolean(prog?.examPassed),
+          examPassedDate: prog?.examPassedDate || undefined,
+          levelScores: prog?.levelScores || {},
+          xp: Number(prog?.xp || 0),
+          streakDays: Number(prog?.streakDays || 1),
+          lastStudyDate: prog?.lastStudyDate,
+          unlockedBadges: Array.isArray(prog?.unlockedBadges) ? prog.unlockedBadges : [],
+          wordSRSStatus: prog?.wordSRSStatus || {},
+          lessonDates: prog?.lessonDates || {},
+          examHistory: Array.isArray(prog?.examHistory) ? prog.examHistory : [],
+          totalExercisesDone: Number(prog?.totalExercisesDone || 0),
+          timeSpentMinutes: Number(prog?.timeSpentMinutes || 0)
+        },
+        courseLanguage: prog?.courseLanguage || p.targetLanguage || 'en'
+      });
+    });
+
+    const mergedMap = new Map<string, StudentRecord>();
+    localList.forEach(s => {
+      if (
+        s.profile.role !== 'teacher' &&
+        s.profile.requestedRole !== 'teacher' &&
+        !isMasterTeacherEmail(s.profile.email)
+      ) {
+        mergedMap.set(s.profile.id, s);
+      }
+    });
+    remoteStudents.forEach(s => {
+      mergedMap.set(s.profile.id, s);
+    });
+
+    saveLocalStudents(Array.from(mergedMap.values()));
+    return {
+      students: Array.from(mergedMap.values()),
+      teachersAndRequests
+    };
+  } catch (err) {
+    handleFirestoreError(err, OperationType.LIST, 'users');
+    return {
+      students: localList.filter(
+        s => s.profile.role !== 'teacher' && !isMasterTeacherEmail(s.profile.email)
+      ),
+      teachersAndRequests: []
+    };
+  }
 }
 
-// Teacher updates teacher notes / feedback for a student
+export async function fetchAllStudentsForTeacher(): Promise<StudentRecord[]> {
+  const res = await fetchAllUsersForTeacherDashboard();
+  return res.students;
+}
+
 export async function updateStudentTeacherNotes(
   studentId: string,
   notes: string
@@ -418,64 +730,30 @@ export async function updateStudentTeacherNotes(
     saveLocalStudents(students);
   }
 
-  const client = getSupabaseClient();
-  if (client) {
-    try {
-      await client.from('profiles').update({ notes_from_teacher: notes }).eq('id', studentId);
-    } catch (e) {
-      console.error('Error updating notes in Supabase:', e);
-    }
+  try {
+    await updateDoc(doc(db, 'users', studentId), {
+      notesFromTeacher: notes,
+      lastActiveAt: new Date().toISOString()
+    });
+    return true;
+  } catch (err) {
+    handleFirestoreError(err, OperationType.UPDATE, `users/${studentId}`);
+    return false;
   }
-  return true;
 }
 
-// Copy-pasteable SQL setup script for teacher
-export const SUPABASE_SQL_SETUP_SCRIPT = `-- ========================================================
--- TABLAS PARA LINGOSTEP (ESCUELA DE IDIOMAS & ESTUDIANTES)
--- Ejecuta este script en el SQL Editor de tu proyecto Supabase
--- ========================================================
+export const SUPABASE_SQL_SETUP_SCRIPT = `// ============================================================================
+// ARQUITECTURA DE BASE DE DATOS EN FIREBASE CLOUD FIRESTORE
+// Proyecto: ${firebaseConfig.projectId}
+// Base de Datos: ${firebaseConfig.firestoreDatabaseId}
+// Profesor Titular Administrador: ${MASTER_TEACHER_EMAIL}
+// ============================================================================
 
--- 1. Tabla de Perfiles de Usuarios (Estudiantes y Profesores)
-CREATE TABLE IF NOT EXISTS public.profiles (
-  id TEXT PRIMARY KEY,
-  email TEXT NOT NULL UNIQUE,
-  full_name TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'student', -- 'student' | 'teacher'
-  avatar_url TEXT,
-  student_id_number TEXT,
-  notes_from_teacher TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-  last_active_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
+// 1. REGISTRO DE ALUMNOS (ABIERTO E INMEDIATO):
+// Cualquier estudiante puede crear su cuenta o entrar con Google con role: "student".
 
--- 2. Tabla de Progreso Académico de Estudiantes
-CREATE TABLE IF NOT EXISTS public.student_progress (
-  user_id TEXT PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
-  completed_lessons JSONB DEFAULT '[]'::jsonb,
-  mastered_words JSONB DEFAULT '[]'::jsonb,
-  exam_score NUMERIC,
-  exam_passed BOOLEAN DEFAULT FALSE,
-  exam_passed_date TIMESTAMP WITH TIME ZONE,
-  xp INTEGER DEFAULT 0,
-  streak_days INTEGER DEFAULT 0,
-  last_study_date TEXT,
-  unlocked_badges JSONB DEFAULT '[]'::jsonb,
-  word_srs_status JSONB DEFAULT '{}'::jsonb,
-  lesson_dates JSONB DEFAULT '{}'::jsonb,
-  course_language TEXT DEFAULT 'en',
-  total_exercises_done INTEGER DEFAULT 0,
-  time_spent_minutes INTEGER DEFAULT 0,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 3. Habilitar seguridad de nivel de fila (Row Level Security)
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.student_progress ENABLE ROW LEVEL SECURITY;
-
--- 4. Políticas de lectura y escritura públicas/autenticadas
-CREATE POLICY "Permitir lectura para todos" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Permitir insercion y actualizacion" ON public.profiles FOR ALL USING (true);
-
-CREATE POLICY "Permitir lectura de progreso" ON public.student_progress FOR SELECT USING (true);
-CREATE POLICY "Permitir insercion y actualizacion de progreso" ON public.student_progress FOR ALL USING (true);
+// 2. REGISTRO DE PROFESORES (PROTEGIDO CON AUTORIZACIÓN DEL TITULAR):
+// Ningún profesor puede registrarse por su cuenta.
+// Solo ${MASTER_TEACHER_EMAIL} o cuentas con authorizedTeacherByMaster: true
+// aprobadas por el Profesor Titular en el Panel de Control obtienen role: "teacher".
 `;

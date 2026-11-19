@@ -126,9 +126,9 @@ También se usa cuando una actividad reciente deja una señal evidente ahora mis
         question: '¿Cómo traduces correctamente "Llevo tres horas esperando"?',
         options: [
           'I am waiting for three hours.',
-          'I have been waiting for three hours.',
           'I wait since three hours.',
-          'I has been waiting for three hours.'
+          'I has been waiting for three hours.',
+          'I have been waiting for three hours.'
         ],
         correctAnswer: 'I have been waiting for three hours.',
         explanation: 'Para expresar "llevar + tiempo + gerundio" usamos "have/has been + verbo-ing".'
@@ -195,7 +195,7 @@ Solo añadimos **by + autor** cuando el creador aporta información relevante:
       {
         id: 'b1-en-3-q1',
         question: 'Completa en voz pasiva pasada: "The new software ___ developed last year."',
-        options: ['is', 'was', 'were', 'did'],
+        options: ['is', 'were', 'was', 'did'],
         correctAnswer: 'was',
         explanation: '"The new software" es singular y "last year" indica pasado, por lo que usamos "was + participio".'
       },
@@ -263,14 +263,14 @@ Solo añadimos **by + autor** cuando el creador aporta información relevante:
       {
         id: 'b1-en-4-q1',
         question: 'Pasa a estilo indirecto: Maria said, "I will finish the report today." → Maria said that she ___ finish the report.',
-        options: ['will', 'would', 'can', 'had'],
+        options: ['would', 'will', 'can', 'had'],
         correctAnswer: 'would',
         explanation: 'En Reported Speech, el auxiliar futuro "will" retrocede a "would".'
       },
       {
         id: 'b1-en-4-q2',
         question: 'Completa con el verbo correcto: "He ___ me that he was tired."',
-        options: ['said', 'told', 'spoke', 'talked'],
+        options: ['said', 'spoke', 'told', 'talked'],
         correctAnswer: 'told',
         explanation: 'Cuando hay un pronombre personal receptor ("me"), es obligatorio usar "told" y no "said".'
       },
@@ -329,7 +329,7 @@ Solo añadimos **by + autor** cuando el creador aporta información relevante:
       {
         id: 'b1-en-5-q2',
         question: 'Completa: "That is the cafe ___ we met for the first time."',
-        options: ['which', 'where', 'who', 'whose'],
+        options: ['which', 'who', 'whose', 'where'],
         correctAnswer: 'where',
         explanation: 'Para lugares donde ocurre una acción usamos "where".'
       },
@@ -485,14 +485,14 @@ Solo añadimos **by + autor** cuando el creador aporta información relevante:
       {
         id: 'b1-en-8-q1',
         question: 'Atención al gerundio: "I look forward to ___ you at the conference."',
-        options: ['see', 'seeing', 'saw', 'seen'],
+        options: ['seeing', 'see', 'saw', 'seen'],
         correctAnswer: 'seeing',
         explanation: 'En "look forward to", "to" es una preposición, por lo que el verbo siguiente SIEMPRE lleva -ING ("seeing").'
       },
       {
         id: 'b1-en-8-q2',
         question: 'Completa: "We need to go to the supermarket because we ___ coffee."',
-        options: ['turned down', 'ran out of', 'gave up', 'looked after'],
+        options: ['turned down', 'gave up', 'looked after', 'ran out of'],
         correctAnswer: 'ran out of',
         explanation: '"Run out of" significa quedarse sin suministros de algo.'
       }
@@ -559,7 +559,7 @@ En español basta con decir *"¿verdad?"* al final de cualquier frase. En inglé
       {
         id: 'b1-en-9-q2',
         question: 'Completa con el Question Tag correcto: "She speaks fluent Portuguese, ___?"',
-        options: ['isn\'t she', 'doesn\'t she', 'does she', 'didn\'t she'],
+        options: ['doesn\'t she', 'isn\'t she', 'does she', 'didn\'t she'],
         correctAnswer: 'doesn\'t she',
         explanation: 'Como "speaks" está en Present Simple afirmativo (3ra persona), el Question Tag usa el auxiliar negativo "doesn\'t she?".',
         hint: 'Present Simple afirmativo (she speaks) -> auxiliar negativo.'
@@ -624,7 +624,7 @@ Ambas estructuras expresan la misma idea desde ángulos opuestos:
       {
         id: 'b1-en-10-q2',
         question: 'Completa: "The traffic was ___ heavy that we missed the beginning of the play."',
-        options: ['such', 'so', 'too', 'enough'],
+        options: ['such', 'too', 'so', 'enough'],
         correctAnswer: 'so',
         explanation: '"Heavy" está solo como adjetivo antes de "that", por lo que usamos "so heavy that".',
         hint: 'Adjetivo solo ("heavy") -> so.'
@@ -711,10 +711,10 @@ Ambas estructuras expresan la misma idea desde ángulos opuestos:
         id: 'b1-en-11-q3',
         question: 'Si la computadora está lenta y sugieres probar reiniciándola como experimento, dices:',
         options: [
-          'Try restarting the computer.',
           'Try to restart the computer with force.',
           'Remember restarting the computer.',
-          'Stop to restart the computer.'
+          'Stop to restart the computer.',
+          'Try restarting the computer.'
         ],
         correctAnswer: 'Try restarting the computer.',
         explanation: '"Try + -ING" significa probar una solución o método para ver si funciona.',
@@ -775,9 +775,9 @@ Ambas estructuras expresan la misma idea desde ángulos opuestos:
         id: 'b1-en-12-q1',
         question: 'En una entrevista con el método STAR, ¿qué tiempo verbal es ideal para conectar tu logro con el impacto que sigue vigente hoy?',
         options: [
-          'Present Perfect ("Since then, our team has increased efficiency by 25%")',
           'Past Continuous ("We were increasing efficiency")',
           'Imperative ("Increase efficiency!")',
+          'Present Perfect ("Since then, our team has increased efficiency by 25%")',
           'Second Conditional ("We would increase efficiency")'
         ],
         correctAnswer: 'Present Perfect ("Since then, our team has increased efficiency by 25%")',
@@ -896,7 +896,7 @@ Para acciones que ya habrán concluido antes de una fecha límite (*By...*):
       {
         id: 'b2-en-2-q2',
         question: 'Completa: "Don\'t call me at 8 PM because I ___ having dinner with clients."',
-        options: ['will have', 'will be', 'am', 'would have'],
+        options: ['will be', 'will have', 'am', 'would have'],
         correctAnswer: 'will be',
         explanation: 'Expresa una acción en progreso en un punto exacto del futuro ("will be having").'
       }
@@ -937,14 +937,14 @@ Para acciones que ya habrán concluido antes de una fecha límite (*By...*):
       {
         id: 'b2-en-3-q1',
         question: 'Expresa arrepentimiento: "I failed the test. I ___ studied harder."',
-        options: ['must have', 'should have', 'can\'t have', 'may'],
+        options: ['must have', 'can\'t have', 'should have', 'may'],
         correctAnswer: 'should have',
         explanation: '"Should have + participio" indica lo que era recomendable hacer en el pasado pero no se hizo.'
       },
       {
         id: 'b2-en-3-q2',
         question: 'Deducción lógica del pasado: "She wasn\'t in the office yesterday; she ___ taken the day off."',
-        options: ['must have', 'should', 'can', 'would'],
+        options: ['should', 'can', 'would', 'must have'],
         correctAnswer: 'must have',
         explanation: '"Must have + participio" expresa una conclusión lógica casi segura sobre el pasado.'
       }
@@ -1047,7 +1047,7 @@ Se usa cuando contratas o encargas a alguien más que realice un servicio por ti
       {
         id: 'b2-en-5-q2',
         question: 'Expresa un deseo sobre el presente: "I wish I ___ more free time right now."',
-        options: ['have', 'had', 'will have', 'would have'],
+        options: ['had', 'have', 'will have', 'would have'],
         correctAnswer: 'had',
         explanation: 'Para deseos sobre el presente, "I wish" va seguido de Past Simple ("had").'
       }
@@ -1092,9 +1092,9 @@ Se usa cuando contratas o encargas a alguien más que realice un servicio por ti
         question: '¿Qué significa la expresión "To hit the nail on the head"?',
         options: [
           'Cometer un error grave',
-          'Dar exactamente en el clavo / acertar el punto clave',
           'Trabajar en construcción',
-          'Cancelar una reunión'
+          'Cancelar una reunión',
+          'Dar exactamente en el clavo / acertar el punto clave'
         ],
         correctAnswer: 'Dar exactamente en el clavo / acertar el punto clave',
         explanation: '"Hit the nail on the head" significa describir exactamente la causa o solución de una situación.'
@@ -1161,8 +1161,8 @@ Se usa cuando contratas o encargas a alguien más que realice un servicio por ti
         question: 'Elige el participio con sentido pasivo: "___ in 1925, the novel remains a classic today."',
         options: [
           'Publishing',
-          'Published',
           'Having publish',
+          'Published',
           'To publish'
         ],
         correctAnswer: 'Published',
@@ -1280,7 +1280,7 @@ Después de *insist, suggest, recommend, demand, it is essential/vital that*:
       {
         id: 'b2-en-9-q2',
         question: 'Elige la forma de Subjuntivo Formal en inglés: "It is essential that she ___ present at the signing."',
-        options: ['is', 'be', 'was', 'will be'],
+        options: ['is', 'was', 'will be', 'be'],
         correctAnswer: 'be',
         explanation: 'Tras "It is essential/vital/important that...", el subjuntivo formal inglés usa el verbo base "be" para todas las personas.',
         hint: 'Subjuntivo formal en inglés = verbo base puro ("be").'
@@ -1332,9 +1332,9 @@ Después de *insist, suggest, recommend, demand, it is essential/vital that*:
         id: 'b2-en-10-q1',
         question: '¿Qué Phrasal Verb significa "estar a la altura de las expectativas"? "The movie didn\'t ___ the hype."',
         options: [
-          'live up to',
           'put up with',
           'cut down on',
+          'live up to',
           'come up with'
         ],
         correctAnswer: 'live up to',
@@ -1345,8 +1345,8 @@ Después de *insist, suggest, recommend, demand, it is essential/vital that*:
         id: 'b2-en-10-q2',
         question: 'Elige la colocación académica correcta para "hacer una investigación":',
         options: [
-          'make a research',
           'conduct research',
+          'make a research',
           'do a researches',
           'take research'
         ],
@@ -1399,8 +1399,8 @@ En lugar de hacer generalizaciones absolutas que pueden ser refutadas, matiza tu
         question: 'Completa con el conector formal seguido de sustantivo: "___ the severe weather conditions, all flights were rescheduled."',
         options: [
           'Because',
-          'Owing to',
           'Although',
+          'Owing to',
           'Whereas'
         ],
         correctAnswer: 'Owing to',
@@ -1467,10 +1467,10 @@ Observa cómo un hablante B2 certificado combina múltiples estructuras en un so
         id: 'b2-en-12-q2',
         question: 'Identifica la inversión condicional formal equivalente a "If we had known earlier...":',
         options: [
-          'Had we known earlier...',
           'Did we know earlier...',
           'Were we known earlier...',
-          'Have we known earlier...'
+          'Have we known earlier...',
+          'Had we known earlier...'
         ],
         correctAnswer: 'Had we known earlier...',
         explanation: 'En registro formal B2/C1, "If we had known" puede invertirse eliminando "if": "Had we known earlier...".',
@@ -1584,7 +1584,7 @@ All -AR, -ER, and -IR verbs use the exact same endings attached to the infinitiv
       {
         id: 'b1-es-2-q2',
         question: 'What is the irregular conditional "Yo" form of "Hacer"?',
-        options: ['hacería', 'haría', 'hiciera', 'hago'],
+        options: ['haría', 'hacería', 'hiciera', 'hago'],
         correctAnswer: 'haría',
         explanation: 'Hacer uses the irregular stem "har-" in both the future and conditional: yo haría.'
       }
@@ -1626,7 +1626,7 @@ All -AR, -ER, and -IR verbs use the exact same endings attached to the infinitiv
       {
         id: 'b1-es-3-q1',
         question: 'Choose the correct negative command: "¡No ___ (llegar - tú) tarde a la entrevista!"',
-        options: ['llegas', 'llega', 'llegues', 'llegar'],
+        options: ['llegas', 'llega', 'llegar', 'llegues'],
         correctAnswer: 'llegues',
         explanation: 'Negative tú commands use the Present Subjunctive (llegar → llegues).'
       },
@@ -1671,7 +1671,7 @@ All -AR, -ER, and -IR verbs use the exact same endings attached to the infinitiv
       {
         id: 'b1-es-4-q1',
         question: 'Complete: "Cuando llamé a Ana, ella ya ___ (salir) de la oficina."',
-        options: ['ha salido', 'había salido', 'salió', 'salía'],
+        options: ['había salido', 'ha salido', 'salió', 'salía'],
         correctAnswer: 'había salido',
         explanation: '"Había salido" expresses an action completed prior to another past action ("llamé").'
       },
@@ -1728,7 +1728,7 @@ When **le** or **les** is followed by **lo, la, los, las**, change **le/les** to
       {
         id: 'b1-es-5-q2',
         question: 'Complete: "¿Me prestas tu bolígrafo? — Sí, ___ presto."',
-        options: ['te lo', 'lo te', 'se la', 'me lo'],
+        options: ['lo te', 'se la', 'te lo', 'me lo'],
         correctAnswer: 'te lo',
         explanation: 'Indirect pronoun "te" (to you) + Direct masculine singular "lo" (el bolígrafo).'
       }
@@ -1781,7 +1781,7 @@ When **le** or **les** is followed by **lo, la, los, las**, change **le/les** to
       {
         id: 'b1-es-6-q2',
         question: 'Complete for a career achieved through effort: "Después de seis años en la universidad, se ___ arquitecta."',
-        options: ['puso', 'hizo', 'quedó', 'volvió'],
+        options: ['puso', 'quedó', 'volvió', 'hizo'],
         correctAnswer: 'hizo',
         explanation: '"Hacerse" is used for professions and goals achieved through personal effort.'
       }
@@ -1823,14 +1823,14 @@ When **le** or **les** is followed by **lo, la, los, las**, change **le/les** to
       {
         id: 'b1-es-7-q1',
         question: 'Future event after "Cuando": "Te avisaré mañana cuando ___ (terminar - yo) el informe."',
-        options: ['termino', 'termine', 'terminaré', 'terminé'],
+        options: ['termino', 'terminaré', 'termine', 'terminé'],
         correctAnswer: 'termine',
         explanation: 'Future actions introduced by "cuando" require the Present Subjunctive ("termine").'
       },
       {
         id: 'b1-es-7-q2',
         question: 'Complete: "Te doy las llaves para que ___ (poder - tú) entrar."',
-        options: ['puedes', 'puedas', 'podrás', 'podías'],
+        options: ['puedas', 'puedes', 'podrás', 'podías'],
         correctAnswer: 'puedas',
         explanation: '"Para que" (so that) always requires the Subjunctive ("puedas").'
       }
@@ -1868,14 +1868,14 @@ When **le** or **les** is followed by **lo, la, los, las**, change **le/les** to
       {
         id: 'b1-es-8-q1',
         question: 'Shift to Reported Speech: Juan dijo: "Mañana viajaré a Lima" → Juan dijo que al día siguiente ___ a Lima.',
-        options: ['viajará', 'viajaría', 'viaja', 'viajó'],
+        options: ['viajará', 'viaja', 'viajaría', 'viajó'],
         correctAnswer: 'viajaría',
         explanation: 'When reporting past statements, Future ("viajaré") shifts to Conditional ("viajaría").'
       },
       {
         id: 'b1-es-8-q2',
         question: 'Complete the yes/no reported question: "Ella me preguntó ___ yo hablaba español."',
-        options: ['que', 'si', 'como', 'cuando'],
+        options: ['que', 'como', 'cuando', 'si'],
         correctAnswer: 'si',
         explanation: 'Yes/No indirect questions are introduced by "si" (if/whether).'
       }
@@ -1926,8 +1926,8 @@ The moment you add **"NO"** before these expressions, you open a space of doubt�
         id: 'b1-es-9-q1',
         question: 'Compare affirmative vs. negative opinion: "Pienso que este hotel ___ (ser) excelente, pero no pienso que ___ (ser) barato."',
         options: [
-          'es / sea',
           'sea / es',
+          'es / sea',
           'es / es',
           'sea / sea'
         ],
@@ -1938,7 +1938,7 @@ The moment you add **"NO"** before these expressions, you open a space of doubt�
       {
         id: 'b1-es-9-q2',
         question: 'Complete: "No es cierto que nosotros ___ (tener) problemas con el proyecto."',
-        options: ['tenemos', 'tengamos', 'tendremos', 'tuvimos'],
+        options: ['tengamos', 'tenemos', 'tendremos', 'tuvimos'],
         correctAnswer: 'tengamos',
         explanation: '"No es cierto que" denies certainty and requires the Present Subjunctive ("tengamos").',
         hint: 'Denied truth -> Subjunctive.'
@@ -1987,9 +1987,9 @@ In Spanish, you can NEVER leave a preposition dangling at the end of a sentence 
         question: 'How do you translate "I know what you need" into Spanish?',
         options: [
           'Sé qué necesitas.',
-          'Sé lo que necesitas.',
           'Sé el que necesitas.',
-          'Sé cual necesitas.'
+          'Sé cual necesitas.',
+          'Sé lo que necesitas.'
         ],
         correctAnswer: 'Sé lo que necesitas.',
         explanation: '"Lo que" translates "what" (= that which) in non-interrogative sentences referring to an idea or thing.',
@@ -2048,7 +2048,7 @@ In Spanish, you can NEVER leave a preposition dangling at the end of a sentence 
       {
         id: 'b1-es-11-q1',
         question: 'Complete the accidental structure: "Ayer se me ___ (caer) las gafas en la escalera."',
-        options: ['cayó', 'cayeron', 'caí', 'caían'],
+        options: ['cayeron', 'cayó', 'caí', 'caían'],
         correctAnswer: 'cayeron',
         explanation: 'Because "las gafas" is plural, the preterite verb must agree in the 3rd person plural: "se me cayeron".',
         hint: 'Las gafas (plural) -> cayeron.'
@@ -2109,8 +2109,8 @@ In Spanish, you can NEVER leave a preposition dangling at the end of a sentence 
         question: 'Which phrase is the most natural way to say "meet the deadlines" in professional Spanish?',
         options: [
           'encontrar las líneas muertas',
-          'cumplir con los plazos de entrega',
           'hacer las fechas finales',
+          'cumplir con los plazos de entrega',
           'conocer el tiempo límite'
         ],
         correctAnswer: 'cumplir con los plazos de entrega',
@@ -2163,7 +2163,7 @@ export const spanishB2Lessons: LessonStep[] = [
       {
         id: 'b2-es-1-q1',
         question: 'Complete the hypothetical clause: "Si yo ___ (tener) más vacaciones, viajaría por Sudamérica."',
-        options: ['tengo', 'tenga', 'tuviera', 'tendría'],
+        options: ['tengo', 'tuviera', 'tenga', 'tendría'],
         correctAnswer: 'tuviera',
         explanation: 'Hypothetical "Si" clauses require the Imperfect Subjunctive ("tuviera") in the condition.'
       },
@@ -2217,7 +2217,7 @@ export const spanishB2Lessons: LessonStep[] = [
       {
         id: 'b2-es-2-q2',
         question: 'Complete the result clause: "Si hubieras estudiado más, ___ aprobado el examen."',
-        options: ['habrías', 'hubieras', 'habías', 'tendrías'],
+        options: ['hubieras', 'habías', 'tendrías', 'habrías'],
         correctAnswer: 'habrías',
         explanation: 'The result clause uses the Compound Conditional ("habrías aprobado").'
       }
@@ -2260,14 +2260,14 @@ The participle must agree in **gender and number** with the subject:
       {
         id: 'b2-es-3-q1',
         question: 'Choose the correct agreement in Pasiva Refleja: "En esta tienda se ___ (vender) libros antiguos."',
-        options: ['vende', 'venden', 'vendido', 'vender'],
+        options: ['vende', 'vendido', 'venden', 'vender'],
         correctAnswer: 'venden',
         explanation: '"Libros antiguos" is plural, so the reflexive passive verb must also be plural: "se venden".'
       },
       {
         id: 'b2-es-3-q2',
         question: 'Check gender/number agreement: "Las cartas fueron ___ por el director."',
-        options: ['escrito', 'escrita', 'escritos', 'escritas'],
+        options: ['escritas', 'escrito', 'escrita', 'escritos'],
         correctAnswer: 'escritas',
         explanation: 'In the "Ser" passive, the participle agrees with the feminine plural subject "Las cartas" → "escritas".'
       }
@@ -2311,9 +2311,9 @@ The participle must agree in **gender and number** with the subject:
         id: 'b2-es-4-q1',
         question: 'How do a native speaker say "She read the book again"?',
         options: [
-          'Ella volvió a leer el libro.',
           'Ella llevó leyendo el libro.',
           'Ella dejó de leer el libro.',
+          'Ella volvió a leer el libro.',
           'Ella acabó por leer el libro.'
         ],
         correctAnswer: 'Ella volvió a leer el libro.',
@@ -2322,7 +2322,7 @@ The participle must agree in **gender and number** with the subject:
       {
         id: 'b2-es-4-q2',
         question: 'Complete the negative duration: "Llevo dos semanas ___ comer azúcar."',
-        options: ['no', 'sin', 'nunca', 'de'],
+        options: ['no', 'nunca', 'de', 'sin'],
         correctAnswer: 'sin',
         explanation: 'The negative of "llevar + gerundio" is "llevar + tiempo + SIN + infinitivo".'
       }
@@ -2371,7 +2371,7 @@ The participle must agree in **gender and number** with the subject:
       {
         id: 'b2-es-5-q2',
         question: 'Negative antecedent: "Aquí no hay ningún restaurante que ___ (abrir) después de medianoche."',
-        options: ['abre', 'abra', 'abrirá', 'abrió'],
+        options: ['abra', 'abre', 'abrirá', 'abrió'],
         correctAnswer: 'abra',
         explanation: 'Non-existent or negated antecedents ("no hay ningún...") always require the Subjunctive ("abra").'
       }
@@ -2414,7 +2414,7 @@ The participle must agree in **gender and number** with the subject:
       {
         id: 'b2-es-6-q1',
         question: 'Express "Even if it rains tomorrow, we will go": "Aunque mañana ___ (llover), iremos."',
-        options: ['llueve', 'llueva', 'lloverá', 'llovió'],
+        options: ['llueve', 'lloverá', 'llovió', 'llueva'],
         correctAnswer: 'llueva',
         explanation: '"Aunque + Subjunctive" expresses a hypothetical condition ("even if").'
       },
@@ -2470,7 +2470,7 @@ Even when talking about the present, **como si** introduces an unreal comparison
       {
         id: 'b2-es-7-q1',
         question: 'Complete after "Como si": "Ella conduce por Madrid como si ___ (conocer) cada calle de memoria."',
-        options: ['conoce', 'conozca', 'conociera', 'conocerá'],
+        options: ['conociera', 'conoce', 'conozca', 'conocerá'],
         correctAnswer: 'conociera',
         explanation: '"Como si" ALWAYS requires the Imperfect Subjunctive ("conociera") or Pluperfect Subjunctive, never the present.',
         hint: 'Como si + Imperfecto de Subjuntivo (-ra).'
@@ -2478,7 +2478,7 @@ Even when talking about the present, **como si** introduces an unreal comparison
       {
         id: 'b2-es-7-q2',
         question: 'Mixed Conditional (past cause -> present result): "Si hubiéramos comprado esa casa en 2018, hoy no ___ (pagar) alquiler."',
-        options: ['pagaríamos', 'habríamos pagado', 'pagábamos', 'paguemos'],
+        options: ['habríamos pagado', 'pagábamos', 'pagaríamos', 'paguemos'],
         correctAnswer: 'pagaríamos',
         explanation: 'Because the result applies to the present ("hoy"), we use the Simple Conditional ("pagaríamos").',
         hint: 'Result today ("hoy") = Condicional Simple (-íamos).'
@@ -2532,10 +2532,10 @@ Even when talking about the present, **como si** introduces an unreal comparison
         id: 'b2-es-8-q2',
         question: 'Which conjunction means "unless" and requires the Subjunctive? "Mañana saldremos al campo, ___ haga mal tiempo."',
         options: [
-          'a no ser que',
           'debido a que',
           'puesto que',
-          'ya que'
+          'ya que',
+          'a no ser que'
         ],
         correctAnswer: 'a no ser que',
         explanation: '"A no ser que" (or "salvo que / a menos que") means "unless" and takes the Subjunctive ("haga").',
@@ -2585,7 +2585,7 @@ Even when talking about the present, **como si** introduces an unreal comparison
       {
         id: 'b2-es-9-q1',
         question: 'Choose the authentic Spanish preposition: "Nuestra estrategia consiste ___ tres fases principales."',
-        options: ['de', 'en', 'con', 'por'],
+        options: ['de', 'con', 'en', 'por'],
         correctAnswer: 'en',
         explanation: 'Unlike English "consist of", Spanish uses "consistir EN" ("consiste en tres fases").',
         hint: 'Consistir + EN.'
@@ -2594,8 +2594,8 @@ Even when talking about the present, **como si** introduces an unreal comparison
         id: 'b2-es-9-q2',
         question: 'How do you say "I fell in love with the culture and I dream about returning"?',
         options: [
-          'Me enamoré con la cultura y sueño sobre volver.',
           'Me enamoré de la cultura y sueño con volver.',
+          'Me enamoré con la cultura y sueño sobre volver.',
           'Me enamoré en la cultura y sueño de volver.',
           'Me enamoré por la cultura y sueño a volver.'
         ],
@@ -2645,7 +2645,7 @@ Even when talking about the present, **como si** introduces an unreal comparison
       {
         id: 'b2-es-10-q1',
         question: 'Apply the Sequence of Tenses after a past main verb: "Ayer el médico me recomendó que ___ (descansar) tres días."',
-        options: ['descanse', 'descansara', 'descansé', 'descansaría'],
+        options: ['descanse', 'descansé', 'descansara', 'descansaría'],
         correctAnswer: 'descansara',
         explanation: 'Because "recomendó" is in the past (Preterite), the subordinate subjunctive verb shifts to the Imperfect Subjunctive ("descansara").',
         hint: 'Past main verb (recomendó) -> Imperfect Subjunctive (-ra).'
@@ -2654,10 +2654,10 @@ Even when talking about the present, **como si** introduces an unreal comparison
         id: 'b2-es-10-q2',
         question: 'Present emotion about a recently completed action: "Es fantástico que ustedes ___ (lograr) el acuerdo esta mañana."',
         options: [
-          'hayan logrado',
           'lograran',
           'han logrado',
-          'lograron'
+          'lograron',
+          'hayan logrado'
         ],
         correctAnswer: 'hayan logrado',
         explanation: '"Es fantástico que" (Present) followed by an action completed earlier today uses the Present Perfect Subjunctive ("hayan logrado").',
@@ -2707,8 +2707,8 @@ Even when talking about the present, **como si** introduces an unreal comparison
         id: 'b2-es-11-q1',
         question: 'Which formal expression means "It is worth highlighting that..."?',
         options: [
-          'Cabe destacar que...',
           'A no ser que...',
+          'Cabe destacar que...',
           'Como si fuera...',
           'De repente que...'
         ],
@@ -3247,7 +3247,7 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Second Conditional',
     cefrLevel: 'B1',
     question: 'If I ___ you, I would apply for that international scholarship immediately.',
-    options: ['am', 'were', 'would be', 'have been'],
+    options: ['am', 'would be', 'have been', 'were'],
     correctAnswer: 'were',
     explanation: 'En el Second Conditional usamos "If I were you" para dar consejos.'
   },
@@ -3265,7 +3265,7 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Passive Voice',
     cefrLevel: 'B1',
     question: 'The new electric model ___ manufactured in our Berlin factory last month.',
-    options: ['is', 'was', 'has', 'did'],
+    options: ['was', 'is', 'has', 'did'],
     correctAnswer: 'was',
     explanation: 'Voz pasiva en pasado singular ("last month"): was + Past Participle.'
   },
@@ -3274,7 +3274,7 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Reported Speech',
     cefrLevel: 'B1',
     question: 'Sarah told me that she ___ call the client the next day.',
-    options: ['will', 'would', 'can', 'shall'],
+    options: ['will', 'can', 'would', 'shall'],
     correctAnswer: 'would',
     explanation: 'En Reported Speech, "will" retrocede a "would".'
   },
@@ -3283,7 +3283,7 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Relative Clauses',
     cefrLevel: 'B1',
     question: 'She is the director ___ team won the innovation award.',
-    options: ['who', 'which', 'whose', 'where'],
+    options: ['who', 'whose', 'which', 'where'],
     correctAnswer: 'whose',
     explanation: '"Whose" indica posesión ("cuyo equipo").'
   },
@@ -3292,7 +3292,7 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Past Perfect',
     cefrLevel: 'B1',
     question: 'By the time we arrived at the theater, the concert ___ already begun.',
-    options: ['has', 'had', 'was', 'did'],
+    options: ['has', 'was', 'did', 'had'],
     correctAnswer: 'had',
     explanation: 'Past Perfect ("had begun") para una acción previa a otra en el pasado.'
   },
@@ -3301,7 +3301,7 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Modals of Deduction',
     cefrLevel: 'B1',
     question: 'He just ate three large pizzas; he ___ be hungry anymore!',
-    options: ['mustn\'t', 'can\'t', 'shouldn\'t', 'might'],
+    options: ['mustn\'t', 'shouldn\'t', 'can\'t', 'might'],
     correctAnswer: 'can\'t',
     explanation: '"Can\'t be" expresa que algo es lógicamente imposible en el presente.'
   },
@@ -3310,7 +3310,7 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Phrasal Verbs & Prepositions',
     cefrLevel: 'B1',
     question: 'We really look forward to ___ with your company this year.',
-    options: ['collaborate', 'collaborating', 'collaborated', 'be collaborate'],
+    options: ['collaborating', 'collaborate', 'collaborated', 'be collaborate'],
     correctAnswer: 'collaborating',
     explanation: 'Después de "look forward to", el verbo siempre va en gerundio (-ing).'
   },
@@ -3321,8 +3321,8 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     question: 'Could you tell me what time ___?',
     options: [
       'does the flight depart',
-      'the flight departs',
       'departs the flight',
+      'the flight departs',
       'is the flight depart'
     ],
     correctAnswer: 'the flight departs',
@@ -3333,7 +3333,7 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Question Tags',
     cefrLevel: 'B1',
     question: 'You haven\'t seen my notebook anywhere, ___?',
-    options: ['haven\'t you', 'have you', 'did you', 'do you'],
+    options: ['haven\'t you', 'did you', 'do you', 'have you'],
     correctAnswer: 'have you',
     explanation: 'Oración negativa en Present Perfect ("haven\'t seen") lleva Question Tag positivo ("have you?").'
   },
@@ -3351,7 +3351,7 @@ export const b1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Verb Meaning Shifts',
     cefrLevel: 'B1',
     question: 'Please remember ___ the client before 5 PM; it is very urgent.',
-    options: ['calling', 'to call', 'call', 'called'],
+    options: ['to call', 'calling', 'call', 'called'],
     correctAnswer: 'to call',
     explanation: '"Remember + TO + verbo" expresa recordar cumplir una obligación o tarea pendiente.'
   }
@@ -3363,7 +3363,7 @@ export const b2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Third Conditional',
     cefrLevel: 'B2',
     question: 'If we had signed the contract in May, we ___ saved 20% of the budget.',
-    options: ['would', 'would have', 'will have', 'had'],
+    options: ['would', 'will have', 'had', 'would have'],
     correctAnswer: 'would have',
     explanation: 'Third Conditional: If + had + participle, would have + participle.'
   },
@@ -3390,7 +3390,7 @@ export const b2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Negative Inversion',
     cefrLevel: 'B2',
     question: 'Not only ___ the exam, but she also achieved the highest score in the school.',
-    options: ['she passed', 'did she pass', 'passed she', 'she did pass'],
+    options: ['she passed', 'passed she', 'did she pass', 'she did pass'],
     correctAnswer: 'did she pass',
     explanation: '"Not only" al inicio de la frase obliga a invertir auxiliar + sujeto ("did she pass").'
   },
@@ -3408,7 +3408,7 @@ export const b2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Executive Connectors',
     cefrLevel: 'B2',
     question: 'The northern region prefers digital channels, ___ the southern branch relies on in-person visits.',
-    options: ['despite', 'whereas', 'due to', 'moreover'],
+    options: ['despite', 'due to', 'moreover', 'whereas'],
     correctAnswer: 'whereas',
     explanation: '"Whereas" contrasta dos cláusulas completas con registro formal.'
   },
@@ -3418,9 +3418,9 @@ export const b2FinalExamQuestions: ExamQuestion[] = [
     cefrLevel: 'B2',
     question: '___ all the security checks, the aircraft was cleared for takeoff.',
     options: [
-      'Having completed',
       'Completed',
       'To complete',
+      'Having completed',
       'Completing by'
     ],
     correctAnswer: 'Having completed',
@@ -3431,7 +3431,7 @@ export const b2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Passive Reporting',
     cefrLevel: 'B2',
     question: 'The CEO is expected ___ the new sustainability targets tomorrow.',
-    options: ['announcing', 'to announce', 'that announces', 'announce'],
+    options: ['to announce', 'announcing', 'that announces', 'announce'],
     correctAnswer: 'to announce',
     explanation: 'Estructura pasiva personal: Subject + is expected + to + verbo base.'
   },
@@ -3440,7 +3440,7 @@ export const b2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Unreal Past (It\'s High Time)',
     cefrLevel: 'B2',
     question: 'It is high time we ___ a permanent solution to this logistics issue.',
-    options: ['find', 'found', 'will find', 'have found'],
+    options: ['find', 'will find', 'found', 'have found'],
     correctAnswer: 'found',
     explanation: '"It\'s high time + sujeto" va seguido de Past Simple ("found") para expresar urgencia en el presente.'
   },
@@ -3449,7 +3449,7 @@ export const b2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Three-Word Phrasal Verbs',
     cefrLevel: 'B2',
     question: 'Our engineering team ___ an ingenious way to reduce battery consumption.',
-    options: ['came up with', 'put up with', 'cut down on', 'looked up to'],
+    options: ['put up with', 'cut down on', 'looked up to', 'came up with'],
     correctAnswer: 'came up with',
     explanation: '"Come up with" significa idear o encontrar una solución creativa.'
   },
@@ -3458,7 +3458,7 @@ export const b2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Formal Cause Connectors',
     cefrLevel: 'B2',
     question: '___ the unexpected supply shortage, delivery dates were adjusted.',
-    options: ['Owing to', 'Because', 'Although', 'Whereas'],
+    options: ['Because', 'Owing to', 'Although', 'Whereas'],
     correctAnswer: 'Owing to',
     explanation: '"Owing to" significa "Debido a" y va seguido de un sustantivo.'
   },
@@ -3479,7 +3479,7 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Present Subjunctive',
     cefrLevel: 'B1',
     question: 'Es fundamental que todos los estudiantes ___ (practicar) la pronunciación.',
-    options: ['practican', 'practiquen', 'practicarán', 'practicaron'],
+    options: ['practican', 'practicarán', 'practicaron', 'practiquen'],
     correctAnswer: 'practiquen',
     explanation: '"Es fundamental que" activa el Presente de Subjuntivo (practicar → practiquen).'
   },
@@ -3497,7 +3497,7 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Negative Commands',
     cefrLevel: 'B1',
     question: '¡Por favor, no ___ (hacer - tú) ruido mientras grabamos el audio!',
-    options: ['haces', 'haz', 'hagas', 'harás'],
+    options: ['hagas', 'haces', 'haz', 'harás'],
     correctAnswer: 'hagas',
     explanation: 'El imperativo negativo usa siempre la forma del presente de subjuntivo ("no hagas").'
   },
@@ -3506,7 +3506,7 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Past Perfect (Pluscuamperfecto)',
     cefrLevel: 'B1',
     question: 'Cuando llegamos al restaurante, nuestros amigos ya ___ (pedir) la cena.',
-    options: ['han pedido', 'habían pedido', 'pidieron', 'pedían'],
+    options: ['han pedido', 'pidieron', 'habían pedido', 'pedían'],
     correctAnswer: 'habían pedido',
     explanation: 'El Pluscuamperfecto ("habían pedido") indica una acción anterior a otra pasada ("llegamos").'
   },
@@ -3524,7 +3524,7 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Verbs of Change',
     cefrLevel: 'B1',
     question: 'Después de años de esfuerzo y estudio, Elena se ___ cirujana.',
-    options: ['puso', 'hizo', 'quedó', 'fue'],
+    options: ['puso', 'quedó', 'fue', 'hizo'],
     correctAnswer: 'hizo',
     explanation: '"Hacerse" expresa un cambio profesional logrado mediante esfuerzo voluntario.'
   },
@@ -3533,7 +3533,7 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Future Time Clauses',
     cefrLevel: 'B1',
     question: 'Mañana te enviaré un mensaje en cuanto ___ (aterrizar) el avión.',
-    options: ['aterriza', 'aterrice', 'aterrizará', 'aterrizó'],
+    options: ['aterriza', 'aterrizará', 'aterrice', 'aterrizó'],
     correctAnswer: 'aterrice',
     explanation: 'Las conjunciones temporales ("en cuanto", "cuando") referidas al futuro exigen Subjuntivo.'
   },
@@ -3542,7 +3542,7 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Reported Speech',
     cefrLevel: 'B1',
     question: 'Carlos dijo que el viernes ___ (tener) una reunión importante.',
-    options: ['tendrá', 'tendría', 'tenga', 'ha tenido'],
+    options: ['tendría', 'tendrá', 'tenga', 'ha tenido'],
     correctAnswer: 'tendría',
     explanation: 'Al reportar en pasado una promesa futura, el Futuro pasa a Condicional ("tendría").'
   },
@@ -3552,9 +3552,9 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     cefrLevel: 'B1',
     question: 'Creo que el museo ___ (estar) abierto, pero no creo que ___ (haber) entradas.',
     options: [
-      'está / haya',
       'esté / hay',
       'está / hay',
+      'está / haya',
       'esté / haya'
     ],
     correctAnswer: 'está / haya',
@@ -3565,7 +3565,7 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Relative Pronouns (Lo que)',
     cefrLevel: 'B1',
     question: '___ más me gusta de este curso es la claridad de las explicaciones.',
-    options: ['Que', 'Lo que', 'El cual', 'Quien'],
+    options: ['Que', 'El cual', 'Quien', 'Lo que'],
     correctAnswer: 'Lo que',
     explanation: '"Lo que" equivale a "What / The thing that" al encabezar una afirmación.'
   },
@@ -3583,7 +3583,7 @@ export const spanishB1FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Purpose Clauses (Para que)',
     cefrLevel: 'B1',
     question: 'Te llamo ahora para que ___ (poder - nosotros) organizar la agenda de mañana.',
-    options: ['podemos', 'podamos', 'podremos', 'pudimos'],
+    options: ['podamos', 'podemos', 'podremos', 'pudimos'],
     correctAnswer: 'podamos',
     explanation: '"Para que" exige siempre el modo Subjuntivo ("podamos").'
   }
@@ -3595,7 +3595,7 @@ export const spanishB2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Imperfect Subjunctive Clauses',
     cefrLevel: 'B2',
     question: 'Si ___ (tener - nosotros) más presupuesto, abriríamos una sede en Madrid.',
-    options: ['tenemos', 'tengamos', 'tuviéramos', 'tendríamos'],
+    options: ['tenemos', 'tengamos', 'tendríamos', 'tuviéramos'],
     correctAnswer: 'tuviéramos',
     explanation: 'Las cláusulas hipotéticas con "Si" requieren Imperfecto de Subjuntivo ("tuviéramos").'
   },
@@ -3613,7 +3613,7 @@ export const spanishB2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Pasiva Refleja',
     cefrLevel: 'B2',
     question: 'En esta conferencia internacional se ___ (buscar) soluciones sostenibles.',
-    options: ['busca', 'buscan', 'buscado', 'buscando'],
+    options: ['buscan', 'busca', 'buscado', 'buscando'],
     correctAnswer: 'buscan',
     explanation: 'En la pasiva refleja, el verbo concuerda en plural con "soluciones sostenibles" ("se buscan").'
   },
@@ -3622,7 +3622,7 @@ export const spanishB2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Verbal Periphrases',
     cefrLevel: 'B2',
     question: 'Llevo más de cuatro años ___ (aprender) idiomas en esta academia.',
-    options: ['aprender', 'aprendiendo', 'aprendido', 'aprendo'],
+    options: ['aprender', 'aprendido', 'aprendiendo', 'aprendo'],
     correctAnswer: 'aprendiendo',
     explanation: '"Llevar + tiempo + gerundio" expresa duración acumulada hasta el presente.'
   },
@@ -3640,7 +3640,7 @@ export const spanishB2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Concession & Idioms',
     cefrLevel: 'B2',
     question: 'Aunque el camino ___ (ser) exigente, alcanzar el nivel B2 vale la pena.',
-    options: ['es', 'sea', 'será', 'fue'],
+    options: ['es', 'será', 'fue', 'sea'],
     correctAnswer: 'sea',
     explanation: '"Aunque + Subjuntivo" proyecta una concesión hipotética o de futuro ("even if").'
   },
@@ -3658,7 +3658,7 @@ export const spanishB2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Conditional Conjunctions',
     cefrLevel: 'B2',
     question: 'Firmaremos el convenio hoy mismo, siempre y cuando se ___ (incluir) las garantías.',
-    options: ['incluyen', 'incluyan', 'incluirán', 'incluyeron'],
+    options: ['incluyan', 'incluyen', 'incluirán', 'incluyeron'],
     correctAnswer: 'incluyan',
     explanation: '"Siempre y cuando" exige siempre el modo Subjuntivo ("incluyan").'
   },
@@ -3667,7 +3667,7 @@ export const spanishB2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Prepositional Regimen',
     cefrLevel: 'B2',
     question: 'La evaluación final consiste ___ doce preguntas de nivel avanzado.',
-    options: ['de', 'en', 'con', 'por'],
+    options: ['de', 'con', 'en', 'por'],
     correctAnswer: 'en',
     explanation: 'En español se dice "consistir EN" (a diferencia del inglés "consist of").'
   },
@@ -3676,7 +3676,7 @@ export const spanishB2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Sequence of Tenses (Correlación Temporal)',
     cefrLevel: 'B2',
     question: 'El director nos pidió ayer que ___ (preparar) el informe financiero.',
-    options: ['preparemos', 'preparáramos', 'preparamos', 'prepararemos'],
+    options: ['preparemos', 'preparamos', 'prepararemos', 'preparáramos'],
     correctAnswer: 'preparáramos',
     explanation: 'Cuando el verbo principal está en pasado ("pidió"), el subjuntivo subordinado pasa a Imperfecto ("preparáramos").'
   },
@@ -3685,7 +3685,7 @@ export const spanishB2FinalExamQuestions: ExamQuestion[] = [
     sectionTitle: 'Formal Discourse Markers',
     cefrLevel: 'B2',
     question: '___ destacar que los resultados superaron todas las previsiones del trimestre.',
-    options: ['Cabe', 'Tiene', 'Hace', 'Pone'],
+    options: ['Tiene', 'Cabe', 'Hace', 'Pone'],
     correctAnswer: 'Cabe',
     explanation: '"Cabe destacar que..." es el marcador discursivo formal para resaltar un punto clave.'
   },

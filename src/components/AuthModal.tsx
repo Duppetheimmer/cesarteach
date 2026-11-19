@@ -1,28 +1,30 @@
 import React, { useState } from 'react';
-import { UserProfile, UserRole } from '../types';
-import { 
-  getSupabaseClient, 
-  getLocalStudents, 
+import { UserProfile } from '../types';
+import {
+  getLocalStudents,
   setStoredCurrentUser,
   fetchStudentProgressFromDatabase,
-  fetchStudentProfileFromDatabase
+  fetchStudentProfileFromDatabase,
+  syncStudentProgressToDatabase,
+  signInWithGoogleFirebase
 } from '../lib/supabase';
-import { verifyTeacherPin } from '../lib/security';
-import { motion, AnimatePresence } from 'motion/react';
-import { 
-  GraduationCap, 
-  ShieldCheck, 
-  LogIn, 
-  UserPlus, 
-  CheckCircle2, 
-  AlertCircle, 
-  Eye, 
-  EyeOff, 
-  KeyRound, 
-  RefreshCw, 
-  X,
-  ArrowRight,
-  Languages
+import {
+  MASTER_TEACHER_EMAIL,
+  isMasterTeacherEmail,
+  verifyTeacherCredentials
+} from '../lib/security';
+import { motion } from 'motion/react';
+import {
+  GraduationCap,
+  ShieldCheck,
+  LogIn,
+  UserPlus,
+  CheckCircle2,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  RefreshCw,
+  X
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -38,8 +40,6 @@ export function AuthModal({
   isOpen,
   onClose,
   onLoginSuccess,
-  currentUser,
-  onLogout,
   initialMode = 'signin'
 }: AuthModalProps) {
   const [mode, setMode] = useState<'signin' | 'signup' | 'teacher'>(initialMode);
@@ -47,7 +47,8 @@ export function AuthModal({
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [studentId, setStudentId] = useState('');
-  const [targetLanguage, setTargetLanguage] = useState<'en' | 'es'>('es');
+  const [targetLanguage, setTargetLanguage] = useState<'en' | 'es'>('en');
+  const [teacherEmail, setTeacherEmail] = useState(MASTER_TEACHER_EMAIL);
   const [teacherPin, setTeacherPin] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showTeacherPin, setShowTeacherPin] = useState(false);
@@ -57,66 +58,61 @@ export function AuthModal({
 
   if (!isOpen) return null;
 
-  const isSpanishTarget = targetLanguage === 'es';
-
-  const t = {
-    modalTitle: isSpanishTarget ? 'Student & Teacher Portal' : 'Portal de Estudiantes y Profesores',
-    modalSub: isSpanishTarget ? 'Save your lesson progress, streak, and grade records' : 'Guarda tu progreso de lecciones, racha y notas',
-    tabSignIn: isSpanishTarget ? 'Sign In' : 'Iniciar Sesión',
-    tabSignUp: isSpanishTarget ? 'Create Account' : 'Crear Cuenta',
-    tabTeacher: isSpanishTarget ? 'Teacher' : 'Docente',
-    labelTargetLang: isSpanishTarget ? 'Which course do you want to learn?' : '¿Qué idioma quieres aprender?',
-    cardOptSpanishTitle: isSpanishTarget ? 'Learn Spanish' : 'Aprender Español',
-    cardOptSpanishSub: isSpanishTarget ? 'Spanish A1 for English Speakers' : 'Español A1 (para angloparlantes)',
-    cardOptEnglishTitle: isSpanishTarget ? 'Learn English' : 'Aprender Inglés',
-    cardOptEnglishSub: isSpanishTarget ? 'English A1 for Spanish Speakers' : 'Inglés A1 (para hispanohablantes)',
-    labelFullName: isSpanishTarget ? 'Student Full Name' : 'Nombre Completo del Estudiante',
-    placeholderFullName: isSpanishTarget ? 'e.g. John Alexander Smith' : 'Ej. María Fernanda Morales',
-    labelEmail: isSpanishTarget ? 'Email Address' : 'Correo Electrónico',
-    placeholderEmail: isSpanishTarget ? 'student@university.edu' : 'tu.correo@estudiante.edu',
-    labelStudentId: isSpanishTarget ? 'Student ID / Enrollment (Optional)' : 'Matrícula / ID (Opcional)',
-    placeholderStudentId: isSpanishTarget ? 'e.g. STD-2026-01' : 'Ej. EST-2026-99',
-    labelPassword: isSpanishTarget ? 'Password' : 'Contraseña',
-    placeholderPassword: isSpanishTarget ? 'Min 4 characters' : 'Mínimo 4 caracteres',
-    btnCreateAccount: isSpanishTarget ? 'Create Account & Start' : 'Crear Cuenta y Comenzar',
-    btnSignIn: isSpanishTarget ? 'Log In to Course' : 'Ingresar al Curso',
-    teacherBannerTitle: isSpanishTarget ? 'Teacher Control Panel Access' : 'Acceso al Panel de Control del Docente',
-    teacherBannerDesc: isSpanishTarget 
-      ? 'Enter your teacher security PIN to review student records, academic progress, and official grades.' 
-      : 'Ingresa con la clave de seguridad del docente para revisar el registro académico y calificaciones de los estudiantes.',
-    labelTeacherPin: isSpanishTarget ? 'Teacher Security PIN' : 'Clave de Seguridad del Docente',
-    placeholderTeacherPin: isSpanishTarget ? 'Enter teacher security PIN' : 'Introduce la clave del docente',
-    btnValidateTeacher: isSpanishTarget ? 'Validate Teacher Access' : 'Validar Acceso de Docente',
-    errFillAll: isSpanishTarget ? 'Please fill in all required fields.' : 'Por favor completa todos los campos obligatorios.',
-    errPasswordLength: isSpanishTarget ? 'Password must be at least 4 characters.' : 'La contraseña debe tener al menos 4 caracteres.',
-    errEmailPass: isSpanishTarget ? 'Enter your email and password.' : 'Introduce tu correo electrónico y tu contraseña.',
-    errTeacherPin: isSpanishTarget ? 'Incorrect teacher security PIN. Access denied.' : 'Clave de docente incorrecta. Acceso denegado.',
-    successCreated: isSpanishTarget ? 'Account created successfully!' : '¡Cuenta creada con éxito!',
-    successWelcome: isSpanishTarget ? 'Welcome back!' : '¡Bienvenido de nuevo!'
+  const handleGoogleSignIn = async (attemptingTeacherLogin: boolean = false) => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setIsLoading(true);
+    try {
+      const { profile, courseLanguage } = await signInWithGoogleFirebase(
+        targetLanguage,
+        attemptingTeacherLogin
+      );
+      setSuccessMsg(`¡Bienvenido(a), ${profile.fullName}!`);
+      setTimeout(() => {
+        onLoginSuccess(profile, courseLanguage);
+        onClose();
+      }, 350);
+    } catch (err: any) {
+      if (err?.code !== 'auth/popup-closed-by-user') {
+        setErrorMsg(err.message || 'No se pudo iniciar sesión con Google.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // Open Student Registration
   const handleSignUpStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
 
     if (!fullName.trim() || !email.trim() || !password.trim()) {
-      setErrorMsg(t.errFillAll);
+      setErrorMsg('Completa todos los campos obligatorios.');
       return;
     }
 
     if (password.length < 4) {
-      setErrorMsg(t.errPasswordLength);
+      setErrorMsg('La contraseña debe tener al menos 4 caracteres.');
+      return;
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    if (isMasterTeacherEmail(cleanEmail)) {
+      setErrorMsg(`El correo ${MASTER_TEACHER_EMAIL} es del Profesor Titular.`);
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const generatedId = `std_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
-      const cleanEmail = email.trim().toLowerCase();
+      const generatedId = `std_${Date.now().toString(36)}_${Math.random()
+        .toString(36)
+        .substring(2, 6)}`;
       const cleanName = fullName.trim();
-      const cleanStudentId = studentId.trim() || `EST-${Math.floor(1000 + Math.random() * 9000)}`;
+      const cleanStudentId = (
+        studentId.trim() || `EST-${Math.floor(1000 + Math.random() * 9000)}`
+      ).toUpperCase();
 
       const newProfile: UserProfile = {
         id: generatedId,
@@ -124,109 +120,43 @@ export function AuthModal({
         fullName: cleanName,
         role: 'student',
         studentIdNumber: cleanStudentId,
-        targetLanguage: targetLanguage,
+        targetLanguage,
+        enrollmentStatus: 'approved',
+        approvedByTeacher: true,
+        accessPin: password.trim(),
         createdAt: new Date().toISOString(),
         lastActiveAt: new Date().toISOString(),
-        avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanName)}`
+        avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(
+          cleanName
+        )}`
       };
-
-      const client = getSupabaseClient();
-      if (client) {
-        try {
-          const authEmail = cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@student.cesarteach.edu`;
-          const { data, error } = await client.auth.signUp({
-            email: authEmail,
-            password: password,
-            options: {
-              data: {
-                full_name: cleanName,
-                role: 'student',
-                student_id_number: cleanStudentId,
-                target_language: targetLanguage
-              }
-            }
-          });
-
-          if (!error && data?.user) {
-            newProfile.id = data.user.id;
-          }
-
-          await client.from('profiles').upsert({
-            id: newProfile.id,
-            email: newProfile.email,
-            full_name: newProfile.fullName,
-            role: 'student',
-            student_id_number: newProfile.studentIdNumber || null,
-            avatar_url: newProfile.avatarUrl,
-            created_at: newProfile.createdAt,
-            last_active_at: newProfile.lastActiveAt
-          });
-
-          // Initialize student progress in Supabase
-          await client.from('student_progress').upsert({
-            user_id: newProfile.id,
-            completed_lessons: [],
-            mastered_words: [],
-            exam_score: null,
-            exam_passed: false,
-            xp: 0,
-            streak_days: 1,
-            last_study_date: new Date().toISOString().split('T')[0],
-            unlocked_badges: ['b_first_step'],
-            word_srs_status: {},
-            lesson_dates: {},
-            course_language: targetLanguage,
-            total_exercises_done: 0,
-            time_spent_minutes: 0,
-            updated_at: new Date().toISOString()
-          });
-        } catch (supaErr) {
-          console.warn('Notice from Supabase sign up:', supaErr);
-        }
-      }
 
       const initialProgress = {
         completedLessons: [],
         masteredWords: [],
         examScore: undefined,
         examPassed: false,
+        levelScores: {},
         xp: 0,
         streakDays: 1,
         lastStudyDate: new Date().toISOString().split('T')[0],
         unlockedBadges: ['b_first_step'],
         wordSRSStatus: {},
         lessonDates: {},
+        examHistory: [],
         totalExercisesDone: 0,
         timeSpentMinutes: 0
       };
 
-      try {
-        localStorage.setItem(`lingostep_progress_${newProfile.id}`, JSON.stringify(initialProgress));
-      } catch (e) {}
-
-      const localStudents = getLocalStudents();
-      const existingIdx = localStudents.findIndex(s => s.profile.email.toLowerCase() === cleanEmail || s.profile.id === newProfile.id);
-      if (existingIdx >= 0) {
-        localStudents[existingIdx].profile = newProfile;
-        localStudents[existingIdx].progress = initialProgress;
-        localStudents[existingIdx].courseLanguage = targetLanguage;
-      } else {
-        localStudents.unshift({
-          profile: newProfile,
-          progress: initialProgress,
-          courseLanguage: targetLanguage
-        });
-      }
-      localStorage.setItem('lingostep_students_records_v2', JSON.stringify(localStudents));
-
+      await syncStudentProgressToDatabase(newProfile, initialProgress, targetLanguage);
       setStoredCurrentUser(newProfile);
-      setSuccessMsg(t.successCreated);
+      setSuccessMsg('¡Cuenta de alumno creada!');
       setTimeout(() => {
         onLoginSuccess(newProfile, targetLanguage);
         onClose();
-      }, 500);
+      }, 400);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error al crear la cuenta de estudiante.');
+      setErrorMsg(err.message || 'Error al crear la cuenta.');
     } finally {
       setIsLoading(false);
     }
@@ -238,7 +168,7 @@ export function AuthModal({
     setSuccessMsg(null);
 
     if (!email.trim() || !password.trim()) {
-      setErrorMsg(t.errEmailPass);
+      setErrorMsg('Introduce tu correo/matrícula y tu contraseña.');
       return;
     }
 
@@ -246,95 +176,55 @@ export function AuthModal({
 
     try {
       const cleanEmail = email.trim().toLowerCase();
-      const client = getSupabaseClient();
 
-      if (client) {
-        try {
-          const authEmail = cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@student.cesarteach.edu`;
-          const { data, error } = await client.auth.signInWithPassword({
-            email: authEmail,
-            password: password
-          });
-
-          if (!error && data.user) {
-            const userLang = (data.user.user_metadata?.target_language as 'en' | 'es') || targetLanguage || 'es';
-            const profile: UserProfile = {
-              id: data.user.id,
-              email: data.user.email || cleanEmail,
-              fullName: data.user.user_metadata?.full_name || cleanEmail.split('@')[0],
-              role: (data.user.user_metadata?.role as UserRole) || 'student',
-              studentIdNumber: data.user.user_metadata?.student_id_number,
-              targetLanguage: userLang,
-              createdAt: data.user.created_at || new Date().toISOString(),
-              lastActiveAt: new Date().toISOString(),
-              avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(data.user.email || 'user')}`
-            };
-
-            const remoteProgress = await fetchStudentProgressFromDatabase(profile.id);
-            if (remoteProgress) {
-              try {
-                localStorage.setItem(`lingostep_progress_${profile.id}`, JSON.stringify(remoteProgress));
-              } catch (e) {}
-            }
-
-            setStoredCurrentUser(profile);
-            setSuccessMsg(`${t.successWelcome} ${profile.fullName}!`);
-            setTimeout(() => {
-              onLoginSuccess(profile, userLang);
-              onClose();
-            }, 400);
-            return;
-          }
-        } catch (supaErr) {
-          console.warn('Supabase sign-in warning:', supaErr);
+      const remoteProfile = await fetchStudentProfileFromDatabase(cleanEmail);
+      if (remoteProfile) {
+        if (remoteProfile.accessPin && remoteProfile.accessPin !== password.trim()) {
+          throw new Error('Contraseña incorrecta.');
         }
 
-        // Check profiles table directly in Supabase
-        try {
-          const remoteProfile = await fetchStudentProfileFromDatabase(cleanEmail);
-          if (remoteProfile) {
-            const userLang = remoteProfile.targetLanguage || targetLanguage || 'es';
-            const remoteProgress = await fetchStudentProgressFromDatabase(remoteProfile.id);
-            if (remoteProgress) {
-              try {
-                localStorage.setItem(`lingostep_progress_${remoteProfile.id}`, JSON.stringify(remoteProgress));
-              } catch (e) {}
-            }
-            setStoredCurrentUser(remoteProfile);
-            setSuccessMsg(`${t.successWelcome} ${remoteProfile.fullName}!`);
-            setTimeout(() => {
-              onLoginSuccess(remoteProfile, userLang);
-              onClose();
-            }, 400);
-            return;
-          }
-        } catch (supaProfileErr) {
-          console.warn('Supabase profile query warning in modal:', supaProfileErr);
+        const userLang = remoteProfile.targetLanguage || 'en';
+        const remoteProgress = await fetchStudentProgressFromDatabase(remoteProfile.id);
+        if (remoteProgress) {
+          try {
+            localStorage.setItem(
+              `lingostep_progress_${remoteProfile.id}`,
+              JSON.stringify(remoteProgress)
+            );
+          } catch (e) {}
         }
+        setStoredCurrentUser(remoteProfile);
+        setSuccessMsg(`¡Bienvenido(a), ${remoteProfile.fullName}!`);
+        setTimeout(() => {
+          onLoginSuccess(remoteProfile, userLang);
+          onClose();
+        }, 350);
+        return;
       }
 
       const localStudents = getLocalStudents();
-      const matched = localStudents.find(s => 
-        s.profile.email.toLowerCase() === cleanEmail ||
-        s.profile.email.toLowerCase().replace(/@.*$/, '') === cleanEmail ||
-        s.profile.fullName.toLowerCase() === cleanEmail ||
-        (s.profile.studentIdNumber && s.profile.studentIdNumber.toLowerCase() === cleanEmail)
+      const matched = localStudents.find(
+        s =>
+          s.profile.email.toLowerCase() === cleanEmail ||
+          (s.profile.studentIdNumber &&
+            s.profile.studentIdNumber.toLowerCase() === cleanEmail)
       );
 
       if (matched) {
-        const userLang = matched.courseLanguage || matched.profile.targetLanguage || targetLanguage || 'es';
+        const userLang = matched.courseLanguage || matched.profile.targetLanguage || 'en';
         const updated = {
           ...matched.profile,
           lastActiveAt: new Date().toISOString()
         };
+        await syncStudentProgressToDatabase(updated, matched.progress, userLang);
         setStoredCurrentUser(updated);
-        setSuccessMsg(`${t.successWelcome} ${updated.fullName}!`);
+        setSuccessMsg(`¡Bienvenido(a), ${updated.fullName}!`);
         setTimeout(() => {
           onLoginSuccess(updated, userLang);
           onClose();
-        }, 400);
+        }, 350);
       } else {
-        throw new Error(isSpanishTarget ? 'Credenciales incorrectas o el usuario no existe.' : 'Incorrect credentials or user does not exist.');
+        throw new Error('Cuenta no encontrada.');
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Error al iniciar sesión.');
@@ -349,28 +239,62 @@ export function AuthModal({
     setIsLoading(true);
 
     try {
-      const isValid = await verifyTeacherPin(teacherPin);
-      if (!isValid) {
-        setErrorMsg(t.errTeacherPin);
+      const cleanTeacherEmail = teacherEmail.trim().toLowerCase();
+
+      if (isMasterTeacherEmail(cleanTeacherEmail)) {
+        const isValid = await verifyTeacherCredentials(cleanTeacherEmail, teacherPin);
+        if (!isValid) {
+          setErrorMsg('Clave maestra de Profesor Titular incorrecta.');
+          setIsLoading(false);
+          return;
+        }
+
+        const teacherProfile: UserProfile = {
+          id: 'teacher_master_01',
+          email: MASTER_TEACHER_EMAIL,
+          fullName: 'Profesor César (Titular)',
+          role: 'teacher',
+          authorizedTeacherByMaster: true,
+          enrollmentStatus: 'approved',
+          approvedByTeacher: true,
+          createdAt: new Date().toISOString(),
+          lastActiveAt: new Date().toISOString()
+        };
+
+        setStoredCurrentUser(teacherProfile);
+        setSuccessMsg('Acceso de Profesor Titular concedido.');
+        setTimeout(() => {
+          onLoginSuccess(teacherProfile);
+          onClose();
+        }, 350);
+        return;
+      }
+
+      const existingTeacher = await fetchStudentProfileFromDatabase(cleanTeacherEmail);
+      if (
+        !existingTeacher ||
+        existingTeacher.role !== 'teacher' ||
+        !existingTeacher.authorizedTeacherByMaster
+      ) {
+        setErrorMsg(
+          `Ningún profesor puede acceder o registrarse sin autorización de ${MASTER_TEACHER_EMAIL}.`
+        );
         setIsLoading(false);
         return;
       }
 
-      const teacherProfile: UserProfile = {
-        id: 'teacher_master_01',
-        email: email.trim() || 'docente@cesarteach.edu',
-        fullName: isSpanishTarget ? 'Head Teacher / Professor' : 'Profesor(a) CesarTeach',
-        role: 'teacher',
-        createdAt: new Date().toISOString(),
-        lastActiveAt: new Date().toISOString()
-      };
+      if (existingTeacher.accessPin && existingTeacher.accessPin !== teacherPin.trim()) {
+        setErrorMsg('Clave de profesor incorrecta.');
+        setIsLoading(false);
+        return;
+      }
 
-      setStoredCurrentUser(teacherProfile);
-      setSuccessMsg(isSpanishTarget ? 'Teacher access authorized.' : 'Acceso de Docente concedido.');
+      setStoredCurrentUser(existingTeacher);
+      setSuccessMsg('Acceso de Profesor Autorizado concedido.');
       setTimeout(() => {
-        onLoginSuccess(teacherProfile);
+        onLoginSuccess(existingTeacher);
         onClose();
-      }, 400);
+      }, 350);
     } catch (err) {
       setErrorMsg('Error al verificar la clave de seguridad.');
     } finally {
@@ -384,115 +308,122 @@ export function AuthModal({
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        className="bg-white dark:bg-zinc-900 rounded-3xl max-w-lg w-full shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
+        className="bg-white dark:bg-zinc-900 rounded-3xl max-w-lg w-full shadow-2xl border-2 border-slate-900 dark:border-zinc-700 overflow-hidden"
       >
-        {/* Header */}
-        <div className="p-6 bg-gradient-to-r from-indigo-600 via-sky-600 to-emerald-600 text-white relative">
+        <div className="p-6 bg-indigo-600 text-white relative border-b-2 border-slate-900">
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="absolute top-5 right-5 p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
 
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 rounded-2xl bg-white/20 backdrop-blur-md">
-              <GraduationCap className="w-6 h-6 text-white" />
+            <div className="p-2.5 rounded-xl bg-yellow-300 text-slate-950 border-2 border-slate-900">
+              <GraduationCap className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black">{t.modalTitle}</h2>
-              <p className="text-xs text-white/80 font-medium">{t.modalSub}</p>
+              <h2 className="text-xl font-black">Portal de Alumnos y Profesores</h2>
+              <p className="text-xs text-indigo-100 font-semibold">
+                Alumnos: registro libre · Profesores: solo con autorización
+              </p>
             </div>
           </div>
 
-          {/* Mode Switch Tabs */}
-          <div className="flex bg-black/20 p-1 rounded-2xl mt-4 gap-1">
+          <div className="flex bg-slate-900/30 p-1 rounded-xl mt-4 gap-1">
             <button
-              onClick={() => { setMode('signin'); setErrorMsg(null); }}
-              className={`flex-1 py-2 text-xs font-black rounded-xl transition-all ${
-                mode === 'signin' ? 'bg-white text-zinc-900 shadow-md' : 'text-white/80 hover:text-white'
+              type="button"
+              onClick={() => {
+                setMode('signin');
+                setErrorMsg(null);
+              }}
+              className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
+                mode === 'signin'
+                  ? 'bg-white text-slate-950'
+                  : 'text-white/80 hover:text-white'
               }`}
             >
-              {t.tabSignIn}
+              Entrar Alumno
             </button>
             <button
-              onClick={() => { setMode('signup'); setErrorMsg(null); }}
-              className={`flex-1 py-2 text-xs font-black rounded-xl transition-all ${
-                mode === 'signup' ? 'bg-white text-zinc-900 shadow-md' : 'text-white/80 hover:text-white'
+              type="button"
+              onClick={() => {
+                setMode('signup');
+                setErrorMsg(null);
+              }}
+              className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
+                mode === 'signup'
+                  ? 'bg-emerald-400 text-slate-950'
+                  : 'text-white/80 hover:text-white'
               }`}
             >
-              {t.tabSignUp}
+              Crear Alumno
             </button>
             <button
-              onClick={() => { setMode('teacher'); setErrorMsg(null); }}
-              className={`flex-1 py-2 text-xs font-black rounded-xl transition-all ${
-                mode === 'teacher' ? 'bg-amber-400 text-zinc-950 shadow-md' : 'text-amber-200 hover:text-white'
+              type="button"
+              onClick={() => {
+                setMode('teacher');
+                setErrorMsg(null);
+              }}
+              className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
+                mode === 'teacher'
+                  ? 'bg-yellow-300 text-slate-950'
+                  : 'text-yellow-200 hover:text-white'
               }`}
             >
-              {t.tabTeacher}
+              Profesor
             </button>
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-6 space-y-4">
-          {/* Feedback messages */}
           {errorMsg && (
-            <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2"
-            >
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="p-3 rounded-2xl bg-rose-100 border-2 border-slate-900 text-slate-950 text-xs font-bold flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
               <span>{errorMsg}</span>
-            </motion.div>
+            </div>
           )}
 
           {successMsg && (
-            <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2"
-            >
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <div className="p-3 rounded-2xl bg-emerald-200 border-2 border-slate-900 text-slate-950 text-xs font-bold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-700" />
               <span>{successMsg}</span>
-            </motion.div>
+            </div>
           )}
 
-          {/* Form 1: SIGN IN */}
           {mode === 'signin' && (
             <form onSubmit={handleSignInStudent} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
-                  {t.labelEmail}
+                <label className="block text-xs font-black text-slate-800 dark:text-zinc-300 mb-1.5">
+                  Correo o Matrícula de Alumno
                 </label>
                 <input
                   type="text"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t.placeholderEmail}
-                  className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="alumno@correo.com o EST-1001"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-700 text-sm font-bold text-slate-900 dark:text-zinc-100"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
-                  {t.labelPassword}
+                <label className="block text-xs font-black text-slate-800 dark:text-zinc-300 mb-1.5">
+                  Contraseña
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium text-zinc-900 dark:text-zinc-100 pr-10"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-700 text-sm font-bold text-slate-900 dark:text-zinc-100 pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -502,173 +433,122 @@ export function AuthModal({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm shadow-md shadow-indigo-600/30 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-slate-900 font-black text-sm shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center gap-2"
               >
-                {isLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : (
+                {isLoading ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
                   <>
                     <LogIn className="w-4 h-4" />
-                    <span>{t.btnSignIn}</span>
+                    <span>Ingresar</span>
                   </>
                 )}
               </button>
             </form>
           )}
 
-          {/* Form 2: SIGN UP */}
           {mode === 'signup' && (
             <form onSubmit={handleSignUpStudent} className="space-y-3.5">
-              {/* Language target picker */}
               <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5 flex items-center gap-1.5">
-                  <Languages className="w-3.5 h-3.5 text-indigo-500" />
-                  <span>{t.labelTargetLang}</span>
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setTargetLanguage('es')}
-                    className={`p-2.5 rounded-2xl border flex items-center gap-2.5 transition-all text-left ${
-                      targetLanguage === 'es'
-                        ? 'bg-amber-500/15 border-amber-500 ring-2 ring-amber-500/30 text-zinc-900 dark:text-white'
-                        : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500'
-                    }`}
-                  >
-                    <span className="text-xl">🇪🇸</span>
-                    <div>
-                      <div className="text-xs font-bold">{t.cardOptSpanishTitle}</div>
-                      <div className="text-[10px] text-zinc-400">{t.cardOptSpanishSub}</div>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setTargetLanguage('en')}
-                    className={`p-2.5 rounded-2xl border flex items-center gap-2.5 transition-all text-left ${
-                      targetLanguage === 'en'
-                        ? 'bg-indigo-500/15 border-indigo-500 ring-2 ring-indigo-500/30 text-zinc-900 dark:text-white'
-                        : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500'
-                    }`}
-                  >
-                    <span className="text-xl">🇺🇸</span>
-                    <div>
-                      <div className="text-xs font-bold">{t.cardOptEnglishTitle}</div>
-                      <div className="text-[10px] text-zinc-400">{t.cardOptEnglishSub}</div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
-                  {t.labelFullName}
+                <label className="block text-xs font-black text-slate-800 dark:text-zinc-300 mb-1">
+                  Nombre Completo del Alumno *
                 </label>
                 <input
                   type="text"
                   required
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder={t.placeholderFullName}
-                  className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                  onChange={e => setFullName(e.target.value)}
+                  placeholder="Ej. María Fernanda Morales"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800 border-2 border-slate-900 text-xs font-bold"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
-                    {t.labelEmail}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t.placeholderEmail}
-                    className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium text-zinc-900 dark:text-zinc-100"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
-                    {t.labelStudentId}
-                  </label>
-                  <input
-                    type="text"
-                    value={studentId}
-                    onChange={(e) => setStudentId(e.target.value)}
-                    placeholder={t.placeholderStudentId}
-                    className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium text-zinc-900 dark:text-zinc-100"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-black text-slate-800 dark:text-zinc-300 mb-1">
+                  Correo o Usuario *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="maria@alumno.edu"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800 border-2 border-slate-900 text-xs font-bold"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
-                  {t.labelPassword}
+                <label className="block text-xs font-black text-slate-800 dark:text-zinc-300 mb-1">
+                  Contraseña *
                 </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={t.placeholderPassword}
-                    className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium text-zinc-900 dark:text-zinc-100 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Mínimo 4 caracteres"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800 border-2 border-slate-900 text-xs font-bold"
+                />
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-700 hover:to-emerald-700 text-white font-extrabold text-sm shadow-md shadow-indigo-600/30 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 rounded-xl bg-emerald-400 hover:bg-emerald-500 text-slate-950 border-2 border-slate-900 font-black text-xs shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center gap-2"
               >
-                {isLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : (
-                  <>
-                    <UserPlus className="w-4 h-4" />
-                    <span>{t.btnCreateAccount}</span>
-                  </>
-                )}
+                <UserPlus className="w-4 h-4" />
+                <span>Crear Cuenta de Alumno</span>
               </button>
             </form>
           )}
 
-          {/* Form 3: TEACHER ACCESS */}
           {mode === 'teacher' && (
             <form onSubmit={handleTeacherAccess} className="space-y-3.5">
-              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-300 text-xs">
-                <div className="flex items-center gap-2 font-bold mb-1">
-                  <ShieldCheck className="w-4 h-4 text-amber-500" />
-                  <span>{t.teacherBannerTitle}</span>
-                </div>
-                <p className="text-[11px] opacity-90">
-                  {t.teacherBannerDesc}
-                </p>
+              <div className="p-3.5 rounded-2xl bg-yellow-200 border-2 border-slate-900 text-slate-950 text-xs font-bold">
+                Ningún profesor puede registrarse sin autorización de{' '}
+                <strong>{MASTER_TEACHER_EMAIL}</strong>.
+              </div>
+
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={() => handleGoogleSignIn(true)}
+                className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-slate-900 font-black text-xs shadow-[3px_3px_0px_0px_#0f172a] flex items-center justify-center gap-2"
+              >
+                <ShieldCheck className="w-4 h-4 text-yellow-300" />
+                <span>Entrar con Google (Profesor Titular o Autorizado)</span>
+              </button>
+
+              <div>
+                <label className="block text-xs font-black text-slate-800 dark:text-zinc-300 mb-1">
+                  Correo del Profesor Autorizado
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={teacherEmail}
+                  onChange={e => setTeacherEmail(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-700 text-xs font-bold text-slate-900 dark:text-zinc-100"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
-                  {t.labelTeacherPin}
+                <label className="block text-xs font-black text-slate-800 dark:text-zinc-300 mb-1">
+                  Clave de Profesor
                 </label>
                 <div className="relative">
                   <input
                     type={showTeacherPin ? 'text' : 'password'}
                     required
                     value={teacherPin}
-                    onChange={(e) => setTeacherPin(e.target.value)}
-                    placeholder={t.placeholderTeacherPin}
-                    className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm font-medium text-zinc-900 dark:text-zinc-100 pr-10"
+                    onChange={e => setTeacherPin(e.target.value)}
+                    placeholder="Introduce tu clave"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-700 text-xs font-bold text-slate-900 dark:text-zinc-100 pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowTeacherPin(!showTeacherPin)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                    title={showTeacherPin ? 'Ocultar PIN' : 'Ver PIN'}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
                   >
                     {showTeacherPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -678,12 +558,14 @@ export function AuthModal({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-zinc-950 font-black text-sm shadow-md shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 rounded-xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 font-black text-xs shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center gap-2"
               >
-                {isLoading ? <RefreshCw className="w-4 h-4 animate-spin text-zinc-950" /> : (
+                {isLoading ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
                   <>
                     <ShieldCheck className="w-4 h-4" />
-                    <span>{t.btnValidateTeacher}</span>
+                    <span>Validar Acceso de Profesor</span>
                   </>
                 )}
               </button>

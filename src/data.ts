@@ -39,7 +39,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_1_1',
         question: '¿Cuál es la forma universal y educada de decir "Gracias" en inglés?',
-        options: ['Please', 'Hello', 'Thank you', 'Goodbye'],
+        options: ['Please', 'Thank you', 'Hello', 'Goodbye'],
         correctAnswer: 'Thank you',
         explanation: '"Thank you" es la expresión formal y estándar para dar las gracias en cualquier contexto.',
         hint: 'Tip: Busca la opción con "Thank".'
@@ -47,7 +47,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_1_2',
         question: '¿Qué respondes cuando alguien te da las gracias diciéndote "Thank you"?',
-        options: ['Excuse me', "You're welcome", 'Nice to meet you', 'Good morning'],
+        options: ['Excuse me', 'Nice to meet you', 'Good morning', "You're welcome"],
         correctAnswer: "You're welcome",
         explanation: '"You\'re welcome" significa "De nada" en inglés.',
         hint: 'Tip: Significa literalmente "Eres bienvenido".'
@@ -72,7 +72,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_1_5',
         question: 'Llegas a un restaurante a las 8:00 PM. ¿Cuál es el saludo apropiado de entrada?',
-        options: ['Good night', 'Good evening', 'Good morning', 'Good afternoon'],
+        options: ['Good evening', 'Good night', 'Good morning', 'Good afternoon'],
         correctAnswer: 'Good evening',
         explanation: '"Good evening" se usa para saludar al llegar de noche; "Good night" es solo para despedirse o irse a dormir.',
         hint: 'Tip: "Evening" es para saludar de noche.'
@@ -111,7 +111,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_2_1',
         question: '¿Cómo se escribe el número 15 en inglés?',
-        options: ['Fiveteen', 'Fifteen', 'Fifty', 'Fivety'],
+        options: ['Fiveteen', 'Fifty', 'Fifteen', 'Fivety'],
         correctAnswer: 'Fifteen',
         explanation: 'El número 15 se escribe "Fifteen". "Fifty" corresponde al número 50.',
         hint: 'Tip: Los números del 13 al 19 terminan en "-teen".'
@@ -119,7 +119,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_2_2',
         question: '¿Cuál es la forma correcta de decir "Tengo 20 años"?',
-        options: ['I have 20 years', 'I am 20 years old', 'I make 20 years', 'I possess 20 years'],
+        options: ['I have 20 years', 'I make 20 years', 'I possess 20 years', 'I am 20 years old'],
         correctAnswer: 'I am 20 years old',
         explanation: 'En inglés la edad siempre utiliza el verbo "To Be" (I am).',
         hint: 'Tip: En inglés dices qué tan viejo "eres" (I am ... years old).'
@@ -135,7 +135,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_2_4',
         question: '¿Cómo preguntas la edad a otra persona?',
-        options: ['How many years have you?', 'How old are you?', 'What age have you?', 'How years are you?'],
+        options: ['How old are you?', 'How many years have you?', 'What age have you?', 'How years are you?'],
         correctAnswer: 'How old are you?',
         explanation: '"How old are you?" es la pregunta universal en inglés para conocer la edad de alguien.',
         hint: 'Tip: "How old" significa "¿Qué tan viejo/a?".'
@@ -176,7 +176,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_3_1',
         question: '¿Qué pronombre usas para decir "Nosotros / Nosotras"?',
-        options: ['They', 'We', 'He', 'You'],
+        options: ['They', 'He', 'You', 'We'],
         correctAnswer: 'We',
         explanation: '"We" significa nosotros o nosotras en inglés.',
         hint: 'Tip: Empieza con W.'
@@ -184,7 +184,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_3_2',
         question: '¿Qué pronombre se usa para un objeto o animal singular (por ejemplo, "the computer")?',
-        options: ['He', 'She', 'It', 'They'],
+        options: ['He', 'It', 'She', 'They'],
         correctAnswer: 'It',
         explanation: '"It" es el pronombre neutro singular para cosas, animales y situaciones.',
         hint: 'Tip: Pronombre neutro de dos letras.'
@@ -192,7 +192,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_3_3',
         question: 'Si hablas de "Sarah and John" (ellos), ¿qué pronombre los sustituye?',
-        options: ['We', 'They', 'You', 'He'],
+        options: ['They', 'We', 'You', 'He'],
         correctAnswer: 'They',
         explanation: '"They" se usa para referirse a terceras personas en plural (ellos/ellas).',
         hint: 'Tip: Significa "Ellos".'
@@ -202,8 +202,8 @@ export const a1InicialLessons: LessonStep[] = [
         question: '¿Cuál de las siguientes afirmaciones sobre el pronombre "I" (Yo) es correcta?',
         options: [
           'Se escribe en minúscula si va al medio de la oración',
-          'Siempre se escribe en MAYÚSCULA sin importar su posición',
           'Solo se usa con nombres femeninos',
+          'Siempre se escribe en MAYÚSCULA sin importar su posición',
           'Significa "Usted"'
         ],
         correctAnswer: 'Siempre se escribe en MAYÚSCULA sin importar su posición',
@@ -253,7 +253,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_4_1',
         question: '¿Cuál es la forma del verbo To Be para "She"?',
-        options: ['She am', 'She are', 'She is', 'She be'],
+        options: ['She am', 'She is', 'She are', 'She be'],
         correctAnswer: 'She is',
         explanation: 'Para la 3ª persona singular (He, She, It) la forma de To Be en presente es "is".',
         hint: 'Tip: He is, She is, It is.'
@@ -261,7 +261,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_4_2',
         question: '¿Cómo dices "Nosotros no estamos cansados"?',
-        options: ['We am not tired', 'We isn\'t tired', 'We aren\'t tired', 'We not be tired'],
+        options: ['We am not tired', 'We isn\'t tired', 'We not be tired', 'We aren\'t tired'],
         correctAnswer: "We aren't tired",
         explanation: '"We" se combina en negativo con "aren\'t" (are not).',
         hint: 'Tip: Plural con "aren\'t".'
@@ -269,7 +269,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_4_3',
         question: 'Completa la frase: "I ___ a student and my brother ___ a doctor."',
-        options: ['am / is', 'is / are', 'are / is', 'am / are'],
+        options: ['is / are', 'are / is', 'am / is', 'am / are'],
         correctAnswer: 'am / is',
         explanation: 'Para "I" se usa "am", y para "my brother" (He) se usa "is".',
         hint: 'I am... my brother is...'
@@ -322,7 +322,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_5_1',
         question: '¿Qué palabra W/H preguntas para saber un lugar?',
-        options: ['What', 'Where', 'When', 'Who'],
+        options: ['What', 'When', 'Where', 'Who'],
         correctAnswer: 'Where',
         explanation: '"Where" significa "¿Dónde?" en inglés y pregunta por una ubicación.',
         hint: 'Tip: Pregunta por ubicación.'
@@ -330,7 +330,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_5_2',
         question: '¿Cómo preguntas correctamente "¿Estás listo?"?',
-        options: ['You are ready?', 'Are you ready?', 'Is you ready?', 'Am you ready?'],
+        options: ['You are ready?', 'Is you ready?', 'Am you ready?', 'Are you ready?'],
         correctAnswer: 'Are you ready?',
         explanation: 'En preguntas con To Be, el verbo "Are" va al inicio delante de "you".',
         hint: 'Tip: Pon el verbo antes del pronombre.'
@@ -394,7 +394,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_6_1',
         question: '¿Cómo se dice "Yo hablo español e inglés"?',
-        options: ['I talk Spanish and English', 'I speak Spanish and English', 'I say Spanish and English', 'I tell Spanish and English'],
+        options: ['I talk Spanish and English', 'I say Spanish and English', 'I tell Spanish and English', 'I speak Spanish and English'],
         correctAnswer: 'I speak Spanish and English',
         explanation: 'Para idiomas se utiliza siempre el verbo "speak" (hablar un idioma).',
         hint: 'Tip: "Speak languages".'
@@ -432,7 +432,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_6_5',
         question: '¿Cómo dices "Ella habla tres idiomas"?',
-        options: ['She speaks three languages', 'She speak three languages', 'She is speak three languages', 'She speaking three languages'],
+        options: ['She speak three languages', 'She is speak three languages', 'She speaks three languages', 'She speaking three languages'],
         correctAnswer: 'She speaks three languages',
         explanation: 'En presente simple con "She", el verbo lleva "-s" (speaks).',
         hint: 'Tip: Agrega -s a speak para She.'
@@ -479,7 +479,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_7_2',
         question: '¿Qué palabra engloba tanto a tu padre como a tu madre juntos?',
-        options: ['Brothers', 'Sons', 'Parents', 'Fathers'],
+        options: ['Brothers', 'Sons', 'Fathers', 'Parents'],
         correctAnswer: 'Parents',
         explanation: '"Parents" significa padres (mamá y papá juntos). "Relatives" son parientes en general.',
         hint: 'Tip: No confundir con parientes.'
@@ -487,7 +487,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_7_3',
         question: 'Completa la frase: "We love ___ new house." (Nuestra)',
-        options: ['our', 'their', 'his', 'her'],
+        options: ['their', 'his', 'our', 'her'],
         correctAnswer: 'our',
         explanation: 'El posesivo correspondiente a "We" (Nosotros) es "Our" (Nuestro/a).',
         hint: 'Tip: We -> Our.'
@@ -539,7 +539,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_8_1',
         question: '¿Cuál es la opción correcta antes de la palabra "apple"?',
-        options: ['a apple', 'an apple', 'the an apple', 'one an apple'],
+        options: ['a apple', 'the an apple', 'an apple', 'one an apple'],
         correctAnswer: 'an apple',
         explanation: 'Al empezar con sonido de vocal, se utiliza "an".',
         hint: 'Tip: "An" antecede sonidos vocálicos.'
@@ -547,7 +547,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_8_2',
         question: '¿Cuál es el plural irregular de la palabra "child" (niño)?',
-        options: ['childs', 'childes', 'children', 'childrens'],
+        options: ['childs', 'childes', 'childrens', 'children'],
         correctAnswer: 'children',
         explanation: 'El plural de "child" es "children" (nunca lleva s final).',
         hint: 'Tip: Termina en -ren.'
@@ -555,7 +555,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_8_3',
         question: '¿Cuál es la forma plural de "person"?',
-        options: ['persons', 'peoples', 'people', 'persones'],
+        options: ['persons', 'people', 'peoples', 'persones'],
         correctAnswer: 'people',
         explanation: 'El plural estándar de "person" en inglés es "people".',
         hint: 'Tip: "People" significa personas o gente.'
@@ -612,7 +612,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_9_1',
         question: 'Tienes varias llaves en la mano (plural y cerca de ti). ¿Qué frase utilizas?',
-        options: ['This is my keys', 'These are my keys', 'That is my keys', 'Those are my keys'],
+        options: ['This is my keys', 'That is my keys', 'Those are my keys', 'These are my keys'],
         correctAnswer: 'These are my keys',
         explanation: 'Plural + Cercanía = "These are".',
         hint: 'Tip: "These" para varios elementos cerca.'
@@ -620,7 +620,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_9_2',
         question: 'Señalas un solo avión a lo lejos en el cielo (singular y lejos). ¿Qué usas?',
-        options: ['This is a plane', 'These are planes', 'That is a plane', 'Those are planes'],
+        options: ['This is a plane', 'That is a plane', 'These are planes', 'Those are planes'],
         correctAnswer: 'That is a plane',
         explanation: 'Singular + Lejos = "That is".',
         hint: 'Tip: "That" para uno solo a lo lejos.'
@@ -628,7 +628,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_9_3',
         question: '¿Cuál es el plural de "that" (lejos)?',
-        options: ['these', 'those', 'this', 'thats'],
+        options: ['those', 'these', 'this', 'thats'],
         correctAnswer: 'those',
         explanation: 'El plural de "that" (aquel) es "those" (aquellos).',
         hint: 'Tip: That (singular) -> Those (plural).'
@@ -645,7 +645,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_9_5',
         question: 'Señalas varias camisetas colgadas al otro lado de la tienda (lejos y plural). ¿Qué dices?',
-        options: ['These shirts are blue', 'Those shirts are blue', 'This shirt is blue', 'That shirts is blue'],
+        options: ['These shirts are blue', 'This shirt is blue', 'Those shirts are blue', 'That shirts is blue'],
         correctAnswer: 'Those shirts are blue',
         explanation: 'Plural + Lejos = "Those shirts are...".',
         hint: 'Tip: Plural a distancia = Those.'
@@ -687,7 +687,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_10_1',
         question: '¿Qué preposición usas antes de los días de la semana (ej. "el Lunes")?',
-        options: ['in', 'at', 'on', 'by'],
+        options: ['in', 'on', 'at', 'by'],
         correctAnswer: 'on',
         explanation: 'Con días de la semana específicos usamos siempre "on" (on Monday, on Friday).',
         hint: 'Tip: "On" + día de la semana.'
@@ -695,7 +695,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_10_2',
         question: '¿Cómo preguntas "¿Qué hora es?" de forma estándar?',
-        options: ['What hour is it?', 'What time is it?', 'Which time is?', 'How hours is it?'],
+        options: ['What hour is it?', 'Which time is?', 'How hours is it?', 'What time is it?'],
         correctAnswer: 'What time is it?',
         explanation: '"What time is it?" es la pregunta fija y natural en inglés.',
         hint: 'Tip: Usamos la palabra "time".'
@@ -703,7 +703,7 @@ export const a1InicialLessons: LessonStep[] = [
       {
         id: 'q_a1_10_3',
         question: '¿Qué preposición se usa para las horas exactas ("a las 8:00 AM")?',
-        options: ['at', 'on', 'in', 'for'],
+        options: ['on', 'in', 'at', 'for'],
         correctAnswer: 'at',
         explanation: 'Para horas precisas se usa obligatoriamente "at" (at 8:00 AM).',
         hint: 'Tip: Horas precisas usan "at".'
@@ -765,7 +765,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_1_1',
         question: '¿Cómo dices en afirmativo "Ella trabaja todos los días"?',
-        options: ['She work every day', 'She works every day', 'She is work every day', 'She working every day'],
+        options: ['She work every day', 'She is work every day', 'She works every day', 'She working every day'],
         correctAnswer: 'She works every day',
         explanation: 'Para "She" en afirmativo en presente simple se le suma la "-s" al verbo (works).',
         hint: 'Tip: Agrega "-s" al verbo para He/She/It.'
@@ -773,7 +773,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_1_2',
         question: '¿Cómo niegas correctamente la oración "He speaks French"?',
-        options: ['He don\'t speak French', 'He doesn\'t speak French', 'He not speak French', 'He isn\'t speak French'],
+        options: ['He don\'t speak French', 'He not speak French', 'He isn\'t speak French', 'He doesn\'t speak French'],
         correctAnswer: "He doesn't speak French",
         explanation: 'Para He/She/It se usa el auxiliar negativo "doesn\'t" y el verbo vuelve a su forma base (speak).',
         hint: 'Tip: Auxiliar "doesn\'t".'
@@ -781,7 +781,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_1_3',
         question: '¿Cómo preguntas a alguien si vive en Madrid?',
-        options: ['Do you live in Madrid?', 'Does you live in Madrid?', 'Are you live in Madrid?', 'Live you in Madrid?'],
+        options: ['Does you live in Madrid?', 'Do you live in Madrid?', 'Are you live in Madrid?', 'Live you in Madrid?'],
         correctAnswer: 'Do you live in Madrid?',
         explanation: 'Con "you" el auxiliar de pregunta en presente simple es "Do".',
         hint: 'Tip: Pregunta con "Do you...".'
@@ -829,7 +829,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_2_1',
         question: '¿Dónde se coloca "always" en una oración con un verbo común como "eat"?',
-        options: ['I eat always breakfast', 'I always eat breakfast', 'I eat breakfast always', 'Always I eat breakfast'],
+        options: ['I eat always breakfast', 'I eat breakfast always', 'Always I eat breakfast', 'I always eat breakfast'],
         correctAnswer: 'I always eat breakfast',
         explanation: 'Los adverbios de frecuencia van inmediatamente antes del verbo principal (eat).',
         hint: 'Tip: Entre el sujeto (I) y el verbo (eat).'
@@ -845,7 +845,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_2_3',
         question: '¿Cuál es la posición correcta con el verbo To Be?',
-        options: ['She always is happy', 'She is always happy', 'She happy is always', 'Always she is happy'],
+        options: ['She is always happy', 'She always is happy', 'She happy is always', 'Always she is happy'],
         correctAnswer: 'She is always happy',
         explanation: 'Con el verbo To Be, el adverbio de frecuencia va DESPUÉS del verbo (is always).',
         hint: 'Tip: To Be + Adverbio.'
@@ -862,7 +862,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_2_5',
         question: '¿Qué pregunta usas para saber con qué frecuencia alguien hace algo?',
-        options: ['How many times?', 'How often do you exercise?', 'When do you always exercise?', 'How much do you exercise?'],
+        options: ['How many times?', 'When do you always exercise?', 'How often do you exercise?', 'How much do you exercise?'],
         correctAnswer: 'How often do you exercise?',
         explanation: '"How often...?" es la pregunta clave en inglés para consultar frecuencia.',
         hint: 'Tip: "How often" = ¿Con qué frecuencia? / ¿Cada cuánto?'
@@ -906,7 +906,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_3_2',
         question: '¿Qué significa "She hates waking up early"?',
-        options: ['A ella le gusta levantarse temprano', 'Ella odia levantarse temprano', 'Ella suele levantarse temprano', 'Ella no puede levantarse temprano'],
+        options: ['A ella le gusta levantarse temprano', 'Ella suele levantarse temprano', 'Ella no puede levantarse temprano', 'Ella odia levantarse temprano'],
         correctAnswer: 'Ella odia levantarse temprano',
         explanation: '"Hate" significa odiar o detestar.',
         hint: 'Tip: "Hate" es lo opuesto a "love".'
@@ -914,7 +914,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_3_3',
         question: 'Completa: "He ___ playing soccer, but he doesn\'t like running."',
-        options: ['loves', 'love', 'loving', 'is love'],
+        options: ['love', 'loving', 'loves', 'is love'],
         correctAnswer: 'loves',
         explanation: 'Con el sujeto "He" en afirmativo se añade la "-s" al verbo (loves).',
         hint: 'Tip: He + loves.'
@@ -931,7 +931,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_3_5',
         question: '¿Cómo niegas que a él le gusta el café?',
-        options: ['He don\'t like coffee', 'He doesn\'t like coffee', 'He isn\'t like coffee', 'He not likes coffee'],
+        options: ['He doesn\'t like coffee', 'He don\'t like coffee', 'He isn\'t like coffee', 'He not likes coffee'],
         correctAnswer: "He doesn't like coffee",
         explanation: 'Para la 3ª persona singular en presente simple usamos "doesn\'t like".',
         hint: 'Tip: He doesn\'t like.'
@@ -972,7 +972,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_4_1',
         question: '¿Cómo dices "Hay tres sillas en la cocina"?',
-        options: ['There is three chairs in the kitchen', 'There are three chairs in the kitchen', 'Have three chairs in the kitchen', 'There be three chairs in the kitchen'],
+        options: ['There is three chairs in the kitchen', 'Have three chairs in the kitchen', 'There are three chairs in the kitchen', 'There be three chairs in the kitchen'],
         correctAnswer: 'There are three chairs in the kitchen',
         explanation: '"Three chairs" es plural, por lo que requiere obligatoriamente "There are".',
         hint: 'Tip: Plural = There are.'
@@ -980,7 +980,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_4_2',
         question: '¿Cómo preguntas "¿Hay un hospital cerca de aquí?"?',
-        options: ['Is there a hospital near here?', 'Are there a hospital near here?', 'There is a hospital near here?', 'Has there a hospital near here?'],
+        options: ['Are there a hospital near here?', 'There is a hospital near here?', 'Has there a hospital near here?', 'Is there a hospital near here?'],
         correctAnswer: 'Is there a hospital near here?',
         explanation: 'Para preguntar por un elemento singular se invierte a "Is there...?".',
         hint: 'Tip: Inversión en singular: Is there...?'
@@ -988,7 +988,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_4_3',
         question: '¿Qué palabra en inglés designa la habitación donde duermes?',
-        options: ['Kitchen', 'Bathroom', 'Bedroom', 'Living room'],
+        options: ['Kitchen', 'Bedroom', 'Bathroom', 'Living room'],
         correctAnswer: 'Bedroom',
         explanation: '"Bedroom" es el dormitorio o habitación.',
         hint: 'Tip: Contiene "bed" (cama).'
@@ -1046,7 +1046,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_5_1',
         question: '¿Cuál oración es gramaticalmente CORRECTA?',
-        options: ['She can to speak English', 'She can speaks English', 'She can speak English', 'She cans speak English'],
+        options: ['She can to speak English', 'She can speaks English', 'She cans speak English', 'She can speak English'],
         correctAnswer: 'She can speak English',
         explanation: 'Después del modal "can", el verbo va en infinitivo sin "to" y sin "-s".',
         hint: 'Tip: Sin "to" y sin "-s".'
@@ -1079,7 +1079,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_5_5',
         question: '¿Cómo niegas que él puede conducir?',
-        options: ['He doesn\'t can drive', 'He can\'t drive', 'He isn\'t drive', 'He not can drive'],
+        options: ['He doesn\'t can drive', 'He isn\'t drive', 'He can\'t drive', 'He not can drive'],
         correctAnswer: "He can't drive",
         explanation: 'La forma negativa de CAN es "can\'t" (cannot).',
         hint: 'Tip: Forma negativa = can\'t.'
@@ -1114,7 +1114,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_6_1',
         question: '¿Cómo pides un café cortésmente en un restaurante?',
-        options: ['Give me coffee', 'I want coffee now', 'I would like a coffee, please', 'Coffee for me'],
+        options: ['Give me coffee', 'I would like a coffee, please', 'I want coffee now', 'Coffee for me'],
         correctAnswer: 'I would like a coffee, please',
         explanation: '"I would like..." (o "I\'d like...") es la forma más educada de pedir algo.',
         hint: 'Tip: "I would like" = Me gustaría.'
@@ -1122,7 +1122,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_6_2',
         question: '¿Cómo pides la cuenta al terminar de comer en un restaurante?',
-        options: ['The money, please', 'The check, please', 'The count, please', 'The paper, please'],
+        options: ['The money, please', 'The count, please', 'The paper, please', 'The check, please'],
         correctAnswer: 'The check, please',
         explanation: '"The check" (en inglés americano) o "The bill" (en inglés británico) significa la cuenta.',
         hint: 'Tip: Se dice "The check" o "The bill".'
@@ -1147,7 +1147,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_6_5',
         question: 'Si no deseas vuelto y dejas propina, ¿qué le dices al mesero?',
-        options: ['Give my change', 'Keep the change', 'Take money', 'No money back'],
+        options: ['Keep the change', 'Give my change', 'Take money', 'No money back'],
         correctAnswer: 'Keep the change',
         explanation: '"Keep the change" significa "Quédese con el cambio".',
         hint: 'Tip: "Keep" significa guardar o quedarse.'
@@ -1189,7 +1189,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_7_1',
         question: '¿Cómo dices "Mi hermana es muy amigable e inteligente"?',
-        options: ['My sister is very friendly and smart', 'My sister has very friendly and smart', 'My sister is very short and thin', 'My sister friendly smart'],
+        options: ['My sister has very friendly and smart', 'My sister is very short and thin', 'My sister is very friendly and smart', 'My sister friendly smart'],
         correctAnswer: 'My sister is very friendly and smart',
         explanation: 'Para rasgos de personalidad usamos el verbo To Be ("is") con los adjetivos.',
         hint: 'Tip: "Friendly" = amigable, "smart" = inteligente.'
@@ -1197,7 +1197,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_7_2',
         question: '¿Qué frase describe correctamente el cabello de alguien?',
-        options: ['She is long hair', 'She has long hair', 'She wears long hair', 'She do long hair'],
+        options: ['She is long hair', 'She wears long hair', 'She do long hair', 'She has long hair'],
         correctAnswer: 'She has long hair',
         explanation: 'Para rasgos como cabello u ojos se usa el verbo "have / has" (She has long hair).',
         hint: 'Tip: Usa "has" para She.'
@@ -1261,7 +1261,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_8_1',
         question: '¿Cómo le preguntas al vendedor si te puedes probar una prenda?',
-        options: ['Can I buy this?', 'Can I try it on?', 'Where is the shirt?', 'Is this my size?'],
+        options: ['Can I buy this?', 'Where is the shirt?', 'Is this my size?', 'Can I try it on?'],
         correctAnswer: 'Can I try it on?',
         explanation: '"Try on" es el phrasal verb para probarse ropa.',
         hint: 'Tip: El phrasal verb es "try on".'
@@ -1277,7 +1277,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_8_3',
         question: '¿Cómo se dice "probador" (lugar donde te pruebas ropa en una tienda)?',
-        options: ['Bathroom', 'Fitting room', 'Bedroom', 'Kitchen'],
+        options: ['Fitting room', 'Bathroom', 'Bedroom', 'Kitchen'],
         correctAnswer: 'Fitting room',
         explanation: '"Fitting room" (o "dressing room") es el probador de una tienda de ropa.',
         hint: 'Tip: Relacionado con la palabra "fit" (calzar/quedar bien).'
@@ -1294,7 +1294,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_8_5',
         question: '¿Cómo preguntas "¿Cuánto cuestan estos pantalones?"?',
-        options: ['How much is this pants?', 'How much are these pants?', 'How many cost pants?', 'How price are pants?'],
+        options: ['How much is this pants?', 'How many cost pants?', 'How much are these pants?', 'How price are pants?'],
         correctAnswer: 'How much are these pants?',
         explanation: '"Pants" es un sustantivo plural en inglés, por lo que usa "How much are these...".',
         hint: 'Tip: Pants es plural (are these).'
@@ -1340,7 +1340,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_9_2',
         question: '¿Cómo niegas "They are watching TV"?',
-        options: ['They don\'t watching TV', 'They aren\'t watching TV', 'They not watching TV', 'They isn\'t watching TV'],
+        options: ['They don\'t watching TV', 'They not watching TV', 'They isn\'t watching TV', 'They aren\'t watching TV'],
         correctAnswer: "They aren't watching TV",
         explanation: 'La negación en presente continuo para "they" es "aren\'t watching".',
         hint: 'Tip: Plural "aren\'t".'
@@ -1348,7 +1348,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_9_3',
         question: '¿Cómo preguntas "¿Qué estás haciendo?"?',
-        options: ['What are you doing?', 'What do you do?', 'What you are doing?', 'What is you doing?'],
+        options: ['What do you do?', 'What you are doing?', 'What are you doing?', 'What is you doing?'],
         correctAnswer: 'What are you doing?',
         explanation: '"What are you doing?" es la pregunta para saber qué hace alguien en este momento.',
         hint: 'Tip: Inversión "are you doing".'
@@ -1365,7 +1365,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_9_5',
         question: 'Completa: "Listen! The baby ___ in the room."',
-        options: ['cries', 'is crying', 'crying', 'are crying'],
+        options: ['is crying', 'cries', 'crying', 'are crying'],
         correctAnswer: 'is crying',
         explanation: 'La palabra de atención "Listen!" indica que la acción ocurre ahora (is crying).',
         hint: 'Tip: Singular "the baby" -> is crying.'
@@ -1397,7 +1397,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_10_1',
         question: 'Si tu teléfono está encima de la mesa, ¿qué preposición usas?',
-        options: ['in', 'on', 'under', 'between'],
+        options: ['in', 'under', 'on', 'between'],
         correctAnswer: 'on',
         explanation: '"ON" indica superficie (sobre la mesa).',
         hint: 'Tip: Superficie = ON.'
@@ -1405,7 +1405,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_10_2',
         question: 'Si las llaves están dentro de la mochila, ¿qué frase es correcta?',
-        options: ['The keys are in the bag', 'The keys are on the bag', 'The keys are under the bag', 'The keys are at the bag'],
+        options: ['The keys are on the bag', 'The keys are under the bag', 'The keys are at the bag', 'The keys are in the bag'],
         correctAnswer: 'The keys are in the bag',
         explanation: '"IN" indica interior o espacio cerrado (dentro de).',
         hint: 'Tip: Interior = IN.'
@@ -1430,7 +1430,7 @@ export const a1IntermedioLessons: LessonStep[] = [
       {
         id: 'q_a1_int_10_5',
         question: 'Si el banco está al lado de la farmacia, ¿cómo lo dices?',
-        options: ['The bank is in the pharmacy', 'The bank is under the pharmacy', 'The bank is next to the pharmacy', 'The bank is on the pharmacy'],
+        options: ['The bank is next to the pharmacy', 'The bank is in the pharmacy', 'The bank is under the pharmacy', 'The bank is on the pharmacy'],
         correctAnswer: 'The bank is next to the pharmacy',
         explanation: '"Next to" significa "al lado de" o "junto a".',
         hint: 'Tip: "Next to" = al lado de.'
@@ -1470,7 +1470,7 @@ export const fluencyLessons: LessonStep[] = [
       {
         id: 'q_flu_1_1',
         question: '¿Cómo preguntas amablemente si una silla o asiento está libre?',
-        options: ['Is this seat taken?', 'Give me this chair', 'Who sits here?', 'Is this your chair?'],
+        options: ['Give me this chair', 'Who sits here?', 'Is this your chair?', 'Is this seat taken?'],
         correctAnswer: 'Is this seat taken?',
         explanation: '"Is this seat taken?" es la frase fija y educada para preguntar si el asiento está ocupado.',
         hint: 'Tip: Significa literalmente "¿Está tomado este asiento?".'
@@ -1495,7 +1495,7 @@ export const fluencyLessons: LessonStep[] = [
       {
         id: 'q_flu_1_4',
         question: '¿Cómo respondes si alguien te pregunta "Where are you from?"?',
-        options: ['I am 25 years old', 'I am from Colombia', 'I am fine, thanks', 'I like coffee'],
+        options: ['I am from Colombia', 'I am 25 years old', 'I am fine, thanks', 'I like coffee'],
         correctAnswer: 'I am from Colombia',
         explanation: '"I am from [país]" responde al origen de una persona.',
         hint: 'Tip: Indica tu país de procedencia.'
@@ -1528,7 +1528,7 @@ export const fluencyLessons: LessonStep[] = [
       {
         id: 'q_flu_2_1',
         question: '¿Qué respuesta das cuando el cajero te pregunta "Cash or card?"?',
-        options: ['Yes please', 'Card, please', 'No thank you', 'It is 5 dollars'],
+        options: ['Yes please', 'No thank you', 'Card, please', 'It is 5 dollars'],
         correctAnswer: 'Card, please',
         explanation: 'Indicamos la forma de pago deseada: "Cash" (Efectivo) o "Card" (Tarjeta).',
         hint: 'Tip: Eliges tarjeta ("Card").'
@@ -1544,7 +1544,7 @@ export const fluencyLessons: LessonStep[] = [
       {
         id: 'q_flu_2_3',
         question: 'Si el barista pregunta "For here or to go?", ¿qué te consulta?',
-        options: ['Si es frío o caliente', 'Si es para consumir en el local o para llevar', 'Si vas a pagar en efectivo', 'Si deseas azúcar'],
+        options: ['Si es frío o caliente', 'Si vas a pagar en efectivo', 'Si deseas azúcar', 'Si es para consumir en el local o para llevar'],
         correctAnswer: 'Si es para consumir en el local o para llevar',
         explanation: '"For here" es para comer en el lugar; "To go" es para llevar.',
         hint: 'Tip: "To go" = para llevar.'
@@ -1584,7 +1584,7 @@ export const fluencyLessons: LessonStep[] = [
       {
         id: 'q_flu_3_1',
         question: '¿Qué significa "Is it far from here?"?',
-        options: ['¿Está lejos de aquí?', '¿Está cerrado el lugar?', '¿Cuánto cuesta el boleto?', '¿A qué hora abre?'],
+        options: ['¿Está cerrado el lugar?', '¿Cuánto cuesta el boleto?', '¿Está lejos de aquí?', '¿A qué hora abre?'],
         correctAnswer: '¿Está lejos de aquí?',
         explanation: '"Far" significa lejos y "from here" significa de aquí.',
         hint: 'Tip: "Far" es opuesto a "close" (cerca).'
@@ -1592,7 +1592,7 @@ export const fluencyLessons: LessonStep[] = [
       {
         id: 'q_flu_3_2',
         question: 'Si te dicen "Turn left at the bank", ¿qué debes hacer?',
-        options: ['Girar a la derecha en el banco', 'Girar a la izquierda en el banco', 'Seguir derecho hasta el banco', 'Entrar al banco'],
+        options: ['Girar a la izquierda en el banco', 'Girar a la derecha en el banco', 'Seguir derecho hasta el banco', 'Entrar al banco'],
         correctAnswer: 'Girar a la izquierda en el banco',
         explanation: '"Left" es izquierda y "Turn" es girar.',
         hint: 'Tip: Left = izquierda.'
@@ -1642,7 +1642,7 @@ export const fluencyLessons: LessonStep[] = [
       {
         id: 'q_flu_4_1',
         question: '¿Cómo dices "Tengo una reserva a nombre de..." en inglés?',
-        options: ['I have a reservation under the name of...', 'I buy a room named...', 'My name is room...', 'Give me a bed for...'],
+        options: ['I buy a room named...', 'My name is room...', 'Give me a bed for...', 'I have a reservation under the name of...'],
         correctAnswer: 'I have a reservation under the name of...',
         explanation: '"I have a reservation under the name of..." es la expresión formal y correcta en hoteles.',
         hint: 'Tip: "Under the name of" = a nombre de.'
@@ -1658,7 +1658,7 @@ export const fluencyLessons: LessonStep[] = [
       {
         id: 'q_flu_4_3',
         question: '¿Cómo preguntas la contraseña del internet inalámbrico en el hotel?',
-        options: ['Where is the computer?', 'What is the Wi-Fi password?', 'How much is the internet?', 'Is there internet?'],
+        options: ['What is the Wi-Fi password?', 'Where is the computer?', 'How much is the internet?', 'Is there internet?'],
         correctAnswer: 'What is the Wi-Fi password?',
         explanation: '"What is the Wi-Fi password?" es la pregunta estándar para solicitar la clave de Wi-Fi.',
         hint: 'Tip: "Password" = contraseña.'
@@ -1733,7 +1733,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_1',
     question: '1. ¿Cómo dices correctamente "Tengo 22 años" en inglés?',
-    options: ['I have 22 years', 'I am 22 years old', 'I make 22 years', 'I possess 22 years'],
+    options: ['I have 22 years', 'I make 22 years', 'I possess 22 years', 'I am 22 years old'],
     correctAnswer: 'I am 22 years old',
     explanation: 'En inglés la edad se expresa obligatoriamente con el verbo To Be (I am).',
     hint: 'A1 Inicial: Recuerda usar To Be para la edad.'
@@ -1749,7 +1749,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_3',
     question: '3. Selecciona la opción con los artículos correctos: "___ apple" y "___ book".',
-    options: ['a apple, an book', 'an apple, a book', 'the apple, an book', 'a apple, a book'],
+    options: ['an apple, a book', 'a apple, an book', 'the apple, an book', 'a apple, a book'],
     correctAnswer: 'an apple, a book',
     explanation: '"An" precede sonidos vocálicos (apple) y "A" sonidos de consonante (book).',
     hint: 'A1 Inicial: Vocal usa "an", consonante usa "a".'
@@ -1757,7 +1757,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_4',
     question: '4. ¿Cómo niegas en presente simple para "She" (Ella)?',
-    options: ['She don\'t speak English', 'She doesn\'t speak English', 'She isn\'t speak English', 'She not speak English'],
+    options: ['She don\'t speak English', 'She isn\'t speak English', 'She doesn\'t speak English', 'She not speak English'],
     correctAnswer: "She doesn't speak English",
     explanation: 'Para la 3ª persona singular (He, She, It) el auxiliar negativo es "doesn\'t".',
     hint: 'A1 Intermedio: Utiliza "doesn\'t".'
@@ -1773,7 +1773,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_6',
     question: '6. ¿Cuál es la respuesta cortés a "Thank you"?',
-    options: ['Excuse me', "You're welcome", 'Nice to meet you', 'Good evening'],
+    options: ['Excuse me', 'Nice to meet you', 'Good evening', "You're welcome"],
     correctAnswer: "You're welcome",
     explanation: '"You\'re welcome" equivale a "De nada".',
     hint: 'A1 Inicial: Significa "Eres bienvenido".'
@@ -1781,7 +1781,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_7',
     question: '7. ¿Cómo preguntas el precio de algo que deseas comprar en una tienda?',
-    options: ['How many is this?', 'How much is this?', 'What price have this?', 'How money is this?'],
+    options: ['How many is this?', 'What price have this?', 'How much is this?', 'How money is this?'],
     correctAnswer: 'How much is this?',
     explanation: '"How much is this?" es la frase estándar para consultar precios.',
     hint: 'A1 Inicial: Usamos "How much".'
@@ -1789,7 +1789,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_8',
     question: '8. Completa la oración de hábito: "He usually ___ at 6 AM."',
-    options: ['wake up', 'wakes up', 'is waking up', 'waking up'],
+    options: ['wakes up', 'wake up', 'is waking up', 'waking up'],
     correctAnswer: 'wakes up',
     explanation: 'Para hábitos en presente simple con "He", agregamos "-s" al verbo (wakes up).',
     hint: 'A1 Intermedio: Regla de la "-s" para He/She/It.'
@@ -1797,7 +1797,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_9',
     question: '9. ¿Cómo dices "A ella le gusta bailar" usando la regla de preferencias?',
-    options: ['She likes dance', 'She likes dancing', 'She liking dance', 'She like to dancing'],
+    options: ['She likes dance', 'She liking dance', 'She likes dancing', 'She like to dancing'],
     correctAnswer: 'She likes dancing',
     explanation: 'El verbo que sigue a "like/love/hate" lleva la terminación "-ing" (dancing).',
     hint: 'A1 Intermedio: Verbo con "-ing".'
@@ -1805,7 +1805,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_10',
     question: '10. ¿Cómo indicas que hay dos dormitorios en el apartamento?',
-    options: ['There is two bedrooms', 'There are two bedrooms', 'Have two bedrooms', 'There be two bedrooms'],
+    options: ['There is two bedrooms', 'Have two bedrooms', 'There be two bedrooms', 'There are two bedrooms'],
     correctAnswer: 'There are two bedrooms',
     explanation: 'Para plural ("two bedrooms") se usa obligatoriamente "There are".',
     hint: 'A1 Intermedio: "There are" para plural.'
@@ -1821,7 +1821,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_12',
     question: '12. En un café, ¿cómo pides cortésmente una bebida?',
-    options: ['Give me coffee', 'I want coffee now', 'I would like a coffee, please', 'Bring coffee'],
+    options: ['I would like a coffee, please', 'Give me coffee', 'I want coffee now', 'Bring coffee'],
     correctAnswer: 'I would like a coffee, please',
     explanation: '"I would like..." es la forma más amable y educada.',
     hint: 'Fluidez A1: "I would like...".'
@@ -1829,7 +1829,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_13',
     question: '13. ¿Qué preposición de lugar usas si tus llaves están DENTRO de la mochila?',
-    options: ['on', 'in', 'at', 'under'],
+    options: ['on', 'at', 'under', 'in'],
     correctAnswer: 'in',
     explanation: '"IN" indica interior o espacio cerrado.',
     hint: 'A1 Intermedio: Interior = IN.'
@@ -1845,7 +1845,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_15',
     question: '15. ¿Qué significa la palabra de vocabulario "Understand"?',
-    options: ['Aprender', 'Entender / Comprender', 'Escuchar', 'Escribir'],
+    options: ['Entender / Comprender', 'Aprender', 'Escuchar', 'Escribir'],
     correctAnswer: 'Entender / Comprender',
     explanation: '"Understand" significa entender o comprender.',
     hint: 'Vocabulario A1: Verbo clave de comprensión.'
@@ -1861,7 +1861,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_17',
     question: '17. ¿Cuál es la forma en Presente Continuo para "Look! They ___ in the garden"?',
-    options: ['play', 'is playing', 'are playing', 'plays'],
+    options: ['play', 'are playing', 'is playing', 'plays'],
     correctAnswer: 'are playing',
     explanation: 'Con el pronombre "They" en presente continuo se usa "are playing".',
     hint: 'A1 Intermedio: They are + playing.'
@@ -1869,7 +1869,7 @@ export const finalExamQuestions: QuizQuestion[] = [
   {
     id: 'ex_18',
     question: '18. ¿Cómo preguntas amablemente a un transeúnte si un asiento está ocupado?',
-    options: ['Is this seat taken?', 'You leave this chair?', 'Give chair now', 'Whose chair?'],
+    options: ['You leave this chair?', 'Give chair now', 'Whose chair?', 'Is this seat taken?'],
     correctAnswer: 'Is this seat taken?',
     explanation: '"Is this seat taken?" es la frase natural para consultar si un asiento está libre.',
     hint: 'Fluidez A1: "Is this seat taken?".'

@@ -229,6 +229,19 @@ export function FastVocabView({
             </span>
             {categories.map(cat => {
               const isActive = selectedCategory === cat;
+              const catDisplay = isSpanishCourse
+                ? cat === 'Todos'
+                  ? 'All'
+                  : cat === 'Sustantivos'
+                    ? 'Nouns'
+                    : cat === 'Verbos'
+                      ? 'Verbs'
+                      : cat === 'Adjetivos'
+                        ? 'Adjectives'
+                        : cat === 'Conectores'
+                          ? 'Connectors'
+                          : cat
+                : cat;
               return (
                 <button
                   key={cat}
@@ -243,7 +256,7 @@ export function FastVocabView({
                       : 'bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800'
                   }`}
                 >
-                  {cat}
+                  {catDisplay}
                 </button>
               );
             })}
@@ -308,12 +321,18 @@ export function FastVocabView({
 
       {/* SPEAK MODE */}
       {activeMode === 'speak' && currentWord && (
-        <div className="max-w-md mx-auto space-y-6">
+        <div className="max-w-md mx-auto space-y-5">
           <PronunciationPractice
             targetPhrase={currentWord.word}
             courseLanguage={courseLanguage}
             onSuccess={() => {
               onWordMastered(currentWord.id);
+            }}
+            onSkip={() => {
+              onWordMastered(currentWord.id);
+              if (safeIndex < filteredWords.length - 1) {
+                handleNext();
+              }
             }}
           />
 
@@ -324,7 +343,8 @@ export function FastVocabView({
               disabled={safeIndex === 0}
               className="p-3 rounded-xl font-bold text-slate-700 dark:text-zinc-300 disabled:opacity-30 hover:bg-slate-100 dark:hover:bg-zinc-800 text-xs flex items-center gap-1"
             >
-              <ArrowLeft className="w-4 h-4" /> {isSpanishCourse ? 'Previous Word' : 'Palabra Anterior'}
+              <ArrowLeft className="w-4 h-4" />{' '}
+              {isSpanishCourse ? 'Previous Word' : 'Palabra Anterior'}
             </button>
 
             <span className="text-xs font-bold text-slate-500 tabular-nums">
@@ -337,7 +357,8 @@ export function FastVocabView({
               disabled={safeIndex === filteredWords.length - 1}
               className="p-3 rounded-xl font-bold text-slate-700 dark:text-zinc-300 disabled:opacity-30 hover:bg-slate-100 dark:hover:bg-zinc-800 text-xs flex items-center gap-1"
             >
-              {isSpanishCourse ? 'Next Word' : 'Siguiente Palabra'} <ArrowRight className="w-4 h-4" />
+              {isSpanishCourse ? 'Next Word' : 'Siguiente Palabra'}{' '}
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
