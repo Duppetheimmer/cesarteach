@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { CheckCircle2, RefreshCw, Puzzle, X, Volume2 } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { CheckCircle2, RefreshCw, Puzzle, X, Volume2, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { playSpeech } from '../utils/speech';
 import { playTactileSound } from '../utils/soundEffects';
 
 interface WordOrderExerciseProps {
+  questionPrompt?: string;
   correctSentence: string;
   explanation: string;
   hint?: string;
@@ -13,7 +14,34 @@ interface WordOrderExerciseProps {
   onIncorrect: () => void;
 }
 
+function scrambleWordsGuaranteed(words: string[]): string[] {
+  if (words.length <= 1) return [...words];
+  const targetJoined = words.join(' ');
+  let arr = [...words];
+  for (let attempt = 0; attempt < 8; attempt++) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = tmp;
+    }
+    if (arr.join(' ') !== targetJoined) {
+      return arr;
+    }
+  }
+  return [...words].reverse();
+}
+
+function normalizeForComparison(text: string): string {
+  return text
+    .replace(/\s+/g, ' ')
+    .replace(/[¿?¡!.,;:]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
 export function WordOrderExercise({
+  questionPrompt,
   correctSentence,
   explanation,
   hint,
@@ -22,16 +50,30 @@ export function WordOrderExercise({
   onIncorrect
 }: WordOrderExerciseProps) {
   const isSpanishCourse = courseLanguage === 'es';
-  const targetWords = correctSentence.split(' ');
+  const targetWords = useMemo(
+    () =>
+      correctSentence
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean),
+    [correctSentence]
+  );
 
   const [availableTiles, setAvailableTiles] = useState<string[]>(() =>
-    [...targetWords].sort(() => 0.5 - Math.random())
+    scrambleWordsGuaranteed(targetWords)
   );
   const [selectedTiles, setSelectedTiles] = useState<string[]>([]);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
 
+  // Reset tiles whenever correctSentence changes (e.g. moving to another word-order card)
+  useEffect(() => {
+    setAvailableTiles(scrambleWordsGuaranteed(targetWords));
+    setSelectedTiles([]);
+    setStatus('idle');
+  }, [targetWords]);
+
   const speakWord = (word: string) => {
-    playSpeech(word, {
+    playSpeech(word.replace(/[¿?¡!.,;:]/g, ''), {
       courseLanguage,
       rate: 0.95
     });
@@ -59,9 +101,42 @@ export function WordOrderExercise({
     setAvailableTiles(prev => [...prev, word]);
   };
 
+  // Smart Guided Hint: Places the next correct word tile automatically
+  const handlePlaceNextCorrectWord = () => {
+    if (status !== 'idle') return;
+    // Find first position where selectedTiles doesn't match targetWords
+    let mismatchIdx = 0;
+    while (
+      mismatchIdx < selectedTiles.length &&
+      selectedTiles[mismatchIdx].toLowerCase() === targetWords[mismatchIdx]?.toLowerCase()
+    ) {
+      mismatchIdx++;
+    }
+
+    if (mismatchIdx >= targetWords.length) return;
+
+    // Return any wrongly placed tiles from mismatchIdx onwards back to available
+    const keptSelected = selectedTiles.slice(0, mismatchIdx);
+    const returnedTiles = selectedTiles.slice(mismatchIdx);
+    const pool = [...availableTiles, ...returnedTiles];
+
+    const neededWord = targetWords[mismatchIdx];
+    const poolIndex = pool.findIndex(w => w.toLowerCase() === neededWord.toLowerCase());
+    if (poolIndex === -1) return;
+
+    const pickedWord = pool[poolIndex];
+    const nextPool = pool.filter((_, idx) => idx !== poolIndex);
+
+    playTactileSound('highlight');
+    speakWord(pickedWord);
+    setSelectedTiles([...keptSelected, pickedWord]);
+    setAvailableTiles(nextPool);
+  };
+
   const handleCheck = () => {
     const constructed = selectedTiles.join(' ');
-    const isMatched = constructed.trim().toLowerCase() === correctSentence.trim().toLowerCase();
+    const isMatched =
+      normalizeForComparison(constructed) === normalizeForComparison(correctSentence);
 
     if (isMatched) {
       playTactileSound('win');
@@ -78,34 +153,67 @@ export function WordOrderExercise({
   const handleReset = () => {
     playTactileSound('flip');
     setSelectedTiles([]);
-    setAvailableTiles([...targetWords].sort(() => 0.5 - Math.random()));
+    setAvailableTiles(scrambleWordsGuaranteed(targetWords));
     setStatus('idle');
   };
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-xs font-black text-slate-900 dark:text-zinc-100 flex items-center gap-1.5">
-          <Puzzle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          <span>
-            {isSpanishCourse
-              ? 'Magnetic Sentence Builder (Spanish)'
-              : 'Imán de Frases (Ordena las fichas en inglés)'}
-          </span>
-        </span>
-        <div className="flex items-center gap-2">
+    <div className="space-y-4">
+      {/* Prompt Card */}
+      {questionPrompt && (
+        <div className="p-4 rounded-2xl bg-[#FAF6EE] dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_#0f172a] flex items-start justify-between gap-3">
+          <div>
+            <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1 mb-1">
+              <Puzzle className="w-3.5 h-3.5" />
+              {isSpanishCourse
+                ? 'Magnetic Sentence Builder (Spanish)'
+                : 'Imán de Frases (Construcción Activa)'}
+            </span>
+            <h3 className="text-lg md:text-xl font-black text-slate-950 dark:text-zinc-100 leading-snug">
+              {questionPrompt}
+            </h3>
+          </div>
           <button
             type="button"
             onClick={() => speakSentence(correctSentence)}
-            className="px-3 py-1 rounded-xl bg-indigo-600 text-white border-2 border-slate-900 text-xs font-black flex items-center gap-1 shadow-[2px_2px_0px_0px_#0f172a]"
+            title={isSpanishCourse ? 'Listen to target sentence' : 'Escuchar oración objetivo'}
+            className="p-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a] shrink-0"
+          >
+            <Volume2 className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Action Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs font-extrabold text-slate-600 dark:text-zinc-400">
+          {isSpanishCourse
+            ? `Words placed: ${selectedTiles.length} / ${targetWords.length}`
+            : `Fichas colocadas: ${selectedTiles.length} / ${targetWords.length}`}
+        </span>
+        <div className="flex items-center gap-2">
+          {status === 'idle' && selectedTiles.length < targetWords.length && (
+            <button
+              type="button"
+              onClick={handlePlaceNextCorrectWord}
+              className="px-3 py-1.5 rounded-xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 text-xs font-black flex items-center gap-1 shadow-[2px_2px_0px_0px_#0f172a]"
+            >
+              <Lightbulb className="w-3.5 h-3.5" />
+              <span>{isSpanishCourse ? '+1 Word Help' : 'Ayuda +1 Ficha'}</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => speakSentence(correctSentence)}
+            className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white border-2 border-slate-900 text-xs font-black flex items-center gap-1 shadow-[2px_2px_0px_0px_#0f172a]"
           >
             <Volume2 className="w-3.5 h-3.5" />
-            <span>{isSpanishCourse ? 'Audio Hint' : 'Audio Pista'}</span>
+            <span>{isSpanishCourse ? 'Audio Hint' : 'Escuchar Audio'}</span>
           </button>
           <button
             type="button"
             onClick={handleReset}
-            className="px-3 py-1 rounded-xl bg-white dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-600 text-xs font-black text-slate-900 dark:text-zinc-200 flex items-center gap-1 shadow-[2px_2px_0px_0px_#0f172a]"
+            className="px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border-2 border-slate-900 dark:border-zinc-600 text-xs font-black text-slate-900 dark:text-zinc-200 flex items-center gap-1 shadow-[2px_2px_0px_0px_#0f172a]"
           >
             <RefreshCw className="w-3.5 h-3.5" /> {isSpanishCourse ? 'Reset' : 'Reiniciar'}
           </button>
@@ -128,8 +236,8 @@ export function WordOrderExercise({
           {selectedTiles.length === 0 ? (
             <span className="text-xs sm:text-sm font-bold text-slate-500 dark:text-zinc-400">
               {isSpanishCourse
-                ? 'Tap the magnetic word tiles below in the right order...'
-                : 'Toca las fichas magnéticas de abajo en el orden correcto...'}
+                ? 'Tap the magnetic word tiles below in the right order (or use "+1 Word Help")...'
+                : 'Toca las fichas magnéticas de abajo en el orden correcto (o usa "Ayuda +1 Ficha")...'}
             </span>
           ) : (
             selectedTiles.map((w, idx) => (
@@ -199,14 +307,26 @@ export function WordOrderExercise({
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-2xl bg-rose-300 text-slate-950 border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a] text-xs sm:text-sm font-bold space-y-1"
+          className="p-4 rounded-2xl bg-rose-200 text-slate-950 border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a] text-xs sm:text-sm font-bold space-y-2"
         >
-          <p className="font-black">
-            {isSpanishCourse
-              ? 'Not quite the right word order. Check the clue!'
-              : 'Ese no es el orden correcto de las fichas.'}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-black text-rose-950">
+              {isSpanishCourse
+                ? 'Word order check — compare with the target structure:'
+                : 'Revisa el orden de las fichas — compara con la estructura correcta:'}
+            </p>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="px-3 py-1 rounded-xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 text-xs font-black shadow-[2px_2px_0px_0px_#0f172a]"
+            >
+              {isSpanishCourse ? 'Try Building It Again' : 'Intentar Armarla de Nuevo'}
+            </button>
+          </div>
+          <p className="px-3 py-2 rounded-xl bg-white border border-slate-900 font-black text-slate-950">
+            ✓ {correctSentence}
           </p>
-          {hint && <p className="italic">Tip: {hint}</p>}
+          {hint && <p className="italic text-xs">💡 {hint}</p>}
         </motion.div>
       )}
     </div>

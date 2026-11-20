@@ -4,7 +4,7 @@ import { X, Volume2, Sparkles, CheckCircle2, AlertCircle, RefreshCw, Zap, BookOp
 import { playSpeech } from '../utils/speech';
 import { playTactileSound } from '../utils/soundEffects';
 import { SPANISH_A1_VERBS, SPANISH_VERB_PRACTICE_QUESTIONS } from '../data/spanishData';
-import { randomizeQuestionsOptions } from '../utils/shuffleOptions';
+import { randomizeQuestionsOptions, shuffleOptionsList } from '../utils/shuffleOptions';
 
 interface VerbData {
   id: string;
@@ -119,6 +119,38 @@ const A1_VERBS: VerbData[] = [
       { pronoun: 'We', present: 'can', negative: "can't", exampleEn: 'We can help you.', exampleEs: 'Podemos ayudarte.' },
       { pronoun: 'They', present: 'can', negative: "can't", exampleEn: 'They can play guitar.', exampleEs: 'Ellos saben tocar guitarra.' }
     ]
+  },
+  {
+    id: 'do',
+    infinitive: 'To Do',
+    translation: 'Hacer (actividades / auxiliar)',
+    thirdPerson: 'does',
+    past: 'did',
+    type: 'irregular',
+    tip: 'Además de significar "hacer" (do homework, do exercise), es el auxiliar para preguntas y negativas en presente (Do you...? / He doesn\'t...).',
+    forms: [
+      { pronoun: 'I', present: 'do', negative: "don't do", exampleEn: 'I do my homework at 5 PM.', exampleEs: 'Hago mi tarea a las 5 PM.' },
+      { pronoun: 'You', present: 'do', negative: "don't do", exampleEn: 'You do a great job.', exampleEs: 'Haces un gran trabajo.' },
+      { pronoun: 'He / She / It', present: 'does', negative: "doesn't do", exampleEn: 'She does yoga every morning.', exampleEs: 'Ella hace yoga cada mañana.' },
+      { pronoun: 'We', present: 'do', negative: "don't do", exampleEn: 'We do our best.', exampleEs: 'Hacemos nuestro mejor esfuerzo.' },
+      { pronoun: 'They', present: 'do', negative: "don't do", exampleEn: 'They do business here.', exampleEs: 'Ellos hacen negocios aquí.' }
+    ]
+  },
+  {
+    id: 'work',
+    infinitive: 'To Work',
+    translation: 'Trabajar / Funcionar',
+    thirdPerson: 'works',
+    past: 'worked',
+    type: 'regular',
+    tip: 'Verbo regular modelo: agrega "-s" con He/She/It en presente (works) y "-ed" en pasado para todas las personas (worked).',
+    forms: [
+      { pronoun: 'I', present: 'work', negative: "don't work", exampleEn: 'I work from Monday to Friday.', exampleEs: 'Trabajo de lunes a viernes.' },
+      { pronoun: 'You', present: 'work', negative: "don't work", exampleEn: 'You work very hard.', exampleEs: 'Trabajas muy duro.' },
+      { pronoun: 'He / She / It', present: 'works', negative: "doesn't work", exampleEn: 'He works in a hospital.', exampleEs: 'Él trabaja en un hospital.' },
+      { pronoun: 'We', present: 'work', negative: "don't work", exampleEn: 'We work together.', exampleEs: 'Trabajamos juntos.' },
+      { pronoun: 'They', present: 'work', negative: "don't work", exampleEn: 'They work remotely.', exampleEs: 'Ellos trabajan de forma remota.' }
+    ]
   }
 ];
 
@@ -128,6 +160,7 @@ interface QuizQuestionItem {
   correct: string;
   explanation: string;
   verbName: string;
+  isRetry?: boolean;
 }
 
 const VERB_PRACTICE_QUESTIONS: QuizQuestionItem[] = [
@@ -172,6 +205,48 @@ const VERB_PRACTICE_QUESTIONS: QuizQuestionItem[] = [
     correct: 'want',
     explanation: 'Con el pronombre "We" usas la forma base del verbo "want".',
     verbName: 'To Want'
+  },
+  {
+    prompt: 'Negativa 3ª persona: She _____ (not / work) on Sundays.',
+    options: ["doesn't work", "doesn't works", "don't work", 'not works'],
+    correct: "doesn't work",
+    explanation: 'Cuando usamos "doesn\'t", el verbo principal vuelve a su forma base sin "-s" ("doesn\'t work").',
+    verbName: 'To Work'
+  },
+  {
+    prompt: 'Pasado del verbo To Be: Yesterday we _____ very busy.',
+    options: ['were', 'was', 'are', 'been'],
+    correct: 'were',
+    explanation: 'En pasado de To Be: I/He/She/It usan "was", mientras que You/We/They usan "were".',
+    verbName: 'To Be'
+  },
+  {
+    prompt: 'Pasado irregular de To Go: Last summer I _____ to Spain.',
+    options: ['went', 'goed', 'gone', 'goes'],
+    correct: 'went',
+    explanation: 'El pasado simple irregular de "go" es "went" para todas las personas.',
+    verbName: 'To Go'
+  },
+  {
+    prompt: 'Pregunta en presente: _____ she have a car?',
+    options: ['Does', 'Do', 'Is', 'Has'],
+    correct: 'Does',
+    explanation: 'Para preguntas en presente con He/She/It usamos el auxiliar "Does" + sujeto + verbo base ("Does she have...?").',
+    verbName: 'To Have'
+  },
+  {
+    prompt: 'Infinitivo de propósito: He wants _____ English fluently.',
+    options: ['to speak', 'speaking', 'speaks', 'spoke'],
+    correct: 'to speak',
+    explanation: 'Después del verbo "want" siempre colocamos "to + verbo base" (wants to speak).',
+    verbName: 'To Want'
+  },
+  {
+    prompt: 'Expresión con To Do: She _____ yoga every morning.',
+    options: ['does', 'do', 'makes', 'is'],
+    correct: 'does',
+    explanation: 'Con actividades como yoga, homework o exercise usamos "To Do", y para She es "does".',
+    verbName: 'To Do'
   }
 ];
 
@@ -192,21 +267,28 @@ export function VerbTrainerModal({
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const isSpanishCourse = courseLanguage === 'es'; // English speaker learning Spanish
   const activeVerbs: VerbData[] = isSpanishCourse ? (SPANISH_A1_VERBS as VerbData[]) : A1_VERBS;
-  const activeQuestions: QuizQuestionItem[] = React.useMemo(() => {
+
+  const buildVerbQuizQueue = (): QuizQuestionItem[] => {
     const raw = isSpanishCourse
       ? (SPANISH_VERB_PRACTICE_QUESTIONS as QuizQuestionItem[])
       : VERB_PRACTICE_QUESTIONS;
-    return randomizeQuestionsOptions(raw);
-  }, [isSpanishCourse, shuffleSeed]);
+    return randomizeQuestionsOptions(raw.map(q => ({ ...q, isRetry: false })));
+  };
+
+  const [activeQuestions, setActiveQuestions] = useState<QuizQuestionItem[]>(() =>
+    buildVerbQuizQueue()
+  );
 
   const [selectedVerbId, setSelectedVerbId] = useState<string>(activeVerbs[0]?.id || 'be');
 
   useEffect(() => {
     setSelectedVerbId(activeVerbs[0]?.id || 'be');
+    setActiveQuestions(buildVerbQuizQueue());
     setQuizIndex(0);
     setSelectedOption(null);
     setQuizStatus('idle');
-  }, [courseLanguage]);
+    setScore(0);
+  }, [courseLanguage, shuffleSeed]);
 
   const [quizIndex, setQuizIndex] = useState<number>(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -232,12 +314,24 @@ export function VerbTrainerModal({
     if (isCorrect) {
       playTactileSound('stamp');
       setQuizStatus('correct');
-      setScore(s => s + 1);
+      if (!currentQuestion.isRetry) {
+        setScore(s => s + 1);
+      }
       onAddXP(20);
       speakText(currentQuestion.correct);
     } else {
       playTactileSound('error');
       setQuizStatus('incorrect');
+      const prevIdx = currentQuestion.options.indexOf(currentQuestion.correct);
+      const reshuffled = shuffleOptionsList(
+        currentQuestion.options,
+        currentQuestion.correct,
+        prevIdx
+      );
+      setActiveQuestions(prev => [
+        ...prev,
+        { ...currentQuestion, options: reshuffled, isRetry: true }
+      ]);
     }
   };
 
@@ -257,10 +351,6 @@ export function VerbTrainerModal({
   const restartQuiz = () => {
     playTactileSound('flip');
     setShuffleSeed(s => s + 1);
-    setQuizIndex(0);
-    setSelectedOption(null);
-    setQuizStatus('idle');
-    setScore(0);
   };
 
   return (

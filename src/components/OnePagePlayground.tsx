@@ -15,7 +15,9 @@ import {
   Highlighter,
   Layers,
   Grid,
-  Puzzle
+  Puzzle,
+  Lightbulb,
+  Headphones
 } from 'lucide-react';
 
 interface WordBreakdown {
@@ -34,10 +36,13 @@ interface InteractiveChallenge {
   correctAnswer: string;
   tip: string;
   scrambleWords: string[];
+  scrambleTranslation?: string;
+  clozeWord: string;
+  clozeDistractors: string[];
   wordNotes: WordBreakdown[];
 }
 
-// FOR SPANISH SPEAKERS LEARNING ENGLISH (Explanations in Spanish, Target in English)
+// FOR SPANISH SPEAKERS LEARNING ENGLISH (Explanations in Spanish, Target in English) - 12 Cards (3 per level A1-B2)
 const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
   {
     id: 'en_c1',
@@ -46,10 +51,13 @@ const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
     phrase: 'Could I have an iced coffee to go, please?',
     translation: '¿Me podría dar un café helado para llevar, por favor?',
     question: '¿Qué significa la expresión en inglés "to go" al pedir una bebida?',
-    options: ['Para tomar en la mesa', 'Para llevar', 'Sin cafeína'],
+    options: ['Para tomar en la mesa', 'Para llevar', 'Sin cafeína', 'Muy caliente'],
     correctAnswer: 'Para llevar',
     tip: '"Could I have..." es la fórmula más educada y natural para pedir cualquier cosa en inglés.',
-    scrambleWords: ['Could', 'I', 'have', 'a', 'coffee', 'please?'],
+    scrambleWords: ['Could', 'I', 'have', 'an', 'iced', 'coffee', 'please?'],
+    scrambleTranslation: '¿Me podría dar un café helado, por favor?',
+    clozeWord: 'coffee',
+    clozeDistractors: ['ticket', 'luggage', 'weather'],
     wordNotes: [
       { word: 'Could', meaning: 'Podría (cortesía)' },
       { word: 'I', meaning: 'Yo' },
@@ -63,6 +71,64 @@ const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
     ]
   },
   {
+    id: 'en_c1b',
+    level: 'A1',
+    context: 'Presentándote en tu primer día',
+    phrase: 'Nice to meet you, I work as a designer.',
+    translation: 'Mucho gusto en conocerte, trabajo como diseñador(a).',
+    question: '¿Qué palabra se usa siempre en inglés después de "work" para decir tu profesión?',
+    options: ['as a (work as a...)', 'for a (work for a...)', 'like (work like...)', 'how (work how...)'],
+    correctAnswer: 'as a (work as a...)',
+    tip: 'En inglés para profesiones siempre decimos "I work as a/an + profesión" (trabajo como...).',
+    scrambleWords: ['I', 'work', 'as', 'a', 'designer.'],
+    scrambleTranslation: 'Yo trabajo como diseñador(a).',
+    clozeWord: 'meet',
+    clozeDistractors: ['make', 'sleep', 'drive'],
+    wordNotes: [
+      { word: 'Nice', meaning: 'Agradable / Mucho gusto' },
+      { word: 'to', meaning: 'en / de' },
+      { word: 'meet', meaning: 'conocer' },
+      { word: 'you,', meaning: 'a ti' },
+      { word: 'I', meaning: 'yo' },
+      { word: 'work', meaning: 'trabajo' },
+      { word: 'as', meaning: 'como (profesión)' },
+      { word: 'a', meaning: 'un(a)' },
+      { word: 'designer.', meaning: 'diseñador(a)' }
+    ]
+  },
+  {
+    id: 'en_c1c',
+    level: 'A1',
+    context: 'Preguntando direcciones en la ciudad',
+    phrase: 'Excuse me, how do I get to the train station?',
+    translation: 'Disculpe, ¿cómo llego a la estación de tren?',
+    question: '¿Cuál es la estructura natural en inglés para preguntar "¿cómo llego a..."?',
+    options: [
+      'How do I get to...?',
+      'How I arrive in...?',
+      'Where I go for...?',
+      'What way is to...?'
+    ],
+    correctAnswer: 'How do I get to...?',
+    tip: '"Get to + lugar" significa "llegar a un lugar". Es mucho más natural que el verbo "arrive".',
+    scrambleWords: ['How', 'do', 'I', 'get', 'to', 'the', 'station?'],
+    scrambleTranslation: '¿Cómo llego a la estación?',
+    clozeWord: 'station?',
+    clozeDistractors: ['kitchen?', 'pencil?', 'blanket?'],
+    wordNotes: [
+      { word: 'Excuse', meaning: 'Disculpe' },
+      { word: 'me,', meaning: 'a mí' },
+      { word: 'how', meaning: 'cómo' },
+      { word: 'do', meaning: '(auxiliar pregunta)' },
+      { word: 'I', meaning: 'yo' },
+      { word: 'get', meaning: 'llego' },
+      { word: 'to', meaning: 'a' },
+      { word: 'the', meaning: 'la' },
+      { word: 'train', meaning: 'tren' },
+      { word: 'station?', meaning: 'estación?' }
+    ]
+  },
+  {
     id: 'en_c2',
     level: 'A2',
     context: 'Charla casual con nuevos amigos',
@@ -72,11 +138,15 @@ const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
     options: [
       'Porque indica un año exacto en el calendario',
       'Porque habla del futuro',
-      'Porque indica una cantidad o duración de tiempo (3 years)'
+      'Porque indica una cantidad o duración de tiempo (3 years)',
+      'Porque es una oración negativa'
     ],
     correctAnswer: 'Porque indica una cantidad o duración de tiempo (3 years)',
     tip: 'En inglés no se dice "I live here since 3 years": usa siempre "have been + -ing" con "for" (duración).',
-    scrambleWords: ['I', 'have', 'lived', 'here', 'for', 'years.'],
+    scrambleWords: ['I', 'have', 'been', 'living', 'here', 'for', 'three', 'years.'],
+    scrambleTranslation: 'Llevo viviendo aquí tres años.',
+    clozeWord: 'living',
+    clozeDistractors: ['lived', 'lives', 'live'],
     wordNotes: [
       { word: 'I', meaning: 'Yo' },
       { word: 'have', meaning: 'he (auxiliar)' },
@@ -89,6 +159,61 @@ const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
     ]
   },
   {
+    id: 'en_c2b',
+    level: 'A2',
+    context: 'Contando una anécdota del pasado',
+    phrase: 'I was cooking dinner when the phone rang.',
+    translation: 'Estaba preparando la cena cuando sonó el teléfono.',
+    question: '¿Qué tiempo verbal usamos para la acción larga de fondo ("estaba cocinando")?',
+    options: [
+      'Past Continuous (was/were + -ing)',
+      'Future Simple (will + verb)',
+      'Present Simple',
+      'Imperative'
+    ],
+    correctAnswer: 'Past Continuous (was/were + -ing)',
+    tip: 'Acción larga en progreso (was cooking) + "when" + acción corta que interrumpe en pasado simple (rang).',
+    scrambleWords: ['I', 'was', 'cooking', 'dinner', 'when', 'you', 'called.'],
+    scrambleTranslation: 'Estaba preparando la cena cuando llamaste.',
+    clozeWord: 'cooking',
+    clozeDistractors: ['cooked', 'cooks', 'to cook'],
+    wordNotes: [
+      { word: 'I', meaning: 'Yo' },
+      { word: 'was', meaning: 'estaba' },
+      { word: 'cooking', meaning: 'cocinando' },
+      { word: 'dinner', meaning: 'la cena' },
+      { word: 'when', meaning: 'cuando' },
+      { word: 'the', meaning: 'el' },
+      { word: 'phone', meaning: 'teléfono' },
+      { word: 'rang.', meaning: 'sonó (pasado de ring)' }
+    ]
+  },
+  {
+    id: 'en_c2c',
+    level: 'A2',
+    context: 'Comparando dos opciones de viaje',
+    phrase: 'Taking the train is much faster than driving.',
+    translation: 'Tomar el tren es mucho más rápido que conducir.',
+    question: '¿Qué palabra intensifica un comparativo en inglés ("mucho más rápido")?',
+    options: ['much (much faster)', 'very (very faster)', 'more (more faster)', 'too (too faster)'],
+    correctAnswer: 'much (much faster)',
+    tip: 'Nunca digas "very faster" ni "more faster": para decir "mucho más + adjetivo", usa "much + comparativo".',
+    scrambleWords: ['The', 'train', 'is', 'much', 'faster', 'than', 'driving.'],
+    scrambleTranslation: 'El tren es mucho más rápido que conducir.',
+    clozeWord: 'faster',
+    clozeDistractors: ['fastest', 'more fast', 'fastly'],
+    wordNotes: [
+      { word: 'Taking', meaning: 'Tomar (al inicio)' },
+      { word: 'the', meaning: 'el' },
+      { word: 'train', meaning: 'tren' },
+      { word: 'is', meaning: 'es' },
+      { word: 'much', meaning: 'mucho (con comparativos)' },
+      { word: 'faster', meaning: 'más rápido' },
+      { word: 'than', meaning: 'que (comparación)' },
+      { word: 'driving.', meaning: 'conducir' }
+    ]
+  },
+  {
     id: 'en_c3',
     level: 'B1',
     context: 'Organizando planes de fin de semana',
@@ -98,11 +223,15 @@ const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
     options: [
       'Escuchar un concierto en vivo',
       'Improvisar y decidir según vayan surgiendo las cosas',
-      'Seguir un plan estricto paso a paso'
+      'Seguir un plan estricto paso a paso',
+      'Cancelar todos los planes'
     ],
     correctAnswer: 'Improvisar y decidir según vayan surgiendo las cosas',
     tip: 'Viene de la música ("tocar de oído" sin partitura) y hoy significa fluir sin un plan rígido.',
     scrambleWords: ['Let’s', 'play', 'it', 'by', 'ear', 'tomorrow.'],
+    scrambleTranslation: 'Vamos viendo sobre la marcha mañana.',
+    clozeWord: 'ear',
+    clozeDistractors: ['eye', 'hand', 'foot'],
     wordNotes: [
       { word: 'Let’s', meaning: 'Vamos a (propuesta)' },
       { word: 'play', meaning: 'tocar / jugar' },
@@ -111,6 +240,71 @@ const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
       { word: 'ear', meaning: 'oído (sobre la marcha)' },
       { word: 'tomorrow', meaning: 'mañana' },
       { word: 'afternoon.', meaning: 'por la tarde' }
+    ]
+  },
+  {
+    id: 'en_c3b',
+    level: 'B1',
+    context: 'Situaciones hipotéticas (Second Conditional)',
+    phrase: 'If I were in your shoes, I would accept the offer.',
+    translation: 'Si yo estuviera en tu lugar, aceptaría la oferta.',
+    question: '¿Qué significa la expresión idiomática "in your shoes"?',
+    options: [
+      'En tu lugar / en tu situación',
+      'Buscando zapatos nuevos',
+      'Caminando muy rápido',
+      'Sin estar preparado'
+    ],
+    correctAnswer: 'En tu lugar / en tu situación',
+    tip: '"If I were in your shoes, I would..." es la fórmula B1 ideal para dar consejos empáticos.',
+    scrambleWords: ['If', 'I', 'were', 'you,', 'I', 'would', 'accept', 'it.'],
+    scrambleTranslation: 'Si yo fuera tú, lo aceptaría.',
+    clozeWord: 'would',
+    clozeDistractors: ['will', 'did', 'am'],
+    wordNotes: [
+      { word: 'If', meaning: 'Si (condicional)' },
+      { word: 'I', meaning: 'yo' },
+      { word: 'were', meaning: 'estuviera / fuera' },
+      { word: 'in', meaning: 'en' },
+      { word: 'your', meaning: 'tus' },
+      { word: 'shoes,', meaning: 'zapatos (tu lugar)' },
+      { word: 'I', meaning: 'yo' },
+      { word: 'would', meaning: '(terminación -ría)' },
+      { word: 'accept', meaning: 'aceptaría' },
+      { word: 'the', meaning: 'la' },
+      { word: 'offer.', meaning: 'oferta' }
+    ]
+  },
+  {
+    id: 'en_c3c',
+    level: 'B1',
+    context: 'Hábitos y adaptación (Used to vs Be used to)',
+    phrase: 'I am getting used to waking up early every day.',
+    translation: 'Me estoy acostumbrando a despertarme temprano todos los días.',
+    question: '¿Por qué el verbo "wake" lleva "-ing" (waking) después de "getting used to"?',
+    options: [
+      'Porque en "be/get used to" (acostumbrarse a), "to" es una preposición y exige verbo con -ing',
+      'Porque habla de algo que ocurrió hace diez años',
+      'Porque todos los verbos en inglés llevan -ing',
+      'Porque es una orden negativa'
+    ],
+    correctAnswer: 'Porque en "be/get used to" (acostumbrarse a), "to" es una preposición y exige verbo con -ing',
+    tip: '"I used to wake up" = Yo solía despertarme. "I am getting used to waking up" = Me estoy acostumbrando a despertarme.',
+    scrambleWords: ['I', 'am', 'used', 'to', 'waking', 'up', 'early.'],
+    scrambleTranslation: 'Estoy acostumbrado a despertarme temprano.',
+    clozeWord: 'waking',
+    clozeDistractors: ['wake', 'woke', 'woken'],
+    wordNotes: [
+      { word: 'I', meaning: 'Yo' },
+      { word: 'am', meaning: 'estoy' },
+      { word: 'getting', meaning: 'volviéndome' },
+      { word: 'used', meaning: 'acostumbrado' },
+      { word: 'to', meaning: 'a (preposición)' },
+      { word: 'waking', meaning: 'despertarme (-ing)' },
+      { word: 'up', meaning: '(partícula)' },
+      { word: 'early', meaning: 'temprano' },
+      { word: 'every', meaning: 'todos los' },
+      { word: 'day.', meaning: 'días' }
     ]
   },
   {
@@ -123,11 +317,15 @@ const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
     options: [
       'Convierte la frase en una orden directa',
       'Habla de una rutina diaria en presente',
-      'Reemplaza "If I had known" con un tono elegante de nivel B2'
+      'Reemplaza "If I had known" con una inversión condicional elegante de nivel B2',
+      'Expresa una obligación futura'
     ],
-    correctAnswer: 'Reemplaza "If I had known" con un tono elegante de nivel B2',
+    correctAnswer: 'Reemplaza "If I had known" con una inversión condicional elegante de nivel B2',
     tip: 'Esta inversión condicional equivale en español a "De haber sabido..." y demuestra gran dominio.',
-    scrambleWords: ['Had', 'I', 'known,', 'I', 'would', 'have', 'called.'],
+    scrambleWords: ['Had', 'I', 'known,', 'I', 'would', 'have', 'left', 'earlier.'],
+    scrambleTranslation: 'De haber sabido, habría salido más temprano.',
+    clozeWord: 'known',
+    clozeDistractors: ['knew', 'know', 'knowing'],
     wordNotes: [
       { word: 'Had', meaning: 'De haber (inversión)' },
       { word: 'I', meaning: 'yo' },
@@ -141,10 +339,71 @@ const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
       { word: 'left', meaning: 'salido / partido' },
       { word: 'earlier.', meaning: 'más temprano' }
     ]
+  },
+  {
+    id: 'en_c4b',
+    level: 'B2',
+    context: 'Énfasis formal con inversión negativa',
+    phrase: 'Rarely have I seen such an impressive presentation.',
+    translation: 'Rara vez he visto una presentación tan impresionante.',
+    question: '¿Qué ocurre con el orden de las palabras cuando empezamos con "Rarely" o "Never"?',
+    options: [
+      'Se invierte el auxiliar antes del sujeto ("have I seen" en vez de "I have seen")',
+      'Se elimina el verbo principal',
+      'Se cambia toda la frase a futuro simple',
+      'No cambia nada en el orden'
+    ],
+    correctAnswer: 'Se invierte el auxiliar antes del sujeto ("have I seen" en vez de "I have seen")',
+    tip: 'En nivel B2, al poner un adverbio negativo al inicio (Rarely, Seldom, Never), invertimos como en una pregunta: "Rarely have I seen...".',
+    scrambleWords: ['Rarely', 'have', 'I', 'seen', 'such', 'talent.'],
+    scrambleTranslation: 'Rara vez he visto tanto talento.',
+    clozeWord: 'Rarely',
+    clozeDistractors: ['Always', 'Because', 'Unless'],
+    wordNotes: [
+      { word: 'Rarely', meaning: 'Rara vez' },
+      { word: 'have', meaning: 'he (auxiliar invertido)' },
+      { word: 'I', meaning: 'yo' },
+      { word: 'seen', meaning: 'visto' },
+      { word: 'such', meaning: 'tan' },
+      { word: 'an', meaning: 'una' },
+      { word: 'impressive', meaning: 'impresionante' },
+      { word: 'presentation.', meaning: 'presentación' }
+    ]
+  },
+  {
+    id: 'en_c4c',
+    level: 'B2',
+    context: 'Deducción lógica sobre el pasado',
+    phrase: 'She must have forgotten her phone at the office.',
+    translation: 'Ella debe de haber olvidado su teléfono en la oficina.',
+    question: '¿Cómo expresamos en inglés una deducción casi segura sobre algo que ya pasó?',
+    options: [
+      'must have + participio pasado (must have forgotten)',
+      'must to forget',
+      'should забыть',
+      'can forget yesterday'
+    ],
+    correctAnswer: 'must have + participio pasado (must have forgotten)',
+    tip: 'Para deducir qué pasó: "must have + participio" (estoy 95% seguro de que ocurrió) o "can\'t have + participio" (es imposible que haya ocurrido).',
+    scrambleWords: ['She', 'must', 'have', 'forgotten', 'her', 'phone.'],
+    scrambleTranslation: 'Ella debe de haber olvidado su teléfono.',
+    clozeWord: 'forgotten',
+    clozeDistractors: ['forget', 'forgets', 'forgetting'],
+    wordNotes: [
+      { word: 'She', meaning: 'Ella' },
+      { word: 'must', meaning: 'debe de (deducción)' },
+      { word: 'have', meaning: 'haber' },
+      { word: 'forgotten', meaning: 'olvidado' },
+      { word: 'her', meaning: 'su' },
+      { word: 'phone', meaning: 'teléfono' },
+      { word: 'at', meaning: 'en' },
+      { word: 'the', meaning: 'la' },
+      { word: 'office.', meaning: 'oficina' }
+    ]
   }
 ];
 
-// FOR ENGLISH SPEAKERS LEARNING SPANISH (Explanations in English, Target in Spanish)
+// FOR ENGLISH SPEAKERS LEARNING SPANISH (Explanations in English, Target in Spanish) - 12 Cards (3 per level A1-B2)
 const SPANISH_CHALLENGES: InteractiveChallenge[] = [
   {
     id: 'es_c1',
@@ -153,19 +412,86 @@ const SPANISH_CHALLENGES: InteractiveChallenge[] = [
     phrase: '¿Me trae la cuenta cuando pueda, por favor?',
     translation: 'Could you bring me the check when you can, please?',
     question: 'How do you politely ask for the bill/check in a Spanish restaurant?',
-    options: ['La receta, por favor', 'La cuenta, por favor', 'El recibo de luz'],
+    options: ['La receta, por favor', 'La cuenta, por favor', 'El recibo de luz', 'La maleta, por favor'],
     correctAnswer: 'La cuenta, por favor',
     tip: 'Adding "cuando pueda" ("whenever you can") softens the request and sounds very polite across the Spanish-speaking world.',
-    scrambleWords: ['¿Me', 'trae', 'la', 'cuenta', 'por', 'favor?'],
+    scrambleWords: ['¿Me', 'trae', 'la', 'cuenta,', 'por', 'favor?'],
+    scrambleTranslation: 'Could you bring me the check, please?',
+    clozeWord: 'cuenta',
+    clozeDistractors: ['maleta', 'ventana', 'lluvia'],
     wordNotes: [
       { word: '¿Me', meaning: 'To me' },
       { word: 'trae', meaning: 'you bring (formal)' },
       { word: 'la', meaning: 'the' },
       { word: 'cuenta', meaning: 'bill / check' },
       { word: 'cuando', meaning: 'when' },
-      { word: 'pueda,', meaning: 'you can (subjunctive)' },
+      { word: 'pueda,', meaning: 'you can (polite)' },
       { word: 'por', meaning: 'for' },
       { word: 'favor?', meaning: 'please?' }
+    ]
+  },
+  {
+    id: 'es_c1b',
+    level: 'A1',
+    context: 'Introducing your origin and location (Ser vs Estar)',
+    phrase: 'Soy de Chicago, pero ahora estoy en Ciudad de México.',
+    translation: 'I am from Chicago, but right now I am in Mexico City.',
+    question: 'Why does the first part use "Soy" (Ser) and the second part use "estoy" (Estar)?',
+    options: [
+      '"Ser" expresses permanent origin (Soy de...), while "Estar" expresses current location (estoy en...)',
+      'Because "Soy" is past tense and "estoy" is future tense',
+      'They are completely interchangeable in every sentence',
+      'Because Mexico City is plural'
+    ],
+    correctAnswer: '"Ser" expresses permanent origin (Soy de...), while "Estar" expresses current location (estoy en...)',
+    tip: 'Origin & Identity = SER (Soy de...). Physical Location & Mood = ESTAR (Estoy en...).',
+    scrambleWords: ['Soy', 'de', 'Chicago,', 'pero', 'estoy', 'en', 'México.'],
+    scrambleTranslation: 'I am from Chicago, but I am in Mexico.',
+    clozeWord: 'estoy',
+    clozeDistractors: ['soy', 'eres', 'somos'],
+    wordNotes: [
+      { word: 'Soy', meaning: 'I am (origin - Ser)' },
+      { word: 'de', meaning: 'from' },
+      { word: 'Chicago,', meaning: 'Chicago' },
+      { word: 'pero', meaning: 'but' },
+      { word: 'ahora', meaning: 'now' },
+      { word: 'estoy', meaning: 'I am (location - Estar)' },
+      { word: 'en', meaning: 'in' },
+      { word: 'Ciudad', meaning: 'City' },
+      { word: 'de', meaning: 'of' },
+      { word: 'México.', meaning: 'Mexico' }
+    ]
+  },
+  {
+    id: 'es_c1c',
+    level: 'A1',
+    context: 'Expressing likes and preferences with Gustar',
+    phrase: 'Me encantan los tacos, pero no me gusta el picante.',
+    translation: 'I love tacos, but I don’t like spicy food.',
+    question: 'Why do we say "Me encantan" (with an -n) for "los tacos" and "me gusta" (without -n) for "el picante"?',
+    options: [
+      'Because gustar/encantar agrees with the thing liked: plural "los tacos" takes -n, singular "el picante" does not',
+      'Because "encantan" is only used in the morning',
+      'Because negative verbs never take -n',
+      'Because "yo" is plural'
+    ],
+    correctAnswer: 'Because gustar/encantar agrees with the thing liked: plural "los tacos" takes -n, singular "el picante" does not',
+    tip: 'With GUSTAR and ENCANTAR: use singular (gusta/encanta) for 1 thing or an infinitive verb, and plural (gustan/encantan) for plural nouns.',
+    scrambleWords: ['Me', 'encantan', 'los', 'tacos', 'de', 'este', 'lugar.'],
+    scrambleTranslation: 'I love the tacos from this place.',
+    clozeWord: 'encantan',
+    clozeDistractors: ['encanta', 'encanto', 'encantar'],
+    wordNotes: [
+      { word: 'Me', meaning: 'To me' },
+      { word: 'encantan', meaning: 'are enchanting (plural)' },
+      { word: 'los', meaning: 'the (plural)' },
+      { word: 'tacos,', meaning: 'tacos' },
+      { word: 'pero', meaning: 'but' },
+      { word: 'no', meaning: 'not' },
+      { word: 'me', meaning: 'to me' },
+      { word: 'gusta', meaning: 'is pleasing (singular)' },
+      { word: 'el', meaning: 'the' },
+      { word: 'picante.', meaning: 'spicy food' }
     ]
   },
   {
@@ -178,11 +504,15 @@ const SPANISH_CHALLENGES: InteractiveChallenge[] = [
     options: [
       'Because the action happened only once yesterday afternoon',
       'Because it is a promise about the future',
-      'Because they describe an ongoing habit or repeated routine in the past ("used to")'
+      'Because they describe an ongoing habit or repeated routine in the past ("used to")',
+      'Because it is an imperative command'
     ],
     correctAnswer: 'Because they describe an ongoing habit or repeated routine in the past ("used to")',
     tip: 'Think of the Spanish Imperfect (-aba / -ía) as a background video describing childhood habits and ongoing past scenes.',
-    scrambleWords: ['Cuando', 'era', 'niño', 'jugaba', 'en', 'el', 'parque.'],
+    scrambleWords: ['Cuando', 'era', 'niño,', 'jugaba', 'en', 'este', 'parque.'],
+    scrambleTranslation: 'When I was a child, I used to play in this park.',
+    clozeWord: 'jugaba',
+    clozeDistractors: ['jugué', 'jugaré', 'juego'],
     wordNotes: [
       { word: 'Cuando', meaning: 'When' },
       { word: 'era', meaning: 'I was (ongoing)' },
@@ -197,6 +527,66 @@ const SPANISH_CHALLENGES: InteractiveChallenge[] = [
     ]
   },
   {
+    id: 'es_c2b',
+    level: 'A2',
+    context: 'Completed Past Action (Preterite / Indefinido)',
+    phrase: 'Ayer compré los boletos y reservé el hotel.',
+    translation: 'Yesterday I bought the tickets and booked the hotel.',
+    question: 'Why do we use the Preterite ("compré", "reservé") instead of the Imperfect ("compraba")?',
+    options: [
+      'Because they are completed, one-time actions at a specific moment in the past ("Ayer")',
+      'Because they describe the weather',
+      'Because the speaker still hasn’t bought the tickets',
+      'Because they are childhood habits'
+    ],
+    correctAnswer: 'Because they are completed, one-time actions at a specific moment in the past ("Ayer")',
+    tip: 'Time markers like "ayer" (yesterday), "anoche" (last night), and "el lunes pasado" trigger the Preterite (-é / -í).',
+    scrambleWords: ['Ayer', 'compré', 'los', 'boletos', 'para', 'el', 'viaje.'],
+    scrambleTranslation: 'Yesterday I bought the tickets for the trip.',
+    clozeWord: 'compré',
+    clozeDistractors: ['compraba', 'compraré', 'compro'],
+    wordNotes: [
+      { word: 'Ayer', meaning: 'Yesterday' },
+      { word: 'compré', meaning: 'I bought (completed)' },
+      { word: 'los', meaning: 'the' },
+      { word: 'boletos', meaning: 'tickets' },
+      { word: 'y', meaning: 'and' },
+      { word: 'reservé', meaning: 'I booked (completed)' },
+      { word: 'el', meaning: 'the' },
+      { word: 'hotel.', meaning: 'hotel' }
+    ]
+  },
+  {
+    id: 'es_c2c',
+    level: 'A2',
+    context: 'Object Pronouns & Duration with "Llevar + Gerundio"',
+    phrase: 'Llevo dos años estudiando español todos los días.',
+    translation: 'I have been studying Spanish every day for two years.',
+    question: 'What is the most natural Spanish formula to say how long you have been doing something?',
+    options: [
+      'Llevar + time duration + gerund (-ando / -iendo)',
+      'Ser + time duration + infinitive',
+      'Tener + time duration + past participle',
+      'Estar + por + future tense'
+    ],
+    correctAnswer: 'Llevar + time duration + gerund (-ando / -iendo)',
+    tip: '"Llevo + tiempo + verbo en -ando/-iendo" is the #1 natural way native speakers say "I have been doing X for Y time".',
+    scrambleWords: ['Llevo', 'dos', 'años', 'estudiando', 'español.'],
+    scrambleTranslation: 'I have been studying Spanish for two years.',
+    clozeWord: 'estudiando',
+    clozeDistractors: ['estudiado', 'estudié', 'estudiar'],
+    wordNotes: [
+      { word: 'Llevo', meaning: 'I carry / I have been' },
+      { word: 'dos', meaning: 'two' },
+      { word: 'años', meaning: 'years' },
+      { word: 'estudiando', meaning: 'studying (-ando)' },
+      { word: 'español', meaning: 'Spanish' },
+      { word: 'todos', meaning: 'every' },
+      { word: 'los', meaning: 'the' },
+      { word: 'días.', meaning: 'days' }
+    ]
+  },
+  {
     id: 'es_c3',
     level: 'B1',
     context: 'Giving recommendations to a friend',
@@ -206,11 +596,15 @@ const SPANISH_CHALLENGES: InteractiveChallenge[] = [
     options: [
       'Because the sentence is talking about the past',
       'Because verbs of recommendation and advice ("recomiendo que...") trigger the Subjunctive',
-      'Because it is a direct question'
+      'Because it is a direct question',
+      'Because "plato" is masculine'
     ],
     correctAnswer: 'Because verbs of recommendation and advice ("recomiendo que...") trigger the Subjunctive',
     tip: 'Verbs of influence like recomendar, sugerir, aconsejar + "que" + a change of subject always require the Spanish Subjunctive.',
     scrambleWords: ['Te', 'recomiendo', 'que', 'pruebes', 'este', 'plato.'],
+    scrambleTranslation: 'I recommend that you try this dish.',
+    clozeWord: 'pruebes',
+    clozeDistractors: ['pruebas', 'probaste', 'probar'],
     wordNotes: [
       { word: 'Te', meaning: 'To you' },
       { word: 'recomiendo', meaning: 'I recommend' },
@@ -225,6 +619,65 @@ const SPANISH_CHALLENGES: InteractiveChallenge[] = [
     ]
   },
   {
+    id: 'es_c3b',
+    level: 'B1',
+    context: 'Mastering Por vs Para in real life',
+    phrase: 'Gracias por tu ayuda; este regalo es para ti.',
+    translation: 'Thank you for your help; this gift is for you.',
+    question: 'Why do we use "por" in the first half and "para" in the second half?',
+    options: [
+      '"Por" expresses the cause/reason ("por tu ayuda"), while "para" indicates the recipient/destination ("para ti")',
+      'Because "por" is only used before feminine nouns',
+      'They mean the exact same thing and can be swapped',
+      'Because "para" is only used in questions'
+    ],
+    correctAnswer: '"Por" expresses the cause/reason ("por tu ayuda"), while "para" indicates the recipient/destination ("para ti")',
+    tip: 'Think of POR as looking backward at the cause/motive (Gracias por...), and PARA as looking forward to the recipient or goal (Es para ti).',
+    scrambleWords: ['Gracias', 'por', 'venir;', 'esto', 'es', 'para', 'ti.'],
+    scrambleTranslation: 'Thanks for coming; this is for you.',
+    clozeWord: 'para',
+    clozeDistractors: ['por', 'pero', 'sin'],
+    wordNotes: [
+      { word: 'Gracias', meaning: 'Thanks' },
+      { word: 'por', meaning: 'for (reason/motive)' },
+      { word: 'tu', meaning: 'your' },
+      { word: 'ayuda;', meaning: 'help' },
+      { word: 'este', meaning: 'this' },
+      { word: 'regalo', meaning: 'gift' },
+      { word: 'es', meaning: 'is' },
+      { word: 'para', meaning: 'for (recipient)' },
+      { word: 'ti.', meaning: 'you' }
+    ]
+  },
+  {
+    id: 'es_c3c',
+    level: 'B1',
+    context: 'Future Time Clauses with "Cuando + Subjunctive"',
+    phrase: 'Llámame en cuanto llegues al aeropuerto.',
+    translation: 'Call me as soon as you arrive at the airport.',
+    question: 'Why does "llegues" use the Subjunctive after "en cuanto" (as soon as)?',
+    options: [
+      'Because time connectors (cuando, en cuanto) referring to a future action that hasn’t happened yet take the Subjunctive',
+      'Because the person already arrived yesterday',
+      'Because "aeropuerto" is masculine',
+      'Because it is a negative sentence'
+    ],
+    correctAnswer: 'Because time connectors (cuando, en cuanto) referring to a future action that hasn’t happened yet take the Subjunctive',
+    tip: 'When talking about a future event after "cuando" or "en cuanto", Spanish always uses the Present Subjunctive ("cuando llegues", never "cuando llegarás").',
+    scrambleWords: ['Llámame', 'en', 'cuanto', 'llegues', ' a', 'casa.'].map(s => s.trim()),
+    scrambleTranslation: 'Call me as soon as you get home.',
+    clozeWord: 'llegues',
+    clozeDistractors: ['llegas', 'llegarás', 'llegaste'],
+    wordNotes: [
+      { word: 'Llámame', meaning: 'Call me' },
+      { word: 'en', meaning: 'in / as' },
+      { word: 'cuanto', meaning: 'soon as' },
+      { word: 'llegues', meaning: 'you arrive (subjunctive)' },
+      { word: 'al', meaning: 'at the (a + el)' },
+      { word: 'aeropuerto.', meaning: 'airport' }
+    ]
+  },
+  {
     id: 'es_c4',
     level: 'B2',
     context: 'Hypothetical situations and personal dreams',
@@ -234,11 +687,15 @@ const SPANISH_CHALLENGES: InteractiveChallenge[] = [
     options: [
       'Si + Present Simple, + Past Simple',
       'Si + Future Simple, + Imperative',
-      'Si + Imperfect Subjunctive (-ra), + Conditional (-ría)'
+      'Si + Imperfect Subjunctive (-ra), + Conditional (-ría)',
+      'Si + Gerund, + Infinitive'
     ],
     correctAnswer: 'Si + Imperfect Subjunctive (-ra), + Conditional (-ría)',
     tip: 'Golden Rule: Never put the Conditional (-ría) directly after "Si" (If); always use the Imperfect Subjunctive ("Si tuviera...").',
     scrambleWords: ['Si', 'tuviera', 'tiempo,', 'aprendería', 'otro', 'idioma.'],
+    scrambleTranslation: 'If I had time, I would learn another language.',
+    clozeWord: 'tuviera',
+    clozeDistractors: ['tendría', 'tengo', 'tuve'],
     wordNotes: [
       { word: 'Si', meaning: 'If' },
       { word: 'tuviera', meaning: 'I had (hypothetical)' },
@@ -250,19 +707,168 @@ const SPANISH_CHALLENGES: InteractiveChallenge[] = [
       { word: 'tercer', meaning: 'third' },
       { word: 'idioma.', meaning: 'language' }
     ]
+  },
+  {
+    id: 'es_c4b',
+    level: 'B2',
+    context: 'Concessive Clauses with "Aunque + Subjunctive"',
+    phrase: 'Saldremos a caminar aunque llueva esta tarde.',
+    translation: 'We will go out for a walk even if it rains this afternoon.',
+    question: 'What is the difference between "aunque llueve" (Indicative) and "aunque llueva" (Subjunctive)?',
+    options: [
+      '"Aunque + Indicative" states a known fact ("although it is raining"), while "Aunque + Subjunctive" expresses a hypothetical obstacle ("even if it rains")',
+      'There is no difference at all',
+      '"Aunque llueva" only refers to last year',
+      '"Aunque llueve" is grammatically incorrect'
+    ],
+    correctAnswer: '"Aunque + Indicative" states a known fact ("although it is raining"), while "Aunque + Subjunctive" expresses a hypothetical obstacle ("even if it rains")',
+    tip: 'In B2 Spanish: Aunque + Indicative = "Although" (fact). Aunque + Subjunctive = "Even if" (hypothetical).',
+    scrambleWords: ['Iremos', 'al', 'parque', 'aunque', 'llueva', 'hoy.'],
+    scrambleTranslation: 'We will go to the park even if it rains today.',
+    clozeWord: 'llueva',
+    clozeDistractors: ['llueve', 'lloverá', 'llovió'],
+    wordNotes: [
+      { word: 'Saldremos', meaning: 'We will go out' },
+      { word: 'a', meaning: 'to' },
+      { word: 'caminar', meaning: 'walk' },
+      { word: 'aunque', meaning: 'even if' },
+      { word: 'llueva', meaning: 'it rains (subjunctive)' },
+      { word: 'esta', meaning: 'this' },
+      { word: 'tarde.', meaning: 'afternoon' }
+    ]
+  },
+  {
+    id: 'es_c4c',
+    level: 'B2',
+    context: 'Past Hypothetical Regrets (Pluperfect Subjunctive)',
+    phrase: 'De haberlo sabido antes, te habría avisado de inmediato.',
+    translation: 'Had I known it earlier, I would have let you know immediately.',
+    question: 'What does the B2 structure "De haberlo sabido..." replace with high elegance?',
+    options: [
+      'It replaces "Si lo hubiera sabido..." ("If I had known it...")',
+      'It replaces a present tense routine',
+      'It is used only to order food',
+      'It expresses a future obligation'
+    ],
+    correctAnswer: 'It replaces "Si lo hubiera sabido..." ("If I had known it...")',
+    tip: '"De + haber + participio" (De haberlo sabido...) is the Spanish equivalent of the English B2 inversion "Had I known...".',
+    scrambleWords: ['De', 'haberlo', 'sabido,', 'te', 'habría', 'avisado.'],
+    scrambleTranslation: 'Had I known it, I would have let you know.',
+    clozeWord: 'habría',
+    clozeDistractors: ['hubiera', 'había', 'haré'],
+    wordNotes: [
+      { word: 'De', meaning: 'If / Upon (inversion)' },
+      { word: 'haberlo', meaning: 'having it' },
+      { word: 'sabido', meaning: 'known' },
+      { word: 'antes,', meaning: 'earlier' },
+      { word: 'te', meaning: 'you' },
+      { word: 'habría', meaning: 'I would have' },
+      { word: 'avisado', meaning: 'notified / let know' },
+      { word: 'de', meaning: 'right' },
+      { word: 'inmediato.', meaning: 'away' }
+    ]
   }
 ];
 
-const MATCH_PAIRS_EN = [
-  { id: 'm1', left: 'By the way', right: 'Por cierto' },
-  { id: 'm2', left: 'As soon as possible', right: 'Lo antes posible' },
-  { id: 'm3', left: 'It makes sense', right: 'Tiene sentido' }
+interface PairDeck {
+  level: CEFRLevel;
+  titleEs: string;
+  titleEn: string;
+  pairs: { id: string; left: string; right: string }[];
+}
+
+const MATCH_PAIR_DECKS_EN: PairDeck[] = [
+  {
+    level: 'A1',
+    titleEs: 'Mazo 1 (A1): Expresiones Esenciales',
+    titleEn: 'Deck 1 (A1): Essential Expressions',
+    pairs: [
+      { id: 'en_p1', left: 'Nice to meet you', right: 'Mucho gusto en conocerte' },
+      { id: 'en_p2', left: 'Could I have the bill?', right: '¿Me trae la cuenta?' },
+      { id: 'en_p3', left: 'How do I get to...?', right: '¿Cómo llego a...?' },
+      { id: 'en_p4', left: 'Just a moment, please', right: 'Un momento, por favor' }
+    ]
+  },
+  {
+    level: 'A2',
+    titleEs: 'Mazo 2 (A2): Conectores Conversacionales',
+    titleEn: 'Deck 2 (A2): Conversational Connectors',
+    pairs: [
+      { id: 'en_p5', left: 'By the way', right: 'Por cierto' },
+      { id: 'en_p6', left: 'As soon as possible', right: 'Lo antes posible' },
+      { id: 'en_p7', left: 'It makes sense', right: 'Tiene sentido' },
+      { id: 'en_p8', left: 'At the end of the day', right: 'Al final del día / A fin de cuentas' }
+    ]
+  },
+  {
+    level: 'B1',
+    titleEs: 'Mazo 3 (B1): Modismos y Fluidez Natural',
+    titleEn: 'Deck 3 (B1): Idioms & Natural Fluency',
+    pairs: [
+      { id: 'en_p9', left: 'Let’s play it by ear', right: 'Vamos viendo sobre la marcha' },
+      { id: 'en_p10', left: 'If I were in your shoes', right: 'Si yo estuviera en tu lugar' },
+      { id: 'en_p11', left: 'To make up your mind', right: 'Tomar una decisión' },
+      { id: 'en_p12', left: 'Every now and then', right: 'De vez en cuando' }
+    ]
+  },
+  {
+    level: 'B2',
+    titleEs: 'Mazo 4 (B2): Registro Profesional y Avanzado',
+    titleEn: 'Deck 4 (B2): Professional & Advanced Register',
+    pairs: [
+      { id: 'en_p13', left: 'Had I known earlier', right: 'De haberlo sabido antes' },
+      { id: 'en_p14', left: 'Take into account', right: 'Tener en cuenta / Considerar' },
+      { id: 'en_p15', left: 'On the other hand', right: 'Por otra parte / En cambio' },
+      { id: 'en_p16', left: 'It goes without saying', right: 'Está de más decirlo / Es evidente' }
+    ]
+  }
 ];
 
-const MATCH_PAIRS_ES = [
-  { id: 'm1', left: 'Por si acaso', right: 'Just in case' },
-  { id: 'm2', left: 'De vez en cuando', right: 'Every now and then' },
-  { id: 'm3', left: 'Vale la pena', right: 'It is worth it' }
+const MATCH_PAIR_DECKS_ES: PairDeck[] = [
+  {
+    level: 'A1',
+    titleEs: 'Mazo 1 (A1): Supervivencia en Español',
+    titleEn: 'Deck 1 (A1): Survival Spanish',
+    pairs: [
+      { id: 'es_p1', left: 'Mucho gusto', right: 'Nice to meet you' },
+      { id: 'es_p2', left: 'La cuenta, por favor', right: 'The check, please' },
+      { id: 'es_p3', left: '¿Dónde está el metro?', right: 'Where is the subway?' },
+      { id: 'es_p4', left: 'Con mucho gusto', right: 'Gladly / With pleasure' }
+    ]
+  },
+  {
+    level: 'A2',
+    titleEs: 'Mazo 2 (A2): Vida Cotidiana',
+    titleEn: 'Deck 2 (A2): Everyday Life Connectors',
+    pairs: [
+      { id: 'es_p5', left: 'Por si acaso', right: 'Just in case' },
+      { id: 'es_p6', left: 'De vez en cuando', right: 'Every now and then' },
+      { id: 'es_p7', left: 'Vale la pena', right: 'It is worth it' },
+      { id: 'es_p8', left: 'Llevo dos años aquí', right: 'I have been here for two years' }
+    ]
+  },
+  {
+    level: 'B1',
+    titleEs: 'Mazo 3 (B1): Subjuntivo y Expresiones',
+    titleEn: 'Deck 3 (B1): Subjunctive & Idioms',
+    pairs: [
+      { id: 'es_p9', left: 'En cuanto llegues', right: 'As soon as you arrive' },
+      { id: 'es_p10', left: 'Te recomiendo que vayas', right: 'I recommend that you go' },
+      { id: 'es_p11', left: 'Echar una mano', right: 'To lend a hand / help out' },
+      { id: 'es_p12', left: 'Hoy por ti, mañana por mí', right: 'Today for you, tomorrow for me' }
+    ]
+  },
+  {
+    level: 'B2',
+    titleEs: 'Mazo 4 (B2): Dominio Avanzado',
+    titleEn: 'Deck 4 (B2): Advanced Mastery',
+    pairs: [
+      { id: 'es_p13', left: 'De haberlo sabido antes', right: 'Had I known it earlier' },
+      { id: 'es_p14', left: 'Aunque llueva mañana', right: 'Even if it rains tomorrow' },
+      { id: 'es_p15', left: 'Sin lugar a dudas', right: 'Without a shadow of a doubt' },
+      { id: 'es_p16', left: 'Tomar cartas en el asunto', right: 'To take action on the matter' }
+    ]
+  }
 ];
 
 type MarkerColor = 'yellow' | 'mint' | 'coral';
@@ -295,20 +901,31 @@ interface HeroInteractiveCardProps {
 
 export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiveCardProps) {
   const isSpanishCourse = courseLanguage === 'es'; // English native speaker learning Spanish
-  const challenges = isSpanishCourse ? SPANISH_CHALLENGES : ENGLISH_CHALLENGES;
+  const allChallenges = isSpanishCourse ? SPANISH_CHALLENGES : ENGLISH_CHALLENGES;
+  const [levelFilter, setLevelFilter] = useState<'ALL' | CEFRLevel>('ALL');
   const [activeIndex, setActiveIndex] = useState(0);
-  const [mode, setMode] = useState<'deck' | 'builder' | 'pairs'>('deck');
+  const [mode, setMode] = useState<'deck' | 'builder' | 'pairs' | 'cloze'>('deck');
   const [markerColor, setMarkerColor] = useState<MarkerColor>('yellow');
   const [highlightedWords, setHighlightedWords] = useState<Record<string, MarkerColor>>({});
   const [activeWordNote, setActiveWordNote] = useState<WordBreakdown | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [selectedClozeAnswer, setSelectedClozeAnswer] = useState<string | null>(null);
   const [pickedWords, setPickedWords] = useState<number[]>([]);
   const [xpAwardedForId, setXpAwardedForId] = useState<Record<string, boolean>>({});
 
-  // Pairs mini-game state
-  const pairsData = isSpanishCourse ? MATCH_PAIRS_ES : MATCH_PAIRS_EN;
+  // Pairs mini-game state across 4 multi-level decks
+  const pairDecks = isSpanishCourse ? MATCH_PAIR_DECKS_ES : MATCH_PAIR_DECKS_EN;
+  const [activePairDeckIdx, setActivePairDeckIdx] = useState(0);
+  const currentPairDeck = pairDecks[activePairDeckIdx % pairDecks.length];
+  const pairsData = currentPairDeck.pairs;
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
   const [matchedPairIds, setMatchedPairIds] = useState<string[]>([]);
+
+  const challenges = useMemo(() => {
+    if (levelFilter === 'ALL') return allChallenges;
+    const filtered = allChallenges.filter(c => c.level === levelFilter);
+    return filtered.length > 0 ? filtered : allChallenges;
+  }, [allChallenges, levelFilter]);
 
   const current = challenges[activeIndex % challenges.length];
 
@@ -317,11 +934,45 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
     return shuffleOptionsList(current.options, current.correctAnswer, avoidSlot);
   }, [current, activeIndex]);
 
-  const shuffledTiles = useMemo(() => {
-    return current.scrambleWords
-      .map((word, index) => ({ word, originalIndex: index }))
-      .sort((a, b) => a.word.localeCompare(b.word));
+  const shuffledClozeOptions = useMemo(() => {
+    const raw = [current.clozeWord, ...current.clozeDistractors];
+    return shuffleOptionsList(raw, current.clozeWord, (activeIndex + 1) % raw.length);
+  }, [current, activeIndex]);
+
+  const blankedClozePhrase = useMemo(() => {
+    const cleanTarget = current.clozeWord.replace(/[¿?¡!.,]/g, '');
+    const regex = new RegExp(`\\b${cleanTarget}\\b`, 'i');
+    if (regex.test(current.phrase)) {
+      return current.phrase.replace(regex, '_____');
+    }
+    return current.phrase.replace(current.clozeWord, '_____');
   }, [current]);
+
+  // Guaranteed non-solved Fisher-Yates shuffle for Sentence Magnet tiles
+  const shuffledTiles = useMemo(() => {
+    const base = current.scrambleWords.map((word, index) => ({ word, originalIndex: index }));
+    if (base.length <= 1) return base;
+    const arr = [...base];
+    // Deterministic-yet-scrambled permutation based on card id + word length so it never starts in 0,1,2,3... order
+    for (let i = arr.length - 1; i > 0; i--) {
+      const seed = (current.id.charCodeAt(current.id.length - 1) + i * 7) % (i + 1);
+      const tmp = arr[i];
+      arr[i] = arr[seed];
+      arr[seed] = tmp;
+    }
+    if (arr.every((item, idx) => item.originalIndex === idx)) {
+      return [...base].reverse();
+    }
+    return arr;
+  }, [current]);
+
+  // Non-trivial permutation for Right Column of Speed Pairs
+  const shuffledRightPairs = useMemo(() => {
+    const arr = [...pairsData];
+    if (arr.length <= 2) return arr.reverse();
+    // Shift by 1 or 2 positions so no item sits directly across from itself
+    return arr.map((_, idx) => arr[(idx + 2) % arr.length]);
+  }, [pairsData]);
 
   const handleWordHighlightClick = (w: WordBreakdown, idx: number) => {
     playTactileSound('highlight');
@@ -355,6 +1006,22 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
     }
   };
 
+  const handleSelectClozeOption = (opt: string) => {
+    if (selectedClozeAnswer) return;
+    setSelectedClozeAnswer(opt);
+    if (opt.toLowerCase() === current.clozeWord.toLowerCase()) {
+      playTactileSound('stamp');
+      playSpeech(current.phrase, { courseLanguage, rate: 0.95 });
+      const rewardKey = `${current.id}_cloze`;
+      if (!xpAwardedForId[rewardKey]) {
+        setXpAwardedForId(prev => ({ ...prev, [rewardKey]: true }));
+        onEarnXP(15);
+      }
+    } else {
+      playTactileSound('error');
+    }
+  };
+
   const handlePickTile = (tileIdx: number) => {
     playTactileSound('pop');
     if (pickedWords.includes(tileIdx)) {
@@ -363,11 +1030,15 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
     }
     const next = [...pickedWords, tileIdx];
     setPickedWords(next);
+    playSpeech(shuffledTiles[tileIdx].word.replace(/[¿?.,!]/g, ''), {
+      courseLanguage,
+      rate: 0.95
+    });
 
     if (next.length === current.scrambleWords.length) {
       const built = next.map(i => shuffledTiles[i].word).join(' ');
       const target = current.scrambleWords.join(' ');
-      if (built === target) {
+      if (built.toLowerCase() === target.toLowerCase()) {
         playTactileSound('win');
         playSpeech(target, { courseLanguage, rate: 0.95 });
         const rewardKey = `${current.id}_builder`;
@@ -381,6 +1052,35 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
     }
   };
 
+  // Guided +1 Word Clue for Sentence Magnet
+  const handleBuilderHintOneWord = () => {
+    let correctPrefixLen = 0;
+    while (
+      correctPrefixLen < pickedWords.length &&
+      shuffledTiles[pickedWords[correctPrefixLen]]?.word.toLowerCase() ===
+        current.scrambleWords[correctPrefixLen]?.toLowerCase()
+    ) {
+      correctPrefixLen++;
+    }
+    if (correctPrefixLen >= current.scrambleWords.length) return;
+
+    const kept = pickedWords.slice(0, correctPrefixLen);
+    const targetWord = current.scrambleWords[correctPrefixLen];
+    const nextTileIdx = shuffledTiles.findIndex(
+      (t, idx) => !kept.includes(idx) && t.word.toLowerCase() === targetWord.toLowerCase()
+    );
+    if (nextTileIdx === -1) return;
+
+    const updated = [...kept, nextTileIdx];
+    playTactileSound('highlight');
+    setPickedWords(updated);
+
+    if (updated.length === current.scrambleWords.length) {
+      playTactileSound('win');
+      playSpeech(current.scrambleWords.join(' '), { courseLanguage, rate: 0.95 });
+    }
+  };
+
   const handleSelectPairRight = (pairId: string, textToSpeak: string) => {
     if (!selectedLeft) return;
     if (selectedLeft === pairId) {
@@ -389,9 +1089,10 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
       const nextMatched = Array.from(new Set([...matchedPairIds, pairId]));
       setMatchedPairIds(nextMatched);
       setSelectedLeft(null);
-      if (nextMatched.length === pairsData.length && !xpAwardedForId['pairs_bonus']) {
+      const deckRewardKey = `pairs_bonus_${currentPairDeck.level}`;
+      if (nextMatched.length === pairsData.length && !xpAwardedForId[deckRewardKey]) {
         playTactileSound('win');
-        setXpAwardedForId(prev => ({ ...prev, pairs_bonus: true }));
+        setXpAwardedForId(prev => ({ ...prev, [deckRewardKey]: true }));
         onEarnXP(30);
       }
     } else {
@@ -403,6 +1104,7 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
   const handleNextChallenge = () => {
     playTactileSound('flip');
     setSelectedAnswer(null);
+    setSelectedClozeAnswer(null);
     setPickedWords([]);
     setActiveWordNote(null);
     setActiveIndex(prev => (prev + 1) % challenges.length);
@@ -410,18 +1112,24 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
 
   const builtSentence = pickedWords.map(i => shuffledTiles[i]?.word).join(' ');
   const isBuilderComplete = pickedWords.length === current.scrambleWords.length;
-  const isBuilderCorrect = isBuilderComplete && builtSentence === current.scrambleWords.join(' ');
+  const isBuilderCorrect =
+    isBuilderComplete &&
+    builtSentence.toLowerCase() === current.scrambleWords.join(' ').toLowerCase();
+  const isClozeCorrect =
+    selectedClozeAnswer !== null &&
+    selectedClozeAnswer.toLowerCase() === current.clozeWord.toLowerCase();
   const isStamped =
     (mode === 'deck' && selectedAnswer === current.correctAnswer) ||
     (mode === 'builder' && isBuilderCorrect) ||
+    (mode === 'cloze' && isClozeCorrect) ||
     (mode === 'pairs' && matchedPairIds.length === pairsData.length);
 
   return (
     <div className="bg-amber-50/70 dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 rounded-3xl p-6 md:p-7 shadow-[6px_6px_0px_0px_#0f172a] dark:shadow-[6px_6px_0px_0px_#27272a] flex flex-col justify-between h-full relative overflow-hidden">
-      {/* Top Interactive Mode Tabs (Tactile Stationery Tabs) */}
+      {/* Top Interactive Mode Tabs & Level Filter */}
       <div>
-        <div className="flex flex-wrap items-center justify-between gap-2 pb-4 mb-5 border-b-2 border-slate-900/15 dark:border-zinc-800">
-          <div className="flex items-center gap-1.5 bg-white dark:bg-zinc-800 p-1 rounded-2xl border-2 border-slate-900 dark:border-zinc-700">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b-2 border-slate-900/15 dark:border-zinc-800">
+          <div className="flex flex-wrap items-center gap-1.5 bg-white dark:bg-zinc-800 p-1 rounded-2xl border-2 border-slate-900 dark:border-zinc-700">
             <button
               type="button"
               onClick={() => {
@@ -435,7 +1143,7 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>{isSpanishCourse ? '1. Interactive Card' : '1. Carta Interactiva'}</span>
+              <span>{isSpanishCourse ? '1. Study Card' : '1. Carta Interactiva'}</span>
             </button>
             <button
               type="button"
@@ -456,6 +1164,21 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
               type="button"
               onClick={() => {
                 playTactileSound('pop');
+                setMode('cloze');
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                mode === 'cloze'
+                  ? 'bg-sky-300 text-slate-950 border border-slate-900'
+                  : 'text-slate-700 dark:text-zinc-300 hover:text-slate-950'
+              }`}
+            >
+              <Headphones className="w-3.5 h-3.5" />
+              <span>{isSpanishCourse ? '3. Listen & Complete' : '3. Oído y Completar'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playTactileSound('pop');
                 setMode('pairs');
               }}
               className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
@@ -465,7 +1188,7 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
               }`}
             >
               <Grid className="w-3.5 h-3.5" />
-              <span>{isSpanishCourse ? '3. Speed Pairs' : '3. Pares Rápidos'}</span>
+              <span>{isSpanishCourse ? '4. Speed Pairs' : '4. Pares Rápidos'}</span>
             </button>
           </div>
 
@@ -483,6 +1206,38 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
             )}
           </AnimatePresence>
         </div>
+
+        {/* CEFR Level Filter Bar for Cards */}
+        {mode !== 'pairs' && (
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-zinc-400">
+              {isSpanishCourse ? 'Filter Deck by CEFR Level:' : 'Filtrar Mazo por Nivel MCER:'}
+            </span>
+            <div className="flex items-center gap-1">
+              {(['ALL', 'A1', 'A2', 'B1', 'B2'] as const).map(lvl => (
+                <button
+                  key={lvl}
+                  type="button"
+                  onClick={() => {
+                    playTactileSound('pop');
+                    setLevelFilter(lvl);
+                    setActiveIndex(0);
+                    setSelectedAnswer(null);
+                    setSelectedClozeAnswer(null);
+                    setPickedWords([]);
+                  }}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-black border transition-all ${
+                    levelFilter === lvl
+                      ? 'bg-slate-900 text-white dark:bg-yellow-300 dark:text-slate-950 border-slate-900'
+                      : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-900/30 hover:bg-yellow-100'
+                  }`}
+                >
+                  {lvl === 'ALL' ? (isSpanishCourse ? 'All (12)' : 'Todos (12)') : lvl}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* MODE 1: INTERACTIVE CARD + FLUORESCENT HIGHLIGHTER (NODECK STYLE) */}
         {mode === 'deck' && (
@@ -666,25 +1421,40 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
         {/* MODE 2: MAGNETIC SENTENCE BUILDER */}
         {mode === 'builder' && (
           <div className="space-y-4">
-            <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 flex items-center justify-between gap-3">
+            <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 flex items-center justify-between gap-3 shadow-[3px_3px_0px_0px_#0f172a]">
               <div>
                 <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">
                   {isSpanishCourse
-                    ? 'Build this sentence in Spanish:'
-                    : 'Construye esta idea en inglés:'}
+                    ? `Build this ${current.level} Spanish sentence (${current.scrambleWords.length} words):`
+                    : `Construye esta oración ${current.level} en inglés (${current.scrambleWords.length} fichas):`}
                 </p>
                 <p className="text-base font-black text-slate-900 dark:text-white">
-                  "{current.translation}"
+                  "{current.scrambleTranslation || current.translation}"
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => playSpeech(current.scrambleWords.join(' '), { courseLanguage, rate: 0.9 })}
-                className="p-3 rounded-xl bg-indigo-600 text-white border-2 border-slate-900 shrink-0 shadow-[2px_2px_0px_0px_#0f172a]"
-                title={isSpanishCourse ? 'Listen to audio hint' : 'Escuchar pista en audio'}
-              >
-                <Volume2 className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {pickedWords.length < current.scrambleWords.length && (
+                  <button
+                    type="button"
+                    onClick={handleBuilderHintOneWord}
+                    className="px-2.5 py-2 rounded-xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 text-xs font-black flex items-center gap-1 shadow-[2px_2px_0px_0px_#0f172a]"
+                    title={isSpanishCourse ? 'Place next correct word' : 'Colocar siguiente ficha correcta'}
+                  >
+                    <Lightbulb className="w-3.5 h-3.5" />
+                    <span>+1</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() =>
+                    playSpeech(current.scrambleWords.join(' '), { courseLanguage, rate: 0.9 })
+                  }
+                  className="p-2.5 rounded-xl bg-indigo-600 text-white border-2 border-slate-900 shrink-0 shadow-[2px_2px_0px_0px_#0f172a]"
+                  title={isSpanishCourse ? 'Listen to audio hint' : 'Escuchar pista en audio'}
+                >
+                  <Volume2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             {/* Magnetic Drop Zone */}
@@ -733,28 +1503,30 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
 
             {isBuilderComplete && (
               <div
-                className={`p-3.5 rounded-2xl border-2 border-slate-900 text-sm font-extrabold flex items-center justify-between ${
+                className={`p-3.5 rounded-2xl border-2 border-slate-900 text-sm font-extrabold flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
                   isBuilderCorrect
                     ? 'bg-emerald-300 text-slate-950'
                     : 'bg-amber-200 text-slate-950'
                 }`}
               >
-                <span>
-                  {isBuilderCorrect
-                    ? isSpanishCourse
-                      ? 'Great job! You built the sentence and earned +20 XP.'
-                      : '¡Excelente construcción! Has ganado +20 XP.'
-                    : isSpanishCourse
-                      ? 'Almost there: tap a word tile above to adjust the order.'
-                      : 'Casi lista: toca una ficha de arriba para cambiar su orden.'}
-                </span>
+                <div>
+                  <p>
+                    {isBuilderCorrect
+                      ? isSpanishCourse
+                        ? '✓ Great job! You built the sentence and earned +20 XP.'
+                        : '✓ ¡Excelente construcción! Has ganado +20 XP.'
+                      : isSpanishCourse
+                        ? `Target order: "${current.scrambleWords.join(' ')}"`
+                        : `Orden correcto: "${current.scrambleWords.join(' ')}"`}
+                  </p>
+                </div>
                 {!isBuilderCorrect && (
                   <button
                     type="button"
                     onClick={() => setPickedWords([])}
-                    className="px-3 py-1 rounded-lg bg-white border border-slate-900 text-xs font-black ml-2 shrink-0"
+                    className="px-3 py-1.5 rounded-lg bg-white border-2 border-slate-900 text-xs font-black shrink-0"
                   >
-                    {isSpanishCourse ? 'Reset' : 'Reiniciar'}
+                    {isSpanishCourse ? 'Reset & Try Again' : 'Reiniciar e Intentar'}
                   </button>
                 )}
               </div>
@@ -762,9 +1534,112 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
           </div>
         )}
 
-        {/* MODE 3: LARGE-PRINT SPEED PAIRS (YOUTH & SENIOR FRIENDLY) */}
+        {/* MODE 3: ACTIVE LISTENING & CONTEXT CLOZE (OÍDO Y COMPLETAR) */}
+        {mode === 'cloze' && (
+          <div className="space-y-4">
+            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border-2 border-slate-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_#0f172a] space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-black text-indigo-700 dark:text-indigo-400 uppercase">
+                  {isSpanishCourse
+                    ? `CEFR ${current.level} · Listen & Fill the Missing Word`
+                    : `MCER ${current.level} · Escucha y Completa la Palabra Clave`}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => playSpeech(current.phrase, { courseLanguage, rate: 0.9 })}
+                  className="px-3 py-1.5 rounded-xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 text-xs font-black flex items-center gap-1.5 shadow-[2px_2px_0px_0px_#0f172a]"
+                >
+                  <Volume2 className="w-3.5 h-3.5" />
+                  <span>{isSpanishCourse ? 'Play Audio' : 'Escuchar Frase'}</span>
+                </button>
+              </div>
+
+              <p className="text-lg md:text-xl font-black text-slate-950 dark:text-white leading-snug">
+                {blankedClozePhrase}
+              </p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-zinc-400 italic">
+                "{current.translation}"
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {shuffledClozeOptions.map((opt, idx) => {
+                const isSelected = selectedClozeAnswer === opt;
+                const isRight = opt.toLowerCase() === current.clozeWord.toLowerCase();
+                const letter = String.fromCharCode(65 + idx);
+                let cls =
+                  'bg-white dark:bg-zinc-900 border-2 border-slate-900 dark:border-zinc-700 text-slate-900 dark:text-white hover:bg-yellow-100 shadow-[3px_3px_0px_0px_#0f172a]';
+                if (selectedClozeAnswer) {
+                  if (isRight) {
+                    cls = 'bg-emerald-300 text-slate-950 border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a]';
+                  } else if (isSelected) {
+                    cls = 'bg-rose-300 text-slate-950 border-2 border-slate-900';
+                  } else {
+                    cls = 'bg-white/50 dark:bg-zinc-900/40 border border-slate-300 opacity-50';
+                  }
+                }
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => handleSelectClozeOption(opt)}
+                    className={`p-3.5 rounded-2xl text-sm font-black text-left flex items-center justify-between gap-2 transition-all ${cls}`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-lg bg-amber-100 dark:bg-zinc-800 border border-slate-900 text-xs font-black text-slate-950 dark:text-white flex items-center justify-center shrink-0">
+                        {letter}
+                      </span>
+                      <span>{opt}</span>
+                    </span>
+                    {selectedClozeAnswer && isRight && (
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {selectedClozeAnswer && (
+              <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-950 border-2 border-slate-900 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                <strong className="text-emerald-700 dark:text-emerald-400">
+                  {isSpanishCourse ? 'Complete Sentence: ' : 'Oración Completa: '}
+                </strong>
+                {current.phrase} — <em>{current.tip}</em>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* MODE 4: LARGE-PRINT SPEED PAIRS ACROSS 4 CEFR DECKS */}
         {mode === 'pairs' && (
           <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-black text-slate-900 dark:text-zinc-200">
+                {isSpanishCourse ? currentPairDeck.titleEn : currentPairDeck.titleEs}
+              </span>
+              <div className="flex items-center gap-1">
+                {pairDecks.map((d, idx) => (
+                  <button
+                    key={d.level}
+                    type="button"
+                    onClick={() => {
+                      playTactileSound('flip');
+                      setActivePairDeckIdx(idx);
+                      setMatchedPairIds([]);
+                      setSelectedLeft(null);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-black border transition-all ${
+                      activePairDeckIdx === idx
+                        ? 'bg-rose-300 text-slate-950 border-slate-900'
+                        : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-900/30'
+                    }`}
+                  >
+                    {d.level}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="flex items-center justify-between text-xs font-extrabold text-slate-700 dark:text-zinc-300">
               <span>
                 {isSpanishCourse
@@ -776,12 +1651,13 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
                   type="button"
                   onClick={() => {
                     playTactileSound('flip');
+                    setActivePairDeckIdx(prev => (prev + 1) % pairDecks.length);
                     setMatchedPairIds([]);
                     setSelectedLeft(null);
                   }}
-                  className="underline text-indigo-600 dark:text-indigo-400"
+                  className="px-3 py-1 rounded-xl bg-emerald-300 text-slate-950 border border-slate-900 font-black"
                 >
-                  {isSpanishCourse ? 'Play again' : 'Jugar de nuevo'}
+                  {isSpanishCourse ? 'Next Pairs Deck →' : 'Siguiente Mazo de Pares →'}
                 </button>
               )}
             </div>
@@ -819,7 +1695,7 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
 
               {/* Right Column */}
               <div className="space-y-2.5">
-                {[...pairsData].reverse().map(item => {
+                {shuffledRightPairs.map(item => {
                   const isMatched = matchedPairIds.includes(item.id);
                   return (
                     <button
@@ -847,13 +1723,26 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
       {/* Tactile Card Deck Footer Switcher */}
       <div className="pt-4 mt-5 border-t-2 border-slate-900/15 dark:border-zinc-800 flex items-center justify-between text-xs">
         <span className="text-slate-700 dark:text-zinc-300 font-extrabold tabular-nums">
-          {isSpanishCourse
-            ? `Card #${activeIndex + 1} of ${challenges.length} · Level ${current.level}`
-            : `Carta #${activeIndex + 1} de ${challenges.length} · Nivel ${current.level}`}
+          {mode === 'pairs'
+            ? isSpanishCourse
+              ? `Pairs Deck ${activePairDeckIdx + 1} of ${pairDecks.length} · Level ${currentPairDeck.level}`
+              : `Mazo de Pares ${activePairDeckIdx + 1} de ${pairDecks.length} · Nivel ${currentPairDeck.level}`
+            : isSpanishCourse
+              ? `Card #${(activeIndex % challenges.length) + 1} of ${challenges.length} · Level ${current.level}`
+              : `Carta #${(activeIndex % challenges.length) + 1} de ${challenges.length} · Nivel ${current.level}`}
         </span>
         <button
           type="button"
-          onClick={handleNextChallenge}
+          onClick={() => {
+            if (mode === 'pairs') {
+              playTactileSound('flip');
+              setActivePairDeckIdx(prev => (prev + 1) % pairDecks.length);
+              setMatchedPairIds([]);
+              setSelectedLeft(null);
+            } else {
+              handleNextChallenge();
+            }
+          }}
           className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-indigo-600 dark:bg-white dark:text-slate-950 text-white font-black text-xs flex items-center gap-1.5 transition-colors shadow-[2px_2px_0px_0px_#4f46e5]"
         >
           <RefreshCw className="w-3.5 h-3.5" />
@@ -1005,9 +1894,18 @@ export function OnePageBentoExplorer({
   const percent = activeData.total > 0 ? Math.round((activeData.completed / activeData.total) * 100) : 0;
 
   const previewLessons = useMemo(() => {
-    const uncompleted = activeData.lessons.filter(l => !progress.completedLessons.includes(l.id));
-    const completed = activeData.lessons.filter(l => progress.completedLessons.includes(l.id));
-    return [...uncompleted, ...completed].slice(0, 6);
+    const allLessons = activeData.lessons;
+    if (allLessons.length <= 6) return allLessons;
+    const firstPendingIdx = allLessons.findIndex(
+      l => !progress.completedLessons.includes(l.id)
+    );
+    if (firstPendingIdx === -1) {
+      return allLessons.slice(0, 6);
+    }
+    // Keep sequential order starting 1 card before the current active card when possible
+    const maxStart = Math.max(0, allLessons.length - 6);
+    const startIdx = Math.min(Math.max(0, firstPendingIdx - 1), maxStart);
+    return allLessons.slice(startIdx, startIdx + 6);
   }, [activeData.lessons, progress.completedLessons]);
 
   return (
@@ -1017,8 +1915,8 @@ export function OnePageBentoExplorer({
         <div>
           <p className="text-xs font-extrabold text-indigo-600 dark:text-indigo-400 mb-1">
             {isSpanishCourse
-              ? 'Level Mission Board · Listen & Practice Instantly'
-              : 'Tablero de Misiones por Nivel · Escucha y Juega al Instante'}
+              ? 'Sequential Mission Path · Complete Each Card to Unlock the Next'
+              : 'Camino Secuencial por Nivel · Completa cada Carta para Desbloquear la Siguiente'}
           </p>
           <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-zinc-100 tracking-tight">
             {isSpanishCourse ? 'CEFR Level Map (A1 → B2)' : 'Mapa de Niveles MCER (A1 → B2)'}
@@ -1081,8 +1979,8 @@ export function OnePageBentoExplorer({
                       : '✓ Sello Oficial Obtenido'
                     : activeData.isUnlocked
                       ? isSpanishCourse
-                        ? 'Open to study'
-                        : 'Abierto para jugar'
+                        ? 'Sequential path active'
+                        : 'Camino secuencial activo'
                       : isSpanishCourse
                         ? 'Requires previous level certificate'
                         : 'Requiere certificar nivel previo'}
@@ -1108,8 +2006,8 @@ export function OnePageBentoExplorer({
                 >
                   <span>
                     {isSpanishCourse
-                      ? `Open all ${activeData.total} lessons`
-                      : `Abrir las ${activeData.total} lecciones`}
+                      ? `Open full ${activeData.total}-step path`
+                      : `Ver camino completo (${activeData.total} cartas)`}
                   </span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -1163,7 +2061,14 @@ export function OnePageBentoExplorer({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {previewLessons.map(lesson => {
+              const fullIndex = activeData.lessons.findIndex(l => l.id === lesson.id);
+              const prevLesson = fullIndex > 0 ? activeData.lessons[fullIndex - 1] : null;
               const isDone = progress.completedLessons.includes(lesson.id);
+              const isCardUnlocked =
+                fullIndex <= 0 ||
+                isDone ||
+                (prevLesson ? progress.completedLessons.includes(prevLesson.id) : false);
+              const isNextActive = isCardUnlocked && !isDone;
               const samplePhrase =
                 lesson.quiz[0]?.targetText || lesson.quiz[0]?.correctAnswer || lesson.title;
 
@@ -1171,22 +2076,41 @@ export function OnePageBentoExplorer({
                 <div
                   key={lesson.id}
                   onClick={() => {
+                    if (!isCardUnlocked) {
+                      playTactileSound('error');
+                      return;
+                    }
                     playTactileSound('pop');
                     onSelectLessonDirect(lesson);
                   }}
-                  role="button"
-                  tabIndex={0}
+                  role={isCardUnlocked ? 'button' : undefined}
+                  tabIndex={isCardUnlocked ? 0 : -1}
+                  aria-disabled={!isCardUnlocked}
                   onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (isCardUnlocked && (e.key === 'Enter' || e.key === ' ')) {
                       playTactileSound('pop');
                       onSelectLessonDirect(lesson);
                     }
                   }}
-                  className="p-5 rounded-2xl border-2 border-slate-900 dark:border-zinc-700 bg-white dark:bg-zinc-800/90 hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between group shadow-[4px_4px_0px_0px_#0f172a] dark:shadow-[4px_4px_0px_0px_#27272a]"
+                  className={`p-5 rounded-2xl border-2 transition-all flex flex-col justify-between group ${
+                    isDone
+                      ? 'border-emerald-700 dark:border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 hover:-translate-y-1 cursor-pointer shadow-[4px_4px_0px_0px_#065f46]'
+                      : isNextActive
+                        ? 'border-slate-900 dark:border-indigo-400 bg-white dark:bg-zinc-800 hover:-translate-y-1 cursor-pointer ring-2 ring-indigo-500/40 shadow-[5px_5px_0px_0px_#4f46e5]'
+                        : 'border-slate-300 dark:border-zinc-800 bg-slate-100/80 dark:bg-zinc-900/50 opacity-70 cursor-not-allowed'
+                  }`}
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-zinc-400 mb-2 tabular-nums">
-                      <span className="font-black text-indigo-600 dark:text-indigo-400">
+                      <span
+                        className={`font-black ${
+                          isDone
+                            ? 'text-emerald-700 dark:text-emerald-400'
+                            : isNextActive
+                              ? 'text-indigo-600 dark:text-indigo-400'
+                              : 'text-slate-500 dark:text-zinc-500'
+                        }`}
+                      >
                         {isSpanishCourse ? `Card #${lesson.day}` : `Carta #${lesson.day}`} ·{' '}
                         {lesson.cefrLevel || selectedLevel}
                       </span>
@@ -1212,15 +2136,26 @@ export function OnePageBentoExplorer({
                           <span className="font-black text-emerald-700 dark:text-emerald-400">
                             {isSpanishCourse ? '✓ Completed' : '✓ Sellada'}
                           </span>
+                        ) : isNextActive ? (
+                          <span className="px-2 py-0.5 rounded-md bg-yellow-300 text-slate-950 border border-slate-900 font-black text-[11px]">
+                            {isSpanishCourse ? 'Next Step' : 'En Turno'}
+                          </span>
                         ) : (
-                          <span className="font-bold text-slate-500">
-                            {isSpanishCourse ? 'Ready' : 'Lista'}
+                          <span className="flex items-center gap-1 font-bold text-slate-500 dark:text-zinc-500">
+                            <Lock className="w-3.5 h-3.5" />
+                            {isSpanishCourse ? 'Locked' : 'Bloqueada'}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <h4 className="text-base font-black text-slate-900 dark:text-zinc-100 mb-1.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
+                    <h4
+                      className={`text-base font-black mb-1.5 transition-colors leading-snug ${
+                        isCardUnlocked
+                          ? 'text-slate-900 dark:text-zinc-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400'
+                          : 'text-slate-500 dark:text-zinc-500'
+                      }`}
+                    >
                       {lesson.title}
                     </h4>
                     <p className="text-xs font-medium text-slate-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
@@ -1228,17 +2163,31 @@ export function OnePageBentoExplorer({
                     </p>
                   </div>
 
-                  <div className="pt-3 mt-4 border-t-2 border-slate-100 dark:border-zinc-700/70 flex items-center justify-between text-xs font-black text-slate-900 dark:text-white">
-                    <span>
-                      {isDone
-                        ? isSpanishCourse
-                          ? 'Review lesson card'
-                          : 'Volver a jugar carta'
-                        : isSpanishCourse
-                          ? 'Start this lesson card'
-                          : 'Jugar esta carta ahora'}
-                    </span>
-                    <Play className="w-4 h-4 fill-indigo-600 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+                  <div className="pt-3 mt-4 border-t-2 border-slate-200/80 dark:border-zinc-700/70 flex items-center justify-between text-xs font-black">
+                    {isDone ? (
+                      <>
+                        <span className="text-emerald-800 dark:text-emerald-300">
+                          {isSpanishCourse ? 'Review lesson card' : 'Volver a repasar carta'}
+                        </span>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      </>
+                    ) : isNextActive ? (
+                      <>
+                        <span className="text-indigo-700 dark:text-indigo-300">
+                          {isSpanishCourse ? 'Start this lesson card now' : 'Jugar esta carta ahora'}
+                        </span>
+                        <Play className="w-4 h-4 fill-indigo-600 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-slate-500 dark:text-zinc-500">
+                          {isSpanishCourse
+                            ? `Complete Card #${prevLesson?.day ?? lesson.day - 1} first`
+                            : `Completa la Carta #${prevLesson?.day ?? lesson.day - 1} primero`}
+                        </span>
+                        <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      </>
+                    )}
                   </div>
                 </div>
               );

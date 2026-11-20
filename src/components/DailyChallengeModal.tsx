@@ -1,11 +1,23 @@
-import React, { useState } from 'react';
-import { QuizQuestion, UserProgress } from '../types';
+import React, { useState, useEffect } from 'react';
+import { QuizQuestion, UserProgress, CEFRLevel } from '../types';
 import { a1InicialLessons, a1IntermedioLessons, fluencyLessons } from '../data';
-import { spanishA1InicialLessons, spanishA1IntermedioLessons, spanishFluencyLessons } from '../data/spanishData';
-import { randomizeQuestionsOptions } from '../utils/shuffleOptions';
+import { a2EnglishLessons, spanishA2Lessons } from '../data/a2Data';
+import { b1EnglishLessons, b2EnglishLessons, spanishB1Lessons, spanishB2Lessons } from '../data/b1b2Data';
+import {
+  spanishA1InicialLessons,
+  spanishA1IntermedioLessons,
+  spanishFluencyLessons
+} from '../data/spanishData';
+import { randomizeQuestionsOptions, shuffleOptionsList } from '../utils/shuffleOptions';
+import { playSpeech } from '../utils/speech';
 import { playTactileSound } from '../utils/soundEffects';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Zap, Trophy, ChevronRight, Volume2, Flame } from 'lucide-react';
+import { X, Zap, Trophy, ChevronRight, Volume2, Flame, RefreshCw } from 'lucide-react';
+
+interface DailyChallengeItem extends QuizQuestion {
+  isRetry?: boolean;
+  levelTag?: CEFRLevel;
+}
 
 interface DailyChallengeModalProps {
   isOpen: boolean;
@@ -18,39 +30,76 @@ interface DailyChallengeModalProps {
 export function DailyChallengeModal({
   isOpen,
   onClose,
-  progress,
   onCompleteChallenge,
   courseLanguage = 'en'
 }: DailyChallengeModalProps) {
   const isSpanishCourse = courseLanguage === 'es';
+  const [selectedLevel, setSelectedLevel] = useState<'ALL' | CEFRLevel>('ALL');
+  const [seed, setSeed] = useState(0);
 
-  const [questions] = useState<QuizQuestion[]>(() => {
-    const allLessons = isSpanishCourse
-      ? [...spanishA1InicialLessons, ...spanishA1IntermedioLessons, ...spanishFluencyLessons]
-      : [...a1InicialLessons, ...a1IntermedioLessons, ...fluencyLessons];
-    const pool = allLessons.flatMap(l => l.quiz).filter(q => q.options && q.options.length > 1);
-    const shuffled = [...pool].sort(() => 0.5 - Math.random());
-    return randomizeQuestionsOptions(shuffled.slice(0, 3));
-  });
+  const buildChallengeDeck = (lvl: 'ALL' | CEFRLevel): DailyChallengeItem[] => {
+    const a1Pool = (
+      isSpanishCourse
+        ? [...spanishA1InicialLessons, ...spanishA1IntermedioLessons, ...spanishFluencyLessons]
+        : [...a1InicialLessons, ...a1IntermedioLessons, ...fluencyLessons]
+    ).flatMap(l => l.quiz.map(q => ({ ...q, levelTag: 'A1' as CEFRLevel })));
 
+    const a2Pool = (isSpanishCourse ? spanishA2Lessons : a2EnglishLessons).flatMap(l =>
+      l.quiz.map(q => ({ ...q, levelTag: 'A2' as CEFRLevel }))
+    );
+
+    const b1Pool = (isSpanishCourse ? spanishB1Lessons : b1EnglishLessons).flatMap(l =>
+      l.quiz.map(q => ({ ...q, levelTag: 'B1' as CEFRLevel }))
+    );
+
+    const b2Pool = (isSpanishCourse ? spanishB2Lessons : b2EnglishLessons).flatMap(l =>
+      l.quiz.map(q => ({ ...q, levelTag: 'B2' as CEFRLevel }))
+    );
+
+    let fullPool: DailyChallengeItem[] = [];
+    if (lvl === 'A1') fullPool = a1Pool;
+    else if (lvl === 'A2') fullPool = a2Pool;
+    else if (lvl === 'B1') fullPool = b1Pool;
+    else if (lvl === 'B2') fullPool = b2Pool;
+    else fullPool = [...a1Pool, ...a2Pool, ...b1Pool, ...b2Pool];
+
+    const mcPool = fullPool.filter(
+      q => q.type !== 'speaking' && q.type !== 'word-order' && q.options && q.options.length > 1
+    );
+    const shuffled = [...mcPool].sort(() => 0.5 - Math.random()).slice(0, 5);
+    return randomizeQuestionsOptions(shuffled.map(q => ({ ...q, isRetry: false })));
+  };
+
+  const [questions, setQuestions] = useState<DailyChallengeItem[]>(() =>
+    buildChallengeDeck('ALL')
+  );
+  const [initialDeckCount, setInitialDeckCount] = useState(5);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [score, setScore] = useState(0);
   const [isDone, setIsDone] = useState(false);
 
+  useEffect(() => {
+    const deck = buildChallengeDeck(selectedLevel);
+    setQuestions(deck);
+    setInitialDeckCount(deck.length);
+    setCurrentIdx(0);
+    setSelectedOption(null);
+    setStatus('idle');
+    setScore(0);
+    setIsDone(false);
+  }, [selectedLevel, isSpanishCourse, seed]);
+
   if (!isOpen) return null;
 
   const currentQ = questions[currentIdx];
 
   const speakText = (text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = isSpanishCourse ? 'es-ES' : 'en-US';
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
-    }
+    playSpeech(text, {
+      courseLanguage,
+      rate: 0.9
+    });
   };
 
   const handleSelectOption = (option: string) => {
@@ -60,9 +109,18 @@ export function DailyChallengeModal({
     setStatus(isRight ? 'correct' : 'incorrect');
     if (isRight) {
       playTactileSound('stamp');
-      setScore(s => s + 1);
+      if (!currentQ.isRetry) {
+        setScore(s => s + 1);
+      }
+      speakText(currentQ.correctAnswer);
     } else {
       playTactileSound('error');
+      const prevIdx = currentQ.options.indexOf(currentQ.correctAnswer);
+      const reshuffled = shuffleOptionsList(currentQ.options, currentQ.correctAnswer, prevIdx);
+      setQuestions(prev => [
+        ...prev,
+        { ...currentQ, options: reshuffled, isRetry: true }
+      ]);
     }
   };
 
@@ -75,7 +133,7 @@ export function DailyChallengeModal({
     } else {
       playTactileSound('win');
       setIsDone(true);
-      const bonusXp = 50 + score * 20;
+      const bonusXp = 60 + score * 20;
       onCompleteChallenge(bonusXp);
     }
   };
@@ -97,10 +155,10 @@ export function DailyChallengeModal({
               </div>
               <div>
                 <span className="text-xs font-extrabold text-slate-700 dark:text-zinc-300">
-                  {isSpanishCourse ? 'Speed Card Workout' : 'Mazo de Entrenamiento Exprés'}
+                  {isSpanishCourse ? '5-Card Adaptive Daily Workout' : 'Entrenamiento Adaptativo de 5 Cartas'}
                 </span>
                 <h2 className="text-xl font-black">
-                  {isSpanishCourse ? 'Daily A1 Challenge' : 'Desafío Diario A1'}
+                  {isSpanishCourse ? 'Daily CEFR Challenge' : 'Desafío Diario MCER'}
                 </h2>
               </div>
             </div>
@@ -115,6 +173,32 @@ export function DailyChallengeModal({
             </button>
           </div>
 
+          {/* Level Filter Strip */}
+          <div className="px-6 py-2.5 bg-amber-100 dark:bg-zinc-900 border-b-2 border-slate-900 dark:border-zinc-800 flex items-center justify-between gap-2">
+            <span className="text-[11px] font-black uppercase text-slate-700 dark:text-zinc-300">
+              {isSpanishCourse ? 'Challenge Level:' : 'Nivel del Reto:'}
+            </span>
+            <div className="flex items-center gap-1">
+              {(['ALL', 'A1', 'A2', 'B1', 'B2'] as const).map(lvl => (
+                <button
+                  key={lvl}
+                  type="button"
+                  onClick={() => {
+                    playTactileSound('pop');
+                    setSelectedLevel(lvl);
+                  }}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-black border transition-all ${
+                    selectedLevel === lvl
+                      ? 'bg-slate-900 text-white dark:bg-yellow-300 dark:text-slate-950 border-slate-900'
+                      : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-900/30'
+                  }`}
+                >
+                  {lvl === 'ALL' ? (isSpanishCourse ? 'Mix A1–B2' : 'Mixto A1–B2') : lvl}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Body */}
           <div className="p-6 flex-1 bg-[#FAF6EE] dark:bg-zinc-950">
             {!isDone && currentQ ? (
@@ -125,11 +209,23 @@ export function DailyChallengeModal({
                 transition={{ type: 'spring', stiffness: 260, damping: 24 }}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-900 border-2 border-slate-900 text-xs font-black text-slate-950 dark:text-white tabular-nums">
-                    {isSpanishCourse
-                      ? `Card ${currentIdx + 1} / ${questions.length}`
-                      : `Carta ${currentIdx + 1} / ${questions.length}`}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-900 border-2 border-slate-900 text-xs font-black text-slate-950 dark:text-white tabular-nums">
+                      {isSpanishCourse
+                        ? `Card ${currentIdx + 1} / ${questions.length}`
+                        : `Carta ${currentIdx + 1} / ${questions.length}`}
+                    </span>
+                    {currentQ.levelTag && (
+                      <span className="px-2 py-0.5 rounded-lg bg-indigo-100 text-slate-950 border border-slate-900 text-[11px] font-black">
+                        {currentQ.levelTag}
+                      </span>
+                    )}
+                    {currentQ.isRetry && (
+                      <span className="px-2 py-0.5 rounded-lg bg-amber-200 text-slate-950 border border-slate-900 text-[10px] font-black">
+                        {isSpanishCourse ? 'Retry' : 'Refuerzo'}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     {status === 'correct' && (
                       <motion.span
@@ -141,7 +237,7 @@ export function DailyChallengeModal({
                       </motion.span>
                     )}
                     <div className="flex items-center gap-1 text-xs font-black text-slate-900 dark:text-amber-300 tabular-nums">
-                      <Zap className="w-4 h-4 fill-amber-500 text-amber-500" /> +{50 + (currentIdx + 1) * 20} XP
+                      <Zap className="w-4 h-4 fill-amber-500 text-amber-500" /> +{60 + score * 20} XP
                     </div>
                   </div>
                 </div>
@@ -224,8 +320,8 @@ export function DailyChallengeModal({
                           ? '✓ Correct Card!'
                           : '✓ ¡Carta Correcta!'
                         : isSpanishCourse
-                          ? 'Check this rule:'
-                          : 'Revisa esta regla:'}
+                          ? 'Check this rule (card shuffled to the end for review):'
+                          : 'Revisa esta regla (la carta se barajó al final para reforzarla):'}
                     </p>
                     <p>{currentQ.explanation}</p>
                   </motion.div>
@@ -260,23 +356,35 @@ export function DailyChallengeModal({
                 </h3>
                 <p className="text-xs text-slate-600 dark:text-zinc-400 mb-6 font-bold">
                   {isSpanishCourse
-                    ? `You stamped ${score} out of 3 cards today!`
-                    : `Has sellado ${score} de 3 cartas en el reto de hoy.`}
+                    ? `First-try accuracy: ${score} out of ${initialDeckCount} cards (100% reviewed & stamped)!`
+                    : `Aciertos al primer intento: ${score} de ${initialDeckCount} cartas (¡100% repasadas y selladas!).`}
                 </p>
 
                 <div className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-yellow-300 text-slate-950 border-2 border-slate-900 font-black text-sm mb-6 shadow-[3px_3px_0px_0px_#0f172a] tabular-nums">
-                  <Zap className="w-4 h-4 fill-slate-950" /> +{50 + score * 20} XP
+                  <Zap className="w-4 h-4 fill-slate-950" /> +{60 + score * 20} XP
                 </div>
 
-                <button
-                  onClick={() => {
-                    playTactileSound('pop');
-                    onClose();
-                  }}
-                  className="w-full bg-slate-950 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black py-3.5 rounded-2xl text-sm border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0f172a] transition-all"
-                >
-                  {isSpanishCourse ? 'Back to Card Table' : 'Volver a la Mesa'}
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      playTactileSound('flip');
+                      setSeed(s => s + 1);
+                    }}
+                    className="flex-1 bg-white dark:bg-zinc-800 text-slate-950 dark:text-white font-black py-3.5 rounded-2xl text-xs border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a] flex items-center justify-center gap-1.5"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    <span>{isSpanishCourse ? 'Deal 5 More' : 'Otras 5 Cartas'}</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      playTactileSound('pop');
+                      onClose();
+                    }}
+                    className="flex-1 bg-slate-950 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black py-3.5 rounded-2xl text-xs border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a] transition-all"
+                  >
+                    {isSpanishCourse ? 'Back to Path' : 'Volver a Mi Ruta'}
+                  </button>
+                </div>
               </div>
             )}
           </div>

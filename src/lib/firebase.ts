@@ -40,6 +40,7 @@ export const firebaseApp = initializeApp(resolvedFirebaseConfig);
 export const db = getFirestore(firebaseApp, resolvedFirebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(firebaseApp);
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 export enum OperationType {
   CREATE = 'create',

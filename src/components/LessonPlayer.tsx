@@ -6,6 +6,7 @@ import { RolePlaySimulator } from './RolePlaySimulator';
 import { playSpeech } from '../utils/speech';
 import { playTactileSound } from '../utils/soundEffects';
 import { randomizeQuestionsOptions, shuffleOptionsList } from '../utils/shuffleOptions';
+import { buildEnrichedLessonQuiz } from '../utils/exerciseGenerator';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   CheckCircle2,
@@ -72,12 +73,14 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
   const [step, setStep] = useState<'content' | 'quiz' | 'roleplay' | 'success'>(
     initialDraft?.step && initialDraft.step !== 'success' ? initialDraft.step : 'content'
   );
+  const enrichedBaseQuiz = useMemo(() => buildEnrichedLessonQuiz(lesson), [lesson]);
+
   const [quizQueue, setQuizQueue] = useState<QuizItem[]>(() =>
-    randomizeQuestionsOptions(lesson.quiz.map(q => ({ ...q })))
+    randomizeQuestionsOptions(enrichedBaseQuiz.map(q => ({ ...q })))
   );
   const [currentQuizIndex, setCurrentQuizIndex] = useState<number>(() => {
     const savedIdx = Number(initialDraft?.currentQuizIndex || 0);
-    return savedIdx >= 0 && savedIdx < lesson.quiz.length ? savedIdx : 0;
+    return savedIdx >= 0 && savedIdx < enrichedBaseQuiz.length ? savedIdx : 0;
   });
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [quizStatus, setQuizStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
@@ -213,8 +216,18 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
 
   const firstTryAccuracy = Math.max(
     0,
-    Math.round(((lesson.quiz.length - firstTryMistakes) / Math.max(1, lesson.quiz.length)) * 100)
+    Math.round(((enrichedBaseQuiz.length - firstTryMistakes) / Math.max(1, enrichedBaseQuiz.length)) * 100)
   );
+
+  const handleStartBonusPracticeRound = () => {
+    playTactileSound('flip');
+    setQuizQueue(randomizeQuestionsOptions(enrichedBaseQuiz.map(q => ({ ...q }))));
+    setCurrentQuizIndex(0);
+    setSelectedOption(null);
+    setQuizStatus('idle');
+    setFirstTryMistakes(0);
+    setStep('quiz');
+  };
 
   return (
     <div className="fixed inset-0 bg-[#FAF6EE]/95 dark:bg-zinc-950/95 z-50 flex flex-col backdrop-blur-md overflow-hidden">
@@ -579,6 +592,7 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
                 {/* Question Type: Word Order */}
                 {currentQuestion.type === 'word-order' ? (
                   <WordOrderExercise
+                    questionPrompt={currentQuestion.question}
                     correctSentence={currentQuestion.targetText || currentQuestion.correctAnswer}
                     explanation={currentQuestion.explanation}
                     hint={currentQuestion.hint}
@@ -891,14 +905,28 @@ export function LessonPlayer({ lesson, onComplete, onClose }: LessonPlayerProps)
                 </div>
               </div>
 
-              <motion.button
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98, x: 2, y: 2 }}
-                onClick={saveConfidenceAndFinish}
-                className="w-full max-w-md bg-emerald-500 hover:bg-emerald-600 text-slate-950 rounded-2xl py-4 font-black text-base border-2 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center transition-colors"
-              >
-                {isSpanishCourse ? 'Save Progress & Continue' : 'Guardar Progreso y Continuar'}
-              </motion.button>
+              <div className="w-full max-w-md flex flex-col sm:flex-row gap-3">
+                <motion.button
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98, x: 2, y: 2 }}
+                  onClick={handleStartBonusPracticeRound}
+                  className="flex-1 bg-yellow-300 hover:bg-yellow-400 text-slate-950 rounded-2xl py-4 px-4 font-black text-sm border-2 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center gap-2 transition-colors"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>
+                    {isSpanishCourse ? 'Bonus Practice Round' : 'Ronda Extra de Práctica'}
+                  </span>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98, x: 2, y: 2 }}
+                  onClick={saveConfidenceAndFinish}
+                  className="flex-1 bg-emerald-400 hover:bg-emerald-500 text-slate-950 rounded-2xl py-4 px-4 font-black text-sm border-2 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] flex items-center justify-center transition-colors"
+                >
+                  {isSpanishCourse ? 'Save & Continue' : 'Guardar y Continuar'}
+                </motion.button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Volume2, CheckCircle2, RefreshCw, Zap, Star, Play } from 'lucide-react';
 import { playSpeech } from '../utils/speech';
 import { playTactileSound } from '../utils/soundEffects';
 import { SPANISH_QUICK_QUESTIONS } from '../data/spanishData';
-import { randomizeQuestionsOptions } from '../utils/shuffleOptions';
+import { randomizeQuestionsOptions, shuffleOptionsList } from '../utils/shuffleOptions';
 
 interface QuickPracticeModalProps {
   isOpen: boolean;
@@ -21,6 +21,7 @@ interface QuickQuestion {
   correct: string;
   explanation: string;
   audioText?: string;
+  isRetry?: boolean;
 }
 
 const QUICK_QUESTIONS: QuickQuestion[] = [
@@ -62,15 +63,15 @@ const QUICK_QUESTIONS: QuickQuestion[] = [
   {
     id: 'q4',
     type: 'phrase',
-    question: '¿Qué frase usas para pedir un café en una cafetería?',
+    question: '¿Qué frase usas para pedir un café de forma educada en una cafetería?',
     options: [
       'Give me coffee now.',
-      'Can I get a coffee, please?',
+      'Could I have a coffee, please?',
       'I want coffee quickly.',
       'Coffee is good.'
     ],
-    correct: 'Can I get a coffee, please?',
-    explanation: '"Can I get a coffee, please?" es la forma más educada y natural.'
+    correct: 'Could I have a coffee, please?',
+    explanation: '"Could I have a coffee, please?" es la forma más educada y natural.'
   },
   {
     id: 'q5',
@@ -79,6 +80,137 @@ const QUICK_QUESTIONS: QuickQuestion[] = [
     options: ['Nunca', 'A veces', 'Siempre', 'Raramente'],
     correct: 'Siempre',
     explanation: 'Always = Siempre. (Never = Nunca, Sometimes = A veces).'
+  },
+  {
+    id: 'q6',
+    type: 'phrase',
+    question: 'Trampa común A1: ¿Cómo se dice "Tengo 25 años" en inglés?',
+    options: [
+      'I have 25 years.',
+      'I am 25 years old.',
+      'I am 25 years.',
+      'My age has 25.'
+    ],
+    correct: 'I am 25 years old.',
+    explanation: 'En inglés la edad se expresa con el verbo To Be ("I am 25 years old"), nunca con "have".'
+  },
+  {
+    id: 'q7',
+    type: 'listening',
+    question: 'Escucha el audio y selecciona la frase exacta:',
+    options: [
+      'How much does this cost?',
+      'How many do you want?',
+      'What time does it open?',
+      'Where is the nearest bank?'
+    ],
+    correct: 'How much does this cost?',
+    audioText: 'How much does this cost?',
+    explanation: '"How much does this cost?" significa "¿Cuánto cuesta esto?".'
+  },
+  {
+    id: 'q8',
+    type: 'word-order',
+    question: 'Nivel A2: Elige la oración correcta para "Llevo tres años viviendo aquí":',
+    options: [
+      'I have been living here for three years.',
+      'I live here since three years.',
+      'I am living here three years ago.',
+      'I have lived here since three years.'
+    ],
+    correct: 'I have been living here for three years.',
+    explanation: 'Para acciones que empezaron en el pasado y continúan hoy usamos "have been + -ing" con "for" (duración).'
+  },
+  {
+    id: 'q9',
+    type: 'phrase',
+    question: 'Nivel A2: Completa "Taking the subway is _____ faster than driving":',
+    options: ['much', 'very', 'more', 'too'],
+    correct: 'much',
+    explanation: 'Para decir "mucho más rápido" antes de un comparativo usamos "much" (much faster), nunca "very" ni "more".'
+  },
+  {
+    id: 'q10',
+    type: 'phrase',
+    question: 'Nivel B1: Completa el condicional "If I _____ more time, I would travel more":',
+    options: ['had', 'would have', 'have', 'will have'],
+    correct: 'had',
+    explanation: 'Second Conditional: If + Past Simple (had), + would + verbo base (would travel).'
+  },
+  {
+    id: 'q11',
+    type: 'vocab',
+    question: 'Nivel B1: ¿Qué significa la expresión "Every now and then"?',
+    options: ['De vez en cuando', 'Ahora mismo', 'Nunca jamás', 'Todo el tiempo'],
+    correct: 'De vez en cuando',
+    explanation: '"Every now and then" es una expresión natural de nivel B1 que significa "de vez en cuando".'
+  },
+  {
+    id: 'q12',
+    type: 'phrase',
+    question: 'Nivel B2: Elige la inversión formal equivalente a "If I had known earlier...":',
+    options: [
+      'Had I known earlier...',
+      'Have I knew earlier...',
+      'Did I know earlier...',
+      'Would I have known earlier...'
+    ],
+    correct: 'Had I known earlier...',
+    explanation: 'En nivel B2, "Had I known..." invierte el auxiliar "Had" para eliminar "If" con gran elegancia ("De haberlo sabido...").'
+  }
+];
+
+const EXTRA_SPANISH_QUICK_QUESTIONS: QuickQuestion[] = [
+  {
+    id: 'es_q6',
+    type: 'phrase',
+    question: 'Why do we say "Me gustan los libros" with an "-n" at the end of "gustan"?',
+    options: [
+      'Because "los libros" is plural, and gustar agrees with the thing liked',
+      'Because "Me" is plural',
+      'Because it is past tense',
+      'Because all Spanish verbs end in -n'
+    ],
+    correct: 'Because "los libros" is plural, and gustar agrees with the thing liked',
+    explanation: 'With "gustar", use "gusta" for singular nouns/infinitives and "gustan" for plural nouns ("los libros").'
+  },
+  {
+    id: 'es_q7',
+    type: 'phrase',
+    question: 'Level A2: Complete "Cuando era niño, _____ (jugar) en el parque todos los días":',
+    options: ['jugaba', 'jugué', 'jugaré', 'jugando'],
+    correct: 'jugaba',
+    explanation: 'For repeated childhood habits ("used to play"), Spanish uses the Imperfect tense: "jugaba".'
+  },
+  {
+    id: 'es_q8',
+    type: 'listening',
+    question: 'Listen and choose the exact Spanish sentence you hear:',
+    options: [
+      'Llevo dos años estudiando español.',
+      'Tengo dos hermanos en Madrid.',
+      'Mañana voy a visitar el museo.',
+      '¿A qué hora sale el próximo tren?'
+    ],
+    correct: 'Llevo dos años estudiando español.',
+    audioText: 'Llevo dos años estudiando español.',
+    explanation: '"Llevo dos años estudiando español" = I have been studying Spanish for two years.'
+  },
+  {
+    id: 'es_q9',
+    type: 'phrase',
+    question: 'Level B1: Complete "Te recomiendo que _____ (probar) la paella":',
+    options: ['pruebes', 'pruebas', 'probaste', 'probarás'],
+    correct: 'pruebes',
+    explanation: 'Verbs of recommendation ("Te recomiendo que...") require the Present Subjunctive: "pruebes".'
+  },
+  {
+    id: 'es_q10',
+    type: 'phrase',
+    question: 'Level B2: Complete "Si _____ (tener) más tiempo libre, viajaría por Sudamérica":',
+    options: ['tuviera', 'tendría', 'tengo', 'tuve'],
+    correct: 'tuviera',
+    explanation: 'In hypothetical "Si" clauses, use the Imperfect Subjunctive ("Si tuviera..."), never the Conditional after "Si".'
   }
 ];
 
@@ -91,53 +223,81 @@ export function QuickPracticeModal({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
-  const [score, setScore] = useState(0);
+  const [firstTryScore, setFirstTryScore] = useState(0);
   const [shuffleSeed, setShuffleSeed] = useState(0);
 
   const isSpanishCourse = courseLanguage === 'es';
-  const questionsList: QuickQuestion[] = React.useMemo(() => {
-    const raw = isSpanishCourse
-      ? (SPANISH_QUICK_QUESTIONS as QuickQuestion[])
+
+  const buildDeck = (): QuickQuestion[] => {
+    const rawPool = isSpanishCourse
+      ? [...(SPANISH_QUICK_QUESTIONS as QuickQuestion[]), ...EXTRA_SPANISH_QUICK_QUESTIONS]
       : QUICK_QUESTIONS;
-    return randomizeQuestionsOptions(raw);
+    const shuffledPool = [...rawPool].sort(() => 0.5 - Math.random()).slice(0, 8);
+    return randomizeQuestionsOptions(shuffledPool.map(q => ({ ...q, isRetry: false })));
+  };
+
+  const [questionsQueue, setQuestionsQueue] = useState<QuickQuestion[]>(() => buildDeck());
+  const [initialCount, setInitialCount] = useState<number>(8);
+
+  useEffect(() => {
+    const fresh = buildDeck();
+    setQuestionsQueue(fresh);
+    setInitialCount(fresh.length);
+    setCurrentIndex(0);
+    setSelectedOption(null);
+    setStatus('idle');
+    setFirstTryScore(0);
   }, [isSpanishCourse, shuffleSeed]);
 
   if (!isOpen) return null;
 
-  const currentQ = questionsList[currentIndex] || questionsList[0];
+  const currentQ = questionsQueue[currentIndex] || questionsQueue[0];
 
   const speakText = (text: string) => {
     playSpeech(text, {
       courseLanguage,
-      rate: 0.85
+      rate: 0.88
     });
   };
 
   const handleSelectOption = (option: string) => {
-    if (status !== 'idle') return;
+    if (status !== 'idle' || !currentQ) return;
     setSelectedOption(option);
     const isCorrect = option === currentQ.correct;
     if (isCorrect) {
       playTactileSound('stamp');
       setStatus('correct');
-      setScore(s => s + 1);
+      if (!currentQ.isRetry) {
+        setFirstTryScore(s => s + 1);
+      }
       onAddXP(15);
-      if (currentQ.audioText) speakText(currentQ.audioText);
+      if (currentQ.audioText) {
+        speakText(currentQ.audioText);
+      } else {
+        speakText(currentQ.correct);
+      }
     } else {
       playTactileSound('error');
       setStatus('incorrect');
+      // Re-queue missed card at the end of the sprint with reshuffled options!
+      const prevIdx = currentQ.options.indexOf(currentQ.correct);
+      const reshuffled = shuffleOptionsList(currentQ.options, currentQ.correct, prevIdx);
+      setQuestionsQueue(prev => [
+        ...prev,
+        { ...currentQ, options: reshuffled, isRetry: true }
+      ]);
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < questionsList.length - 1) {
+    if (currentIndex < questionsQueue.length - 1) {
       playTactileSound('flip');
       setCurrentIndex(i => i + 1);
       setSelectedOption(null);
       setStatus('idle');
     } else {
       playTactileSound('win');
-      setCurrentIndex(questionsList.length);
+      setCurrentIndex(questionsQueue.length);
       setStatus('idle');
     }
   };
@@ -145,10 +305,6 @@ export function QuickPracticeModal({
   const handleRestart = () => {
     playTactileSound('flip');
     setShuffleSeed(s => s + 1);
-    setCurrentIndex(0);
-    setSelectedOption(null);
-    setStatus('idle');
-    setScore(0);
   };
 
   return (
@@ -168,7 +324,7 @@ export function QuickPracticeModal({
               </div>
               <div>
                 <span className="text-xs font-extrabold text-slate-700 dark:text-zinc-300">
-                  {isSpanishCourse ? '5-Minute Card Sprint' : 'Mazo Rápido 5 Minutos'}
+                  {isSpanishCourse ? 'Adaptive 8-Card Sprint (A1–B2)' : 'Mazo Adaptativo de 8 Cartas (A1–B2)'}
                 </span>
                 <h3 className="text-lg font-black">
                   {isSpanishCourse ? 'Spanish Quick Practice' : 'Práctica Rápida en Inglés'}
@@ -189,7 +345,7 @@ export function QuickPracticeModal({
 
           {/* Content Body */}
           <div className="p-6 text-slate-950 dark:text-zinc-100 bg-[#FAF6EE] dark:bg-zinc-950">
-            {currentIndex < questionsList.length ? (
+            {currentIndex < questionsQueue.length ? (
               <motion.div
                 key={currentIndex}
                 initial={{ opacity: 0, x: 24 }}
@@ -198,11 +354,18 @@ export function QuickPracticeModal({
               >
                 {/* Progress bar */}
                 <div className="flex items-center justify-between text-xs font-black text-slate-700 dark:text-zinc-300 mb-2">
-                  <span>
-                    {isSpanishCourse
-                      ? `Card ${currentIndex + 1} of ${questionsList.length}`
-                      : `Carta ${currentIndex + 1} de ${questionsList.length}`}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {isSpanishCourse
+                        ? `Card ${currentIndex + 1} of ${questionsQueue.length}`
+                        : `Carta ${currentIndex + 1} de ${questionsQueue.length}`}
+                    </span>
+                    {currentQ.isRetry && (
+                      <span className="px-2 py-0.5 rounded-md bg-amber-200 text-slate-950 border border-slate-900 text-[10px] font-black">
+                        {isSpanishCourse ? 'Retry Card' : 'Carta de Refuerzo'}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-amber-600 dark:text-amber-400 font-black flex items-center gap-1">
                     <Star className="w-3.5 h-3.5 fill-amber-500" />{' '}
                     {isSpanishCourse ? '+15 XP per card' : '+15 XP por carta'}
@@ -212,7 +375,7 @@ export function QuickPracticeModal({
                 <div className="h-3.5 w-full bg-white dark:bg-zinc-800 rounded-full overflow-hidden mb-6 border-2 border-slate-900 dark:border-zinc-600 p-0.5">
                   <motion.div
                     className="h-full bg-emerald-400 rounded-full"
-                    animate={{ width: `${((currentIndex + 1) / questionsList.length) * 100}%` }}
+                    animate={{ width: `${((currentIndex + 1) / questionsQueue.length) * 100}%` }}
                     transition={{ type: 'spring', stiffness: 220, damping: 22 }}
                   />
                 </div>
@@ -294,8 +457,8 @@ export function QuickPracticeModal({
                           ? '✓ STAMPED! +15 XP'
                           : '✓ ¡SELLADO! +15 XP'
                         : isSpanishCourse
-                          ? `Correct answer: ${currentQ.correct}`
-                          : `Respuesta correcta: ${currentQ.correct}`}
+                          ? `Correct answer: ${currentQ.correct} (We shuffled this card to the end so you can master it!)`
+                          : `Respuesta correcta: ${currentQ.correct} (Se barajó al final del mazo para que la domines)`}
                     </p>
                     <p>{currentQ.explanation}</p>
                   </motion.div>
@@ -321,24 +484,24 @@ export function QuickPracticeModal({
                   🎉
                 </div>
                 <h4 className="text-xl font-black mb-1">
-                  {isSpanishCourse ? 'Card Sprint Completed!' : '¡Mazo Rápido Completado!'}
+                  {isSpanishCourse ? '100% Cards Mastered!' : '¡100% de las Cartas Dominadas!'}
                 </h4>
                 <p className="text-xs font-bold text-slate-600 dark:text-zinc-400 mb-6">
                   {isSpanishCourse ? (
                     <>
-                      You stamped{' '}
+                      First-try accuracy:{' '}
                       <strong>
-                        {score} out of {questionsList.length}
+                        {firstTryScore} / {initialCount}
                       </strong>{' '}
-                      cards.
+                      (all missed cards were reviewed and stamped!).
                     </>
                   ) : (
                     <>
-                      Sellaste{' '}
+                      Aciertos al primer intento:{' '}
                       <strong>
-                        {score} de {questionsList.length} cartas
-                      </strong>
-                      .
+                        {firstTryScore} de {initialCount}
+                      </strong>{' '}
+                      (todas las cartas pendientes fueron repasadas y selladas).
                     </>
                   )}
                 </p>
@@ -349,7 +512,7 @@ export function QuickPracticeModal({
                     className="bg-white dark:bg-zinc-800 border-2 border-slate-900 text-slate-950 dark:text-zinc-100 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-[3px_3px_0px_0px_#0f172a]"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />{' '}
-                    {isSpanishCourse ? 'Shuffle & Repeat' : 'Barajar y Repetir'}
+                    {isSpanishCourse ? 'New 8-Card Sprint' : 'Nuevo Mazo de 8 Cartas'}
                   </button>
                   <button
                     onClick={() => {

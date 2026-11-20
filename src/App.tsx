@@ -72,6 +72,7 @@ import { AuthGateView } from './components/AuthGateView';
 import { TeacherDashboardView } from './components/TeacherDashboardView';
 import { LearningStrategyPanel } from './components/LearningStrategyPanel';
 import { HeroInteractiveCard, OnePageBentoExplorer } from './components/OnePagePlayground';
+import { LevelArcadeGameSection } from './components/LevelArcadeGameSection';
 import { LessonPlayer } from './components/LessonPlayer';
 import { isSoundEnabled, setSoundEnabled, playTactileSound } from './utils/soundEffects';
 import { SectionTab, UserProfile, LessonStep } from './types';
@@ -635,6 +636,9 @@ export default function App() {
                 </div>
               </div>
             </div>
+
+            {/* Interactive Conjugation Roulette & Level Memory Match Arcade */}
+            <LevelArcadeGameSection courseLanguage={courseLanguage} onEarnXP={addXP} />
           </div>
         );
 
@@ -810,10 +814,15 @@ export default function App() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="p-2 rounded-xl bg-white dark:bg-zinc-800 text-slate-600 hover:bg-rose-200 hover:text-slate-950 border-2 border-slate-900 dark:border-zinc-700 transition-colors"
-                  title={isSpanishCourse ? 'Log out' : 'Cerrar sesión'}
+                  className="px-3 py-1.5 rounded-xl bg-rose-100 dark:bg-rose-950/70 text-slate-950 dark:text-rose-200 hover:bg-rose-300 dark:hover:bg-rose-900 border-2 border-slate-900 dark:border-zinc-700 font-black text-xs transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0"
+                  title={
+                    isSpanishCourse
+                      ? 'Log out or switch account'
+                      : 'Cerrar sesión o cambiar de cuenta'
+                  }
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>{isSpanishCourse ? 'Log Out / Switch' : 'Salir / Cambiar Cuenta'}</span>
                 </button>
               </div>
             </div>
@@ -1443,6 +1452,9 @@ export default function App() {
                     </div>
                   </div>
                 </div>
+
+                {/* Interactive Conjugation Roulette & Memory Duel by CEFR Level (A1-B2) */}
+                <LevelArcadeGameSection courseLanguage={courseLanguage} onEarnXP={addXP} />
               </section>
             )}
 
@@ -1604,6 +1616,7 @@ export default function App() {
               lessons={currentA1Intermedio}
               progress={progress}
               onLessonComplete={markLessonComplete}
+              prerequisiteLessonId={currentA1Inicial[currentA1Inicial.length - 1]?.id}
               title={
                 isSpanishCourse
                   ? '2nd Stage: Spanish A1 Intermediate (Consolidation)'
@@ -2020,16 +2033,30 @@ export default function App() {
             )}
           </nav>
 
-          {/* Zone 3: Notebook Action Button */}
-          <div className="flex items-center gap-3 shrink-0">
+          {/* Zone 3: Notebook & Logout / Switch Account Buttons */}
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setIsNotebookOpen(true)}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-slate-900 text-xs font-black transition-colors whitespace-nowrap shrink-0 shadow-[2px_2px_0px_0px_#0f172a]"
+              className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-slate-900 text-xs font-black transition-colors whitespace-nowrap shrink-0 shadow-[2px_2px_0px_0px_#0f172a]"
             >
               {isSpanishCourse
                 ? `My Notebook (${completedLessonsCount})`
                 : `Mi Cuaderno (${completedLessonsCount})`}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-3 py-2 rounded-xl bg-rose-200 hover:bg-rose-300 text-slate-950 border-2 border-slate-900 text-xs font-black transition-colors whitespace-nowrap shrink-0 shadow-[2px_2px_0px_0px_#0f172a] flex items-center gap-1.5"
+              title={
+                isSpanishCourse
+                  ? `Logged in as ${currentUser.fullName} — Click to log out or switch account`
+                  : `Sesión de ${currentUser.fullName} — Clic para cerrar sesión o cambiar de cuenta`
+              }
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>{isSpanishCourse ? 'Log Out' : 'Salir'}</span>
             </button>
           </div>
         </div>

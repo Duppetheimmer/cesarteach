@@ -21,6 +21,7 @@ import {
   where,
   getDocFromServer,
   signInWithPopup,
+  firebaseSignOut,
   handleFirestoreError,
   OperationType
 } from './firebase';
@@ -131,6 +132,7 @@ export function setStoredCurrentUser(user: UserProfile | null) {
       localStorage.setItem(LOCAL_STORAGE_CURRENT_USER_KEY, JSON.stringify(sanitizedUser));
     } else {
       localStorage.removeItem(LOCAL_STORAGE_CURRENT_USER_KEY);
+      firebaseSignOut(auth).catch(() => {});
     }
   } catch (e) {
     console.error('Error updating current stored user:', e);

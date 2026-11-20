@@ -14,6 +14,7 @@ interface StepPathProps {
   levelBadge: string;
   themeGradient: string;
   accentColor: string;
+  prerequisiteLessonId?: string;
 }
 
 export function StepPath({
@@ -23,10 +24,10 @@ export function StepPath({
   title,
   description,
   levelBadge,
-  themeGradient
+  themeGradient,
+  prerequisiteLessonId
 }: StepPathProps) {
   const [activeLesson, setActiveLesson] = useState<LessonStep | null>(null);
-  const [freeExplorationMode, setFreeExplorationMode] = useState<boolean>(false);
   const [filterMode, setFilterMode] = useState<'all' | 'pending' | 'completed'>('all');
 
   const completedCount = lessons.filter(l => progress.completedLessons.includes(l.id)).length;
@@ -35,9 +36,13 @@ export function StepPath({
   const isSpanishCourse = lessons.length > 0 && lessons[0].id.startsWith('es_');
   const courseLang = isSpanishCourse ? 'es' : 'en';
 
+  const isPrerequisiteMet =
+    !prerequisiteLessonId || progress.completedLessons.includes(prerequisiteLessonId);
+
   const nextRecommendedLesson = useMemo(() => {
+    if (!isPrerequisiteMet) return null;
     return lessons.find(l => !progress.completedLessons.includes(l.id)) || lessons[0] || null;
-  }, [lessons, progress.completedLessons]);
+  }, [lessons, progress.completedLessons, isPrerequisiteMet]);
 
   const filteredLessons = useMemo(() => {
     if (filterMode === 'pending') {
@@ -68,7 +73,7 @@ export function StepPath({
               {description}
             </p>
 
-            {nextRecommendedLesson && (
+            {nextRecommendedLesson ? (
               <button
                 type="button"
                 onClick={() => setActiveLesson(nextRecommendedLesson)}
@@ -82,10 +87,19 @@ export function StepPath({
                 </span>
                 <ArrowRight className="w-4 h-4 text-indigo-600" />
               </button>
+            ) : (
+              <div className="px-4 py-2.5 rounded-2xl bg-black/25 border border-white/20 text-white font-bold text-xs inline-flex items-center gap-2">
+                <Lock className="w-4 h-4 text-yellow-300 shrink-0" />
+                <span>
+                  {isSpanishCourse
+                    ? 'Complete all Stage 1 (A1 Beginner) lessons in order to unlock this path.'
+                    : 'Completa todas las cartas de la Etapa 1 (A1 Inicial) en orden para desbloquear este tramo.'}
+                </span>
+              </div>
             )}
           </div>
 
-          {/* Level Progress & Pedagogical Mode Toggle */}
+          {/* Level Progress & Sequential Path Notice */}
           <div className="w-full lg:w-80 bg-black/20 backdrop-blur-md border border-white/20 rounded-2xl p-5 space-y-3.5 shrink-0">
             <div className="flex justify-between items-center text-xs font-bold tabular-nums">
               <span className="flex items-center gap-1.5">
@@ -109,22 +123,12 @@ export function StepPath({
               <span className="text-white/90 font-medium">
                 {isSpanishCourse ? 'Study Mode:' : 'Modo de Avance:'}
               </span>
-              <button
-                type="button"
-                onClick={() => setFreeExplorationMode(prev => !prev)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold transition-colors whitespace-nowrap shrink-0"
-              >
-                <Unlock className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/15 text-white font-bold whitespace-nowrap shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
                 <span>
-                  {freeExplorationMode
-                    ? isSpanishCourse
-                      ? 'Free Mode Active'
-                      : 'Modo Libre Activo'
-                    : isSpanishCourse
-                      ? 'Unlock All Steps'
-                      : 'Desbloquear Todas'}
+                  {isSpanishCourse ? 'Strict Step-by-Step' : 'Paso a Paso Secuencial'}
                 </span>
-              </button>
+              </span>
             </div>
           </div>
         </div>
@@ -172,8 +176,8 @@ export function StepPath({
 
         <span className="text-xs font-medium text-slate-500 dark:text-zinc-400">
           {isSpanishCourse
-            ? 'Click any unlocked lesson to start or listen to its audio preview.'
-            : 'Haz clic en cualquier lección desbloqueada para iniciar o escuchar su vista previa.'}
+            ? 'Complete each step in order to unlock the next lesson card.'
+            : 'Completa cada paso en orden para desbloquear la siguiente carta.'}
         </span>
       </div>
 
@@ -187,10 +191,10 @@ export function StepPath({
             const originalIndex = lessons.findIndex(l => l.id === lesson.id);
             const isCompleted = progress.completedLessons.includes(lesson.id);
             const isUnlocked =
-              freeExplorationMode ||
-              originalIndex <= 0 ||
               isCompleted ||
-              progress.completedLessons.includes(lessons[originalIndex - 1]?.id);
+              (originalIndex === 0
+                ? isPrerequisiteMet
+                : progress.completedLessons.includes(lessons[originalIndex - 1]?.id));
             const isCurrentActive = isUnlocked && !isCompleted;
             const isEven = idx % 2 === 0;
             const savedMeta = confidenceMap[lesson.id];
@@ -212,6 +216,7 @@ export function StepPath({
                   <div
                     role={isUnlocked ? 'button' : undefined}
                     tabIndex={isUnlocked ? 0 : -1}
+                    aria-disabled={!isUnlocked}
                     onClick={() => isUnlocked && setActiveLesson(lesson)}
                     onKeyDown={e => {
                       if (isUnlocked && (e.key === 'Enter' || e.key === ' ')) {
