@@ -380,7 +380,7 @@ const ENGLISH_CHALLENGES: InteractiveChallenge[] = [
     options: [
       'must have + participio pasado (must have forgotten)',
       'must to forget',
-      'should забыть',
+      'should forgotten',
       'can forget yesterday'
     ],
     correctAnswer: 'must have + participio pasado (must have forgotten)',
@@ -1207,34 +1207,84 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
           </AnimatePresence>
         </div>
 
-        {/* CEFR Level Filter Bar for Cards */}
+        {/* CEFR Level Filter Bar & Complexity Progression Ladder for Cards */}
         {mode !== 'pairs' && (
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-zinc-400">
-              {isSpanishCourse ? 'Filter Deck by CEFR Level:' : 'Filtrar Mazo por Nivel MCER:'}
-            </span>
-            <div className="flex items-center gap-1">
-              {(['ALL', 'A1', 'A2', 'B1', 'B2'] as const).map(lvl => (
-                <button
-                  key={lvl}
-                  type="button"
-                  onClick={() => {
-                    playTactileSound('pop');
-                    setLevelFilter(lvl);
-                    setActiveIndex(0);
-                    setSelectedAnswer(null);
-                    setSelectedClozeAnswer(null);
-                    setPickedWords([]);
-                  }}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-black border transition-all ${
-                    levelFilter === lvl
-                      ? 'bg-slate-900 text-white dark:bg-yellow-300 dark:text-slate-950 border-slate-900'
-                      : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-900/30 hover:bg-yellow-100'
-                  }`}
-                >
-                  {lvl === 'ALL' ? (isSpanishCourse ? 'All (12)' : 'Todos (12)') : lvl}
-                </button>
-              ))}
+          <div className="space-y-2.5 mb-4 p-3 rounded-2xl bg-white/80 dark:bg-zinc-800/70 border-2 border-slate-900/20 dark:border-zinc-700">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-lg bg-emerald-300 text-slate-950 border border-slate-900 text-[10px] font-black uppercase">
+                  {isSpanishCourse
+                    ? 'Ordered by Complexity (A1 → B2)'
+                    : 'Ordenado por Complejidad (A1 → B2)'}
+                </span>
+                <span className="text-[11px] font-black text-slate-700 dark:text-zinc-300">
+                  {isSpanishCourse
+                    ? `Step ${(activeIndex % challenges.length) + 1} of ${challenges.length}`
+                    : `Escalón ${(activeIndex % challenges.length) + 1} de ${challenges.length}`}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                {(['ALL', 'A1', 'A2', 'B1', 'B2'] as const).map(lvl => (
+                  <button
+                    key={lvl}
+                    type="button"
+                    onClick={() => {
+                      playTactileSound('pop');
+                      setLevelFilter(lvl);
+                      setActiveIndex(0);
+                      setSelectedAnswer(null);
+                      setSelectedClozeAnswer(null);
+                      setPickedWords([]);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-black border transition-all ${
+                      levelFilter === lvl
+                        ? 'bg-slate-900 text-white dark:bg-yellow-300 dark:text-slate-950 border-slate-900'
+                        : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-900/30 hover:bg-yellow-100'
+                    }`}
+                  >
+                    {lvl === 'ALL' ? (isSpanishCourse ? 'All (1→12)' : 'Todos (1→12)') : lvl}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Numbered Complexity Step Selector (1 -> N) */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              {challenges.map((cardItem, idx) => {
+                const isCurrentCard = idx === activeIndex % challenges.length;
+                const tierColor =
+                  cardItem.level === 'A1'
+                    ? 'bg-sky-200 text-slate-950'
+                    : cardItem.level === 'A2'
+                      ? 'bg-yellow-200 text-slate-950'
+                      : cardItem.level === 'B1'
+                        ? 'bg-emerald-200 text-slate-950'
+                        : 'bg-rose-200 text-slate-950';
+
+                return (
+                  <button
+                    key={cardItem.id}
+                    type="button"
+                    onClick={() => {
+                      playTactileSound('flip');
+                      setActiveIndex(idx);
+                      setSelectedAnswer(null);
+                      setSelectedClozeAnswer(null);
+                      setPickedWords([]);
+                      setActiveWordNote(null);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-black border transition-all ${
+                      isCurrentCard
+                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 border-slate-950 shadow-[2px_2px_0px_0px_#4f46e5] -translate-y-0.5'
+                        : `${tierColor} border-slate-900/40 opacity-85 hover:opacity-100`
+                    }`}
+                    title={`${cardItem.level} · ${cardItem.context}`}
+                  >
+                    #{idx + 1} {cardItem.level}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -1725,11 +1775,11 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
         <span className="text-slate-700 dark:text-zinc-300 font-extrabold tabular-nums">
           {mode === 'pairs'
             ? isSpanishCourse
-              ? `Pairs Deck ${activePairDeckIdx + 1} of ${pairDecks.length} · Level ${currentPairDeck.level}`
-              : `Mazo de Pares ${activePairDeckIdx + 1} de ${pairDecks.length} · Nivel ${currentPairDeck.level}`
+              ? `Pairs Deck ${activePairDeckIdx + 1} of ${pairDecks.length} · Level ${currentPairDeck.level} (Ordered A1 → B2)`
+              : `Mazo de Pares ${activePairDeckIdx + 1} de ${pairDecks.length} · Nivel ${currentPairDeck.level} (Orden A1 → B2)`
             : isSpanishCourse
-              ? `Card #${(activeIndex % challenges.length) + 1} of ${challenges.length} · Level ${current.level}`
-              : `Carta #${(activeIndex % challenges.length) + 1} de ${challenges.length} · Nivel ${current.level}`}
+              ? `Complexity Step #${(activeIndex % challenges.length) + 1} of ${challenges.length} · Level ${current.level}`
+              : `Escalón de Complejidad #${(activeIndex % challenges.length) + 1} de ${challenges.length} · Nivel ${current.level}`}
         </span>
         <button
           type="button"
@@ -1746,7 +1796,9 @@ export function HeroInteractiveCard({ courseLanguage, onEarnXP }: HeroInteractiv
           className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-indigo-600 dark:bg-white dark:text-slate-950 text-white font-black text-xs flex items-center gap-1.5 transition-colors shadow-[2px_2px_0px_0px_#4f46e5]"
         >
           <RefreshCw className="w-3.5 h-3.5" />
-          <span>{isSpanishCourse ? 'Draw Another Card' : 'Sacar Otra Carta'}</span>
+          <span>
+            {isSpanishCourse ? 'Next Complexity Card →' : 'Siguiente Carta en Complejidad →'}
+          </span>
         </button>
       </div>
     </div>

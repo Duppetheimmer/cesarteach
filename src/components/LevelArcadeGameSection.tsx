@@ -6,13 +6,29 @@ import {
   SPANISH_CONJUGATION_CHALLENGES
 } from '../data/conjugationArcadeData';
 import {
+  EXTRA_ENGLISH_CONJUGATIONS,
+  EXTRA_SPANISH_CONJUGATIONS
+} from '../data/conjugationExpansionData';
+import {
   DictationItem,
   SurvivalMission,
+  FalseFriendCard,
   ENGLISH_DICTATION_ITEMS,
   SPANISH_DICTATION_ITEMS,
   ENGLISH_SURVIVAL_MISSIONS,
-  SPANISH_SURVIVAL_MISSIONS
+  SPANISH_SURVIVAL_MISSIONS,
+  ENGLISH_FALSE_FRIENDS,
+  SPANISH_FALSE_FRIENDS
 } from '../data/survivalAndDictationData';
+import {
+  MemoryVocabPair,
+  EXPANDED_ENGLISH_MEMORY_PAIRS,
+  EXPANDED_SPANISH_MEMORY_PAIRS,
+  EXTRA_ENGLISH_SURVIVAL_MISSIONS,
+  EXTRA_SPANISH_SURVIVAL_MISSIONS,
+  EXTRA_ENGLISH_FALSE_FRIENDS,
+  EXTRA_SPANISH_FALSE_FRIENDS
+} from '../data/arcadeExpansionPack';
 import { playSpeech } from '../utils/speech';
 import { playTactileSound } from '../utils/soundEffects';
 import { shuffleOptionsList } from '../utils/shuffleOptions';
@@ -39,16 +55,10 @@ import {
   Compass,
   AlertTriangle,
   MessageSquare,
-  Undo2
+  Undo2,
+  ShieldAlert,
+  BookmarkCheck
 } from 'lucide-react';
-
-interface MemoryVocabPair {
-  id: string;
-  level: CEFRLevel;
-  targetWord: string;
-  nativeMeaning: string;
-  exampleSentence: string;
-}
 
 interface MemoryDeckCard {
   uid: string;
@@ -61,72 +71,58 @@ interface MemoryDeckCard {
 
 type CategoryFilter = 'all' | 'affirmative' | 'negative-question' | 'past-perfect' | 'advanced-mood';
 type LevelFilter = CEFRLevel | 'ALL';
-type ArcadeGameMode = 'conjugation' | 'memory' | 'dictation' | 'survival';
+type ArcadeGameMode = 'conjugation' | 'memory' | 'dictation' | 'survival' | 'false-friends';
+type MemoryBoardSelection = 1 | 2 | 3 | 'random';
 
-// ============================================================================
-// MEMORY MATCH PAIRS BY CEFR LEVEL (A1–B2)
-// ============================================================================
-const ENGLISH_MEMORY_PAIRS: MemoryVocabPair[] = [
-  // A1 (6 pairs)
-  { id: 'en_m_a1_1', level: 'A1', targetWord: 'Schedule', nativeMeaning: 'Horario / Agenda', exampleSentence: 'Let me check my schedule.' },
-  { id: 'en_m_a1_2', level: 'A1', targetWord: 'Breakfast', nativeMeaning: 'Desayuno', exampleSentence: 'We have breakfast at eight.' },
-  { id: 'en_m_a1_3', level: 'A1', targetWord: 'Neighbor', nativeMeaning: 'Vecino / Vecina', exampleSentence: 'Our neighbor is very friendly.' },
-  { id: 'en_m_a1_4', level: 'A1', targetWord: 'Receipt', nativeMeaning: 'Recibo / Comprobante', exampleSentence: 'Could I have the receipt, please?' },
-  { id: 'en_m_a1_5', level: 'A1', targetWord: 'Luggage', nativeMeaning: 'Equipaje', exampleSentence: 'My luggage is already in the taxi.' },
-  { id: 'en_m_a1_6', level: 'A1', targetWord: 'Appointment', nativeMeaning: 'Cita (médica / profesional)', exampleSentence: 'I have a dentist appointment today.' },
-  // A2 (6 pairs)
-  { id: 'en_m_a2_1', level: 'A2', targetWord: 'Flight delay', nativeMeaning: 'Retraso de vuelo', exampleSentence: 'There was a two-hour flight delay.' },
-  { id: 'en_m_a2_2', level: 'A2', targetWord: 'To borrow', nativeMeaning: 'Pedir prestado', exampleSentence: 'Can I borrow your umbrella?' },
-  { id: 'en_m_a2_3', level: 'A2', targetWord: 'To lend', nativeMeaning: 'Prestar (dar prestado)', exampleSentence: 'I can lend you my notebook.' },
-  { id: 'en_m_a2_4', level: 'A2', targetWord: 'Crowded', nativeMeaning: 'Lleno de gente / Abarrotado', exampleSentence: 'The subway is crowded at rush hour.' },
-  { id: 'en_m_a2_5', level: 'A2', targetWord: 'Refund', nativeMeaning: 'Reembolso / Devolución', exampleSentence: 'They gave me a full refund.' },
-  { id: 'en_m_a2_6', level: 'A2', targetWord: 'Abroad', nativeMeaning: 'En el extranjero', exampleSentence: 'She studied abroad for a year.' },
-  // B1 (6 pairs)
-  { id: 'en_m_b1_1', level: 'B1', targetWord: 'To postpone', nativeMeaning: 'Posponer / Aplazar', exampleSentence: 'We had to postpone the launch.' },
-  { id: 'en_m_b1_2', level: 'B1', targetWord: 'Reliable', nativeMeaning: 'Confiable / Fiable', exampleSentence: 'She is our most reliable partner.' },
-  { id: 'en_m_b1_3', level: 'B1', targetWord: 'Deadline', nativeMeaning: 'Fecha límite de entrega', exampleSentence: 'The deadline is this Friday.' },
-  { id: 'en_m_b1_4', level: 'B1', targetWord: 'To figure out', nativeMeaning: 'Resolver / Descifrar', exampleSentence: 'We need to figure out a solution.' },
-  { id: 'en_m_b1_5', level: 'B1', targetWord: 'Accurate', nativeMeaning: 'Preciso / Exacto', exampleSentence: 'These figures are completely accurate.' },
-  { id: 'en_m_b1_6', level: 'B1', targetWord: 'Outcome', nativeMeaning: 'Resultado / Desenlace', exampleSentence: 'We achieved a positive outcome.' },
-  // B2 (6 pairs)
-  { id: 'en_m_b2_1', level: 'B2', targetWord: 'Nevertheless', nativeMeaning: 'Sin embargo / No obstante', exampleSentence: 'It was risky; nevertheless, we succeeded.' },
-  { id: 'en_m_b2_2', level: 'B2', targetWord: 'Thorough', nativeMeaning: 'Exhaustivo / Minucioso', exampleSentence: 'They conducted a thorough audit.' },
-  { id: 'en_m_b2_3', level: 'B2', targetWord: 'Feasible', nativeMeaning: 'Viable / Factible', exampleSentence: 'Is this timeline financially feasible?' },
-  { id: 'en_m_b2_4', level: 'B2', targetWord: 'To mitigate', nativeMeaning: 'Mitigar / Reducir riesgos', exampleSentence: 'We took steps to mitigate the risk.' },
-  { id: 'en_m_b2_5', level: 'B2', targetWord: 'Unprecedented', nativeMeaning: 'Sin precedentes', exampleSentence: 'The company saw unprecedented growth.' },
-  { id: 'en_m_b2_6', level: 'B2', targetWord: 'Bottleneck', nativeMeaning: 'Cuello de botella / Obstáculo', exampleSentence: 'We solved the production bottleneck.' }
-];
+interface SavedMistakeItem {
+  id: string;
+  level: CEFRLevel;
+  sourceLabel: string;
+  promptText: string;
+  correctText: string;
+  explanationText: string;
+}
 
-const SPANISH_MEMORY_PAIRS: MemoryVocabPair[] = [
-  // A1 (6 pairs)
-  { id: 'es_m_a1_1', level: 'A1', targetWord: 'La cuenta', nativeMeaning: 'The bill / check', exampleSentence: '¿Nos trae la cuenta, por favor?' },
-  { id: 'es_m_a1_2', level: 'A1', targetWord: 'El desayuno', nativeMeaning: 'Breakfast', exampleSentence: 'El desayuno está incluido.' },
-  { id: 'es_m_a1_3', level: 'A1', targetWord: 'La estación', nativeMeaning: 'The station', exampleSentence: 'La estación de metro está cerca.' },
-  { id: 'es_m_a1_4', level: 'A1', targetWord: 'Temprano', nativeMeaning: 'Early', exampleSentence: 'Me levanto temprano todos los días.' },
-  { id: 'es_m_a1_5', level: 'A1', targetWord: 'El equipaje', nativeMeaning: 'The luggage', exampleSentence: 'Mi equipaje está en la habitación.' },
-  { id: 'es_m_a1_6', level: 'A1', targetWord: 'La esquina', nativeMeaning: 'The street corner', exampleSentence: 'El banco está en la esquina.' },
-  // A2 (6 pairs)
-  { id: 'es_m_a2_1', level: 'A2', targetWord: 'Mudarse', nativeMeaning: 'To move (change residence)', exampleSentence: 'Nos mudamos a Valencia el mes pasado.' },
-  { id: 'es_m_a2_2', level: 'A2', targetWord: 'El reembolso', nativeMeaning: 'The refund', exampleSentence: 'Solicité un reembolso completo.' },
-  { id: 'es_m_a2_3', level: 'A2', targetWord: 'Alquilar', nativeMeaning: 'To rent', exampleSentence: 'Queremos alquilar un piso luminoso.' },
-  { id: 'es_m_a2_4', level: 'A2', targetWord: 'El retraso', nativeMeaning: 'The delay', exampleSentence: 'El tren llegó con diez minutos de retraso.' },
-  { id: 'es_m_a2_5', level: 'A2', targetWord: 'Acordarse de', nativeMeaning: 'To remember', exampleSentence: '¿Te acuerdas de nuestra primera clase?' },
-  { id: 'es_m_a2_6', level: 'A2', targetWord: 'Darse cuenta', nativeMeaning: 'To realize / notice', exampleSentence: 'Me di cuenta del error a tiempo.' },
-  // B1 (6 pairs)
-  { id: 'es_m_b1_1', level: 'B1', targetWord: 'El plazo', nativeMeaning: 'The deadline / timeframe', exampleSentence: 'El plazo termina este viernes.' },
-  { id: 'es_m_b1_2', level: 'B1', targetWord: 'Aplazar', nativeMeaning: 'To postpone / put off', exampleSentence: 'Tuvimos que aplazar la reunión.' },
-  { id: 'es_m_b1_3', level: 'B1', targetWord: 'Fiable', nativeMeaning: 'Reliable / trustworthy', exampleSentence: 'Es una fuente muy fiable.' },
-  { id: 'es_m_b1_4', level: 'B1', targetWord: 'Llevar a cabo', nativeMeaning: 'To carry out / execute', exampleSentence: 'Llevaremos a cabo el proyecto.' },
-  { id: 'es_m_b1_5', level: 'B1', targetWord: 'Sin embargo', nativeMeaning: 'However / nevertheless', exampleSentence: 'Estaba lloviendo; sin embargo, fuimos.' },
-  { id: 'es_m_b1_6', level: 'B1', targetWord: 'Merecer la pena', nativeMeaning: 'To be worth it', exampleSentence: 'El esfuerzo realmente merece la pena.' },
-  // B2 (6 pairs)
-  { id: 'es_m_b2_1', level: 'B2', targetWord: 'Imprescindible', nativeMeaning: 'Essential / indispensable', exampleSentence: 'La puntualidad es imprescindible aquí.' },
-  { id: 'es_m_b2_2', level: 'B2', targetWord: 'El desenlace', nativeMeaning: 'The outcome / resolution', exampleSentence: 'La negociación tuvo un buen desenlace.' },
-  { id: 'es_m_b2_3', level: 'B2', targetWord: 'Dar por sentado', nativeMeaning: 'To take for granted', exampleSentence: 'No debemos dar nada por sentado.' },
-  { id: 'es_m_b2_4', level: 'B2', targetWord: 'Rentable', nativeMeaning: 'Profitable / cost-effective', exampleSentence: 'La inversión resultó muy rentable.' },
-  { id: 'es_m_b2_5', level: 'B2', targetWord: 'A raíz de', nativeMeaning: 'As a result of / following', exampleSentence: 'Todo cambió a raíz de aquel acuerdo.' },
-  { id: 'es_m_b2_6', level: 'B2', targetWord: 'Poner en marcha', nativeMeaning: 'To launch / set in motion', exampleSentence: 'Pusimos en marcha la nueva estrategia.' }
-];
+const CEFR_LEVELS_ORDERED: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2'];
+
+function mergeByLevelOrder<T extends { level: CEFRLevel }>(baseList: T[], extraList: T[]): T[] {
+  const combined: T[] = [];
+  for (const lvl of CEFR_LEVELS_ORDERED) {
+    combined.push(...baseList.filter(item => item.level === lvl));
+    combined.push(...extraList.filter(item => item.level === lvl));
+  }
+  return combined;
+}
+
+const ALL_ENGLISH_CONJUGATIONS: ConjugationChallenge[] = mergeByLevelOrder(
+  ENGLISH_CONJUGATION_CHALLENGES,
+  EXTRA_ENGLISH_CONJUGATIONS
+);
+
+const ALL_SPANISH_CONJUGATIONS: ConjugationChallenge[] = mergeByLevelOrder(
+  SPANISH_CONJUGATION_CHALLENGES,
+  EXTRA_SPANISH_CONJUGATIONS
+);
+
+const ALL_ENGLISH_SURVIVAL_MISSIONS: SurvivalMission[] = mergeByLevelOrder(
+  ENGLISH_SURVIVAL_MISSIONS,
+  EXTRA_ENGLISH_SURVIVAL_MISSIONS
+);
+
+const ALL_SPANISH_SURVIVAL_MISSIONS: SurvivalMission[] = mergeByLevelOrder(
+  SPANISH_SURVIVAL_MISSIONS,
+  EXTRA_SPANISH_SURVIVAL_MISSIONS
+);
+
+const ALL_ENGLISH_FALSE_FRIENDS: FalseFriendCard[] = mergeByLevelOrder(
+  ENGLISH_FALSE_FRIENDS,
+  EXTRA_ENGLISH_FALSE_FRIENDS
+);
+
+const ALL_SPANISH_FALSE_FRIENDS: FalseFriendCard[] = mergeByLevelOrder(
+  SPANISH_FALSE_FRIENDS,
+  EXTRA_SPANISH_FALSE_FRIENDS
+);
 
 function shuffleArray<T>(items: T[]): T[] {
   const copy = [...items];
@@ -158,21 +154,30 @@ export function LevelArcadeGameSection({
   const isSpanishCourse = courseLanguage === 'es';
   const [selectedLevel, setSelectedLevel] = useState<LevelFilter>('A1');
   const [activeGameMode, setActiveGameMode] = useState<ArcadeGameMode>('conjugation');
+  const [savedMistakes, setSavedMistakes] = useState<SavedMistakeItem[]>([]);
+  const [showMistakeVault, setShowMistakeVault] = useState(false);
+
+  const recordSavedMistake = (item: SavedMistakeItem) => {
+    setSavedMistakes(prev => {
+      if (prev.some(existing => existing.id === item.id)) return prev;
+      return [item, ...prev].slice(0, 20);
+    });
+  };
 
   // ==========================================================================
-  // GAME 1 STATE: EXPANDED CONJUGATION ROULETTE & TYPING CHALLENGE (48 CARDS/LANG)
+  // GAME 1 STATE: EXPANDED CONJUGATION ROULETTE & TYPING CHALLENGE (80 CARDS/LANG · 20/LEVEL)
   // ==========================================================================
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
   const [inputMode, setInputMode] = useState<'cards' | 'typing'>('cards');
-  const [handSize, setHandSize] = useState<6 | 12>(12);
+  const [handSize, setHandSize] = useState<6 | 12 | 20>(20);
   const [showParadigmTable, setShowParadigmTable] = useState<boolean>(false);
   const [typedConjugation, setTypedConjugation] = useState<string>('');
   const [letterHintCount, setLetterHintCount] = useState<number>(0);
 
   const baseConjugationPool = useMemo<ConjugationChallenge[]>(() => {
     const source = isSpanishCourse
-      ? SPANISH_CONJUGATION_CHALLENGES
-      : ENGLISH_CONJUGATION_CHALLENGES;
+      ? ALL_SPANISH_CONJUGATIONS
+      : ALL_ENGLISH_CONJUGATIONS;
 
     const byLevel =
       selectedLevel === 'ALL'
@@ -184,6 +189,7 @@ export function LevelArcadeGameSection({
     return filtered.length > 0 ? filtered : byLevel;
   }, [isSpanishCourse, selectedLevel, categoryFilter]);
 
+  const [conjOrderMode, setConjOrderMode] = useState<'complexity' | 'random'>('complexity');
   const [conjQueue, setConjQueue] = useState<ConjugationChallenge[]>([]);
   const [conjIndex, setConjIndex] = useState(0);
   const [selectedConjOption, setSelectedConjOption] = useState<string | null>(null);
@@ -192,11 +198,19 @@ export function LevelArcadeGameSection({
   const [conjBestStreak, setConjBestStreak] = useState(0);
   const [conjRoundFinished, setConjRoundFinished] = useState(false);
 
-  const initConjugationDeck = () => {
-    const sliced = shuffleArray<ConjugationChallenge>(baseConjugationPool).slice(
-      0,
-      selectedLevel === 'ALL' ? Math.max(handSize, 12) : handSize
-    );
+  const initConjugationDeck = (modeOverride?: 'complexity' | 'random') => {
+    const activeOrder = modeOverride ?? conjOrderMode;
+    const orderedSource =
+      activeOrder === 'complexity'
+        ? [...baseConjugationPool]
+        : shuffleArray<ConjugationChallenge>(baseConjugationPool);
+    const maxCards =
+      selectedLevel === 'ALL'
+        ? activeOrder === 'complexity'
+          ? orderedSource.length
+          : Math.max(handSize, 20)
+        : handSize;
+    const sliced = orderedSource.slice(0, maxCards);
     const prepared: ConjugationChallenge[] = sliced.map(
       (item: ConjugationChallenge, idx: number) => ({
         ...item,
@@ -216,7 +230,7 @@ export function LevelArcadeGameSection({
 
   useEffect(() => {
     initConjugationDeck();
-  }, [baseConjugationPool, handSize, selectedLevel]);
+  }, [baseConjugationPool, handSize, selectedLevel, conjOrderMode]);
 
   const currentConj = conjQueue[conjIndex];
 
@@ -242,6 +256,14 @@ export function LevelArcadeGameSection({
       setConjStatus('wrong');
       setShowParadigmTable(true);
       setConjStreak(0);
+      recordSavedMistake({
+        id: `conj_${currentConj.id}`,
+        level: currentConj.level,
+        sourceLabel: isSpanishCourse ? 'Conjugation' : 'Conjugación',
+        promptText: currentConj.fullSentence,
+        correctText: currentConj.correctAnswer,
+        explanationText: currentConj.ruleExplanation
+      });
       setConjQueue(prev => [
         ...prev,
         {
@@ -280,14 +302,24 @@ export function LevelArcadeGameSection({
   };
 
   // ==========================================================================
-  // GAME 2 STATE: 3D FLIP MEMORY MATCH BY LEVEL
+  // GAME 2 STATE: 3D FLIP MEMORY MATCH BY LEVEL (18 WORDS/LEVEL · 3 BOARDS OF 6 PAIRS)
   // ==========================================================================
   const effectiveSingleLevel: CEFRLevel = selectedLevel === 'ALL' ? 'A1' : selectedLevel;
+  const [memoryBoardMode, setMemoryBoardMode] = useState<MemoryBoardSelection>(1);
+  const [randomBoardSeed, setRandomBoardSeed] = useState<number>(0);
 
-  const levelMemoryPairs = useMemo<MemoryVocabPair[]>(() => {
-    const source = isSpanishCourse ? SPANISH_MEMORY_PAIRS : ENGLISH_MEMORY_PAIRS;
+  const allLevelMemoryPool = useMemo<MemoryVocabPair[]>(() => {
+    const source = isSpanishCourse ? EXPANDED_SPANISH_MEMORY_PAIRS : EXPANDED_ENGLISH_MEMORY_PAIRS;
     return source.filter(p => p.level === effectiveSingleLevel);
   }, [isSpanishCourse, effectiveSingleLevel]);
+
+  const levelMemoryPairs = useMemo<MemoryVocabPair[]>(() => {
+    if (memoryBoardMode === 'random') {
+      return shuffleArray<MemoryVocabPair>(allLevelMemoryPool).slice(0, 6);
+    }
+    const filtered = allLevelMemoryPool.filter(p => p.boardSet === memoryBoardMode);
+    return filtered.length > 0 ? filtered.slice(0, 6) : allLevelMemoryPool.slice(0, 6);
+  }, [allLevelMemoryPool, memoryBoardMode, randomBoardSeed]);
 
   const [memoryDeck, setMemoryDeck] = useState<MemoryDeckCard[]>([]);
   const [flippedUids, setFlippedUids] = useState<string[]>([]);
@@ -410,7 +442,7 @@ export function LevelArcadeGameSection({
   const currentDict = dictationPool[dictIndex] || dictationPool[0];
 
   const targetDictWords = useMemo<string[]>(() => {
-    if (!currentDict) return [];
+    if (!currentDict?.targetSentence) return [];
     return currentDict.targetSentence.split(/\s+/);
   }, [currentDict]);
 
@@ -513,6 +545,14 @@ export function LevelArcadeGameSection({
     } else {
       playTactileSound('error');
       setErrorFixStatus('wrong');
+      recordSavedMistake({
+        id: `err_${currentDict.id}`,
+        level: currentDict.level,
+        sourceLabel: isSpanishCourse ? 'Error Hunter' : 'Caza-Errores',
+        promptText: currentDict.targetSentence,
+        correctText: currentDict.errorHunter.correctPart,
+        explanationText: currentDict.errorHunter.explanation
+      });
     }
   };
 
@@ -528,10 +568,10 @@ export function LevelArcadeGameSection({
   };
 
   // ==========================================================================
-  // GAME 4 STATE: REAL-WORLD SURVIVAL MISSIONS (A1–B2)
+  // GAME 4 STATE: REAL-WORLD SURVIVAL MISSIONS (20 MISSIONS/LANG · 5/LEVEL)
   // ==========================================================================
   const survivalMissions = useMemo<SurvivalMission[]>(() => {
-    const source = isSpanishCourse ? SPANISH_SURVIVAL_MISSIONS : ENGLISH_SURVIVAL_MISSIONS;
+    const source = isSpanishCourse ? ALL_SPANISH_SURVIVAL_MISSIONS : ALL_ENGLISH_SURVIVAL_MISSIONS;
     if (selectedLevel === 'ALL') return source;
     const filtered = source.filter(m => m.level === selectedLevel);
     return filtered.length > 0 ? filtered : source;
@@ -543,6 +583,7 @@ export function LevelArcadeGameSection({
   const [survivalTurnStatus, setSurvivalTurnStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
   const [showNpcTranslation, setShowNpcTranslation] = useState(false);
   const [missionCompleted, setMissionCompleted] = useState(false);
+  const [completedMissionIds, setCompletedMissionIds] = useState<string[]>([]);
 
   useEffect(() => {
     setMissionIdx(0);
@@ -576,6 +617,14 @@ export function LevelArcadeGameSection({
     } else {
       playTactileSound('error');
       setSurvivalTurnStatus('wrong');
+      recordSavedMistake({
+        id: `surv_${currentMission.id}_${currentTurn.stepNumber}`,
+        level: currentMission.level,
+        sourceLabel: isSpanishCourse ? 'Survival Mission' : 'Supervivencia',
+        promptText: currentTurn.correctOption,
+        correctText: currentTurn.correctOption,
+        explanationText: currentTurn.feedbackExplanation
+      });
     }
   };
 
@@ -592,8 +641,73 @@ export function LevelArcadeGameSection({
     } else {
       playTactileSound('win');
       onEarnXP(30);
+      setCompletedMissionIds(prev =>
+        prev.includes(currentMission.id) ? prev : [...prev, currentMission.id]
+      );
       setMissionCompleted(true);
     }
+  };
+
+  // ==========================================================================
+  // GAME 5 STATE: FALSE FRIENDS & BILINGUAL TRAPS (40 CARDS/LANG · 10/LEVEL)
+  // ==========================================================================
+  const falseFriendsPool = useMemo<FalseFriendCard[]>(() => {
+    const source = isSpanishCourse ? ALL_SPANISH_FALSE_FRIENDS : ALL_ENGLISH_FALSE_FRIENDS;
+    if (selectedLevel === 'ALL') return source;
+    const filtered = source.filter(card => card.level === selectedLevel);
+    return filtered.length > 0 ? filtered : source;
+  }, [isSpanishCourse, selectedLevel]);
+
+  const [ffIndex, setFfIndex] = useState(0);
+  const [selectedFfOption, setSelectedFfOption] = useState<string | null>(null);
+  const [ffStatus, setFfStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
+  const [ffStreak, setFfStreak] = useState(0);
+
+  useEffect(() => {
+    setFfIndex(0);
+    setSelectedFfOption(null);
+    setFfStatus('idle');
+  }, [falseFriendsPool]);
+
+  const currentFf = falseFriendsPool[ffIndex] || falseFriendsPool[0];
+
+  const shuffledFfOptions = useMemo<string[]>(() => {
+    if (!currentFf) return [];
+    return shuffleOptionsList(currentFf.options, currentFf.correctAnswer, ffIndex);
+  }, [currentFf, ffIndex]);
+
+  const handleSelectFalseFriendOption = (opt: string) => {
+    if (!currentFf || ffStatus !== 'idle') return;
+    setSelectedFfOption(opt);
+    const fullResolved =
+      currentFf.fullCorrectSentence ||
+      (currentFf.targetSentenceWithBlank || '').replace('_____', currentFf.correctAnswer);
+    if (opt === currentFf.correctAnswer) {
+      playTactileSound('stamp');
+      setFfStatus('correct');
+      setFfStreak(prev => prev + 1);
+      onEarnXP(20);
+      playSpeech(fullResolved, { courseLanguage, rate: 0.94 });
+    } else {
+      playTactileSound('error');
+      setFfStatus('wrong');
+      setFfStreak(0);
+      recordSavedMistake({
+        id: `ff_${currentFf.id}`,
+        level: currentFf.level,
+        sourceLabel: isSpanishCourse ? 'False Friend' : 'Falso Amigo',
+        promptText: fullResolved,
+        correctText: `${currentFf.correctAnswer} (${currentFf.falseFriendPair})`,
+        explanationText: currentFf.contrastExplanation
+      });
+    }
+  };
+
+  const handleNextFalseFriend = () => {
+    playTactileSound('flip');
+    setSelectedFfOption(null);
+    setFfStatus('idle');
+    setFfIndex(prev => (prev + 1) % falseFriendsPool.length);
   };
 
   const levelStyles: Record<LevelFilter, { badgeBg: string; labelEs: string; labelEn: string }> = {
@@ -642,8 +756,8 @@ export function LevelArcadeGameSection({
               <Dices className="w-4 h-4" />
               <span>
                 {isSpanishCourse
-                  ? '4-IN-1 LEARNING ARCADE · CONJUGATION, MEMORY, DICTATION & SURVIVAL'
-                  : 'ARCADE 4 EN 1 · CONJUGACIÓN, MEMORIA, DICTADO Y SUPERVIVENCIA'}
+                  ? '5-IN-1 LEARNING ARCADE · CONJUGATION, MEMORY, DICTATION, SURVIVAL & FALSE FRIENDS'
+                  : 'ARCADE 5 EN 1 · CONJUGACIÓN, MEMORIA, DICTADO, SUPERVIVENCIA Y FALSOS AMIGOS'}
               </span>
             </div>
             <h3 className="text-2xl md:text-3xl font-black text-slate-950 dark:text-white tracking-tight font-display">
@@ -653,7 +767,7 @@ export function LevelArcadeGameSection({
             </h3>
           </div>
 
-          {/* 5 Level Filter Buttons (A1, A2, B1, B2, ALL) */}
+          {/* 5 Level Filter Buttons (A1, A2, B1, B2, ALL) + Personal Error Vault Button */}
           <div className="flex flex-wrap items-center gap-1.5">
             {(['A1', 'A2', 'B1', 'B2', 'ALL'] as LevelFilter[]).map(lvl => {
               const isSelected = selectedLevel === lvl;
@@ -675,11 +789,114 @@ export function LevelArcadeGameSection({
                 </button>
               );
             })}
+
+            {savedMistakes.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  playTactileSound('pop');
+                  setShowMistakeVault(prev => !prev);
+                }}
+                className={`px-3 py-2 rounded-xl text-xs font-black border-2 border-slate-900 inline-flex items-center gap-1.5 transition-all ${
+                  showMistakeVault
+                    ? 'bg-slate-950 text-white shadow-[2px_2px_0px_0px_#4338ca]'
+                    : 'bg-rose-200 hover:bg-rose-300 text-slate-950 shadow-[2px_2px_0px_0px_#0f172a]'
+                }`}
+              >
+                <BookmarkCheck className="w-4 h-4" />
+                <span>
+                  {isSpanishCourse
+                    ? `My Mistakes (${savedMistakes.length})`
+                    : `Mis Errores (${savedMistakes.length})`}
+                </span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* 4 Game Mode Selector Tabs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+        {/* Personal Error Vault Drawer */}
+        <AnimatePresence>
+          {showMistakeVault && savedMistakes.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="p-4 rounded-2xl bg-rose-50 dark:bg-zinc-800/90 border-2 border-slate-900 space-y-3"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span className="text-xs font-black uppercase tracking-wider text-rose-800 dark:text-rose-300">
+                    {isSpanishCourse
+                      ? 'Personal Error Vault · Click any card to hear & mark as mastered:'
+                      : 'Cofre Personal de Mis Errores · Toca para escuchar y marcar como dominado:'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playTactileSound('pop');
+                    setSavedMistakes([]);
+                    setShowMistakeVault(false);
+                  }}
+                  className="px-3 py-1 rounded-lg bg-white text-slate-900 border border-slate-900 text-xs font-black"
+                >
+                  {isSpanishCourse ? 'Clear All' : 'Limpiar Cofre'}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                {savedMistakes.map(err => (
+                  <div
+                    key={err.id}
+                    className="p-3 rounded-xl bg-white dark:bg-zinc-900 border-2 border-slate-900 flex items-start justify-between gap-3"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-2 py-0.5 rounded-md bg-yellow-300 text-slate-950 border border-slate-900 text-[10px] font-black">
+                          {err.level} · {err.sourceLabel}
+                        </span>
+                        <span className="text-xs font-black text-emerald-700 dark:text-emerald-400">
+                          ✅ {err.correctText}
+                        </span>
+                      </div>
+                      <p className="text-xs font-black text-slate-950 dark:text-white">
+                        "{err.promptText}"
+                      </p>
+                      <p className="text-[11px] font-semibold text-slate-600 dark:text-zinc-400">
+                        {err.explanationText}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          playSpeech(err.promptText, { courseLanguage, rate: 0.92 })
+                        }
+                        className="p-2 rounded-lg bg-yellow-200 text-slate-950 border border-slate-900"
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playTactileSound('stamp');
+                          onEarnXP(5);
+                          setSavedMistakes(prev => prev.filter(item => item.id !== err.id));
+                        }}
+                        className="px-2 py-1 rounded-lg bg-emerald-200 text-slate-950 border border-slate-900 text-[10px] font-black"
+                      >
+                        {isSpanishCourse ? 'Done' : 'Dominado'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 5 Game Mode Selector Tabs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-1">
           <button
             type="button"
             onClick={() => {
@@ -698,7 +915,7 @@ export function LevelArcadeGameSection({
                 {isSpanishCourse ? '1. Conjugation Roulette' : '1. Ruleta de Conjugación'}
               </span>
               <span className="text-[11px] font-bold opacity-80 block">
-                {isSpanishCourse ? '48 cards + Verb tables' : '48 cartas + Tablas de verbos'}
+                {isSpanishCourse ? '80 cards · 20/level + Tables' : '80 cartas · 20/nivel + Tablas'}
               </span>
             </div>
           </button>
@@ -721,7 +938,7 @@ export function LevelArcadeGameSection({
                 {isSpanishCourse ? '2. Memory Card Duel' : '2. Memoria de Palabras'}
               </span>
               <span className="text-[11px] font-bold opacity-80 block">
-                {isSpanishCourse ? 'Flip pairs + Spoken audio' : 'Voltear pares + Audio'}
+                {isSpanishCourse ? '72 pairs · 18/level (3 decks)' : '72 pares · 18/nivel (3 mazos)'}
               </span>
             </div>
           </button>
@@ -741,10 +958,10 @@ export function LevelArcadeGameSection({
             <Headphones className="w-5 h-5 shrink-0" />
             <div>
               <span className="text-xs font-black block">
-                {isSpanishCourse ? '3. Audio Dictation & Traps' : '3. Dictado Auditivo y Trampas'}
+                {isSpanishCourse ? '3. Audio Dictation (24)' : '3. Dictado Auditivo (24)'}
               </span>
               <span className="text-[11px] font-bold opacity-80 block">
-                {isSpanishCourse ? 'Listen 1.0x/0.75x + Error Hunter' : 'Oído 1.0x/0.75x + Caza-Errores'}
+                {isSpanishCourse ? '1.0x/0.72x + Error Hunter' : '1.0x/0.72x + Caza-Errores'}
               </span>
             </div>
           </button>
@@ -764,10 +981,33 @@ export function LevelArcadeGameSection({
             <Compass className="w-5 h-5 shrink-0" />
             <div>
               <span className="text-xs font-black block">
-                {isSpanishCourse ? '4. Survival Missions' : '4. Situaciones de Supervivencia'}
+                {isSpanishCourse ? '4. Survival Missions (20)' : '4. Supervivencia Real (20)'}
               </span>
               <span className="text-[11px] font-bold opacity-80 block">
-                {isSpanishCourse ? 'Real-world dialogue decisions' : 'Decisiones en diálogos reales'}
+                {isSpanishCourse ? '5 missions/level · 60 turns' : '5 misiones/nivel · 60 turnos'}
+              </span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              playTactileSound('pop');
+              setActiveGameMode('false-friends');
+            }}
+            className={`p-3 rounded-2xl border-2 border-slate-900 text-left transition-all flex items-center gap-2.5 ${
+              activeGameMode === 'false-friends'
+                ? 'bg-violet-300 text-slate-950 shadow-[3px_3px_0px_0px_#0f172a] -translate-y-0.5'
+                : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-white'
+            }`}
+          >
+            <ShieldAlert className="w-5 h-5 shrink-0" />
+            <div>
+              <span className="text-xs font-black block">
+                {isSpanishCourse ? '5. False Friends & Traps' : '5. Falsos Amigos y Trampas'}
+              </span>
+              <span className="text-[11px] font-bold opacity-80 block">
+                {isSpanishCourse ? '40 traps · 10 per level' : '40 trampas · 10 por nivel'}
               </span>
             </div>
           </button>
@@ -841,17 +1081,42 @@ export function LevelArcadeGameSection({
                 type="button"
                 onClick={() => {
                   playTactileSound('pop');
-                  setHandSize(prev => (prev === 12 ? 6 : 12));
+                  setConjOrderMode(prev => (prev === 'complexity' ? 'random' : 'complexity'));
+                }}
+                className={`px-3 py-1.5 rounded-xl border-2 border-slate-900 text-xs font-black transition-all ${
+                  conjOrderMode === 'complexity'
+                    ? 'bg-emerald-300 text-slate-950 shadow-[2px_2px_0px_0px_#0f172a]'
+                    : 'bg-amber-200 text-slate-950 shadow-[2px_2px_0px_0px_#0f172a]'
+                }`}
+              >
+                {conjOrderMode === 'complexity'
+                  ? isSpanishCourse
+                    ? 'Order: By Complexity (Easy → Hard)'
+                    : 'Orden: Por Complejidad (Fácil → Difícil)'
+                  : isSpanishCourse
+                    ? 'Order: Random Shuffle'
+                    : 'Orden: Barajado al Azar'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  playTactileSound('pop');
+                  setHandSize(prev => (prev === 20 ? 12 : prev === 12 ? 6 : 20));
                 }}
                 className="px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border-2 border-slate-900 dark:border-zinc-700 text-xs font-black"
               >
-                {handSize === 12
+                {handSize === 20
                   ? isSpanishCourse
-                    ? 'Full Deck: 12 Cards'
-                    : 'Mazo Completo: 12 Cartas'
-                  : isSpanishCourse
-                    ? 'Quick Hand: 6 Cards'
-                    : 'Mano Rápida: 6 Cartas'}
+                    ? 'Full Level Deck: 20 Cards'
+                    : 'Mazo Completo: 20 Cartas'
+                  : handSize === 12
+                    ? isSpanishCourse
+                      ? 'Medium Deck: 12 Cards'
+                      : 'Mazo Medio: 12 Cartas'
+                    : isSpanishCourse
+                      ? 'Quick Hand: 6 Cards'
+                      : 'Mano Rápida: 6 Cartas'}
               </button>
             </div>
           </div>
@@ -1033,7 +1298,7 @@ export function LevelArcadeGameSection({
                         : 'Completa la oración con la conjugación exacta:'}
                     </span>
                     <p className="text-xl sm:text-2xl font-black text-slate-950 dark:text-white leading-snug">
-                      {currentConj.sentenceTemplate.split('_____').map((part, i, arr) => (
+                      {(currentConj.sentenceTemplate || '').split('_____').map((part, i, arr) => (
                         <React.Fragment key={i}>
                           {part}
                           {i < arr.length - 1 && (
@@ -1283,10 +1548,88 @@ export function LevelArcadeGameSection({
       )}
 
       {/* ==================================================================== */}
-      {/* MODE 2: 3D FLIP MEMORY MATCH BY LEVEL                                */}
+      {/* MODE 2: 3D FLIP MEMORY MATCH BY LEVEL (3 BOARDS OF 6 PAIRS = 18/LVL) */}
       {/* ==================================================================== */}
       {activeGameMode === 'memory' && (
-        <div className="pt-6 space-y-6">
+        <div className="pt-6 space-y-5">
+          {/* Memory Board Variant Selector (3 Decks of 6 Pairs = 18 Important Words per Level) */}
+          <div className="p-3.5 rounded-2xl bg-emerald-50/90 dark:bg-zinc-800/70 border-2 border-slate-900 dark:border-zinc-700 space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-black uppercase tracking-wider text-emerald-950 dark:text-emerald-300">
+                {isSpanishCourse
+                  ? `Level ${effectiveSingleLevel} Vocabulary Decks · 18 Important Words (6 Pairs per Game):`
+                  : `Mazos de Vocabulario Nivel ${effectiveSingleLevel} · 18 Palabras Clave (6 Pares por Partida):`}
+              </span>
+              <span className="px-2.5 py-0.5 rounded-lg bg-white dark:bg-zinc-900 border border-slate-900 text-[11px] font-black text-slate-900 dark:text-zinc-200">
+                {isSpanishCourse
+                  ? `Total in Level ${effectiveSingleLevel}: ${allLevelMemoryPool.length} Key Words`
+                  : `Total Nivel ${effectiveSingleLevel}: ${allLevelMemoryPool.length} Palabras Clave`}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              {([1, 2, 3] as const).map(setNum => {
+                const samplePair = allLevelMemoryPool.find(p => p.boardSet === setNum);
+                const isSelectedBoard = memoryBoardMode === setNum;
+                const boardSubtitle = samplePair
+                  ? isSpanishCourse
+                    ? samplePair.boardTitleEn
+                    : samplePair.boardTitleEs
+                  : isSpanishCourse
+                    ? `Board ${setNum} (6 Pairs)`
+                    : `Mazo ${setNum} (6 Pares)`;
+
+                return (
+                  <button
+                    key={setNum}
+                    type="button"
+                    onClick={() => {
+                      playTactileSound('pop');
+                      setMemoryBoardMode(setNum);
+                    }}
+                    className={`p-2.5 rounded-xl border-2 border-slate-900 text-left transition-all ${
+                      isSelectedBoard
+                        ? 'bg-emerald-300 text-slate-950 shadow-[2px_2px_0px_0px_#0f172a] -translate-y-0.5'
+                        : 'bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 hover:bg-emerald-100'
+                    }`}
+                  >
+                    <span className="text-xs font-black block">
+                      {isSpanishCourse
+                        ? `Deck ${setNum} · Words ${(setNum - 1) * 6 + 1}–${setNum * 6}`
+                        : `Mazo ${setNum} · Palabras ${(setNum - 1) * 6 + 1}–${setNum * 6}`}
+                    </span>
+                    <span className="text-[11px] font-bold opacity-85 line-clamp-1 block">
+                      {boardSubtitle}
+                    </span>
+                  </button>
+                );
+              })}
+
+              <button
+                type="button"
+                onClick={() => {
+                  playTactileSound('pop');
+                  setMemoryBoardMode('random');
+                  setRandomBoardSeed(prev => prev + 1);
+                }}
+                className={`p-2.5 rounded-xl border-2 border-slate-900 text-left transition-all ${
+                  memoryBoardMode === 'random'
+                    ? 'bg-yellow-300 text-slate-950 shadow-[2px_2px_0px_0px_#0f172a] -translate-y-0.5'
+                    : 'bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 hover:bg-yellow-100'
+                }`}
+              >
+                <span className="text-xs font-black block">
+                  {isSpanishCourse ? 'Random Mix (6 of 18)' : 'Mix Aleatorio (6 de 18)'}
+                </span>
+                <span className="text-[11px] font-bold opacity-85 block">
+                  {isSpanishCourse
+                    ? 'Draws 6 random pairs from all 18'
+                    : 'Combina 6 pares al azar de las 18'}
+                </span>
+              </button>
+            </div>
+          </div>
+
           <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-100 dark:bg-zinc-800/90 p-3.5 rounded-2xl border-2 border-slate-900 dark:border-zinc-700">
             <div className="flex flex-wrap items-center gap-2.5">
               <span
@@ -1308,7 +1651,7 @@ export function LevelArcadeGameSection({
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 disabled={peekUsed || isPeeking || matchedPairIds.length === levelMemoryPairs.length}
@@ -1335,7 +1678,11 @@ export function LevelArcadeGameSection({
                 type="button"
                 onClick={() => {
                   playTactileSound('flip');
-                  initMemoryBoard();
+                  if (memoryBoardMode === 'random') {
+                    setRandomBoardSeed(prev => prev + 1);
+                  } else {
+                    initMemoryBoard();
+                  }
                 }}
                 className="px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 hover:bg-emerald-200 text-slate-950 dark:text-white border-2 border-slate-900 dark:border-zinc-600 text-xs font-black inline-flex items-center gap-1.5 transition-colors"
               >
@@ -1388,7 +1735,10 @@ export function LevelArcadeGameSection({
                     <>
                       <div className="flex items-center justify-between w-full text-[11px] font-black text-yellow-300">
                         <span>#{idx + 1}</span>
-                        <span>{effectiveSingleLevel}</span>
+                        <span>
+                          {effectiveSingleLevel} ·{' '}
+                          {memoryBoardMode === 'random' ? 'MIX' : `M${memoryBoardMode}`}
+                        </span>
                       </div>
                       <div className="flex items-center justify-center my-auto">
                         <Zap className="w-6 h-6 text-yellow-300 opacity-90" />
@@ -1405,16 +1755,38 @@ export function LevelArcadeGameSection({
 
           {matchedPairIds.length > 0 && (
             <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-zinc-800/70 border-2 border-slate-900 dark:border-zinc-700 space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
                   {isSpanishCourse
                     ? `Unlocked Level ${effectiveSingleLevel} Words (Click to Hear Audio in Context):`
                     : `Palabras Desbloqueadas del Nivel ${effectiveSingleLevel} (Toca para escuchar en contexto):`}
                 </span>
                 {matchedPairIds.length === levelMemoryPairs.length && (
-                  <span className="px-2.5 py-1 rounded-lg bg-yellow-300 text-slate-950 border border-slate-900 text-xs font-black">
-                    {isSpanishCourse ? '★ Board Completed! +40 XP' : '★ ¡Tablero Completado! +40 XP'}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-lg bg-yellow-300 text-slate-950 border border-slate-900 text-xs font-black">
+                      {isSpanishCourse ? '★ Board Completed! +40 XP' : '★ ¡Tablero Completado! +40 XP'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playTactileSound('flip');
+                        if (memoryBoardMode === 1) setMemoryBoardMode(2);
+                        else if (memoryBoardMode === 2) setMemoryBoardMode(3);
+                        else if (memoryBoardMode === 3) {
+                          setMemoryBoardMode('random');
+                          setRandomBoardSeed(prev => prev + 1);
+                        } else {
+                          setMemoryBoardMode(1);
+                        }
+                      }}
+                      className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white border border-slate-900 text-xs font-black inline-flex items-center gap-1"
+                    >
+                      <span>
+                        {isSpanishCourse ? 'Play Next Memory Deck' : 'Jugar Siguiente Mazo'}
+                      </span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -1883,42 +2255,59 @@ export function LevelArcadeGameSection({
       {activeGameMode === 'survival' && currentMission && currentTurn && (
         <div className="pt-6 space-y-5">
           {/* Mission Selector & Progress Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-100 dark:bg-zinc-800/90 p-3.5 rounded-2xl border-2 border-slate-900 dark:border-zinc-700">
-            <div className="flex flex-wrap items-center gap-2">
-              <span
-                className={`px-3 py-1 rounded-xl border-2 border-slate-900 text-xs font-black ${
-                  levelStyles[currentMission.level].badgeBg
-                }`}
-              >
-                {currentMission.locationBadge}
-              </span>
-              <h4 className="text-sm sm:text-base font-black text-slate-950 dark:text-white">
-                {currentMission.title}
-              </h4>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {survivalMissions.map((m, idx) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => {
-                    playTactileSound('pop');
-                    setMissionIdx(idx);
-                    setTurnIdx(0);
-                    setSelectedSurvivalOpt(null);
-                    setSurvivalTurnStatus('idle');
-                    setMissionCompleted(false);
-                  }}
+          <div className="bg-slate-100 dark:bg-zinc-800/90 p-3.5 rounded-2xl border-2 border-slate-900 dark:border-zinc-700 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span
                   className={`px-3 py-1 rounded-xl border-2 border-slate-900 text-xs font-black ${
-                    missionIdx === idx
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-white text-slate-900 hover:bg-yellow-200'
+                    levelStyles[currentMission.level].badgeBg
                   }`}
                 >
-                  {m.level} #{idx + 1}
-                </button>
-              ))}
+                  {currentMission.locationBadge}
+                </span>
+                <h4 className="text-sm sm:text-base font-black text-slate-950 dark:text-white">
+                  {currentMission.title}
+                </h4>
+              </div>
+              <span className="text-xs font-black text-slate-600 dark:text-zinc-300">
+                {isSpanishCourse
+                  ? `Mission ${missionIdx + 1} of ${survivalMissions.length}`
+                  : `Misión ${missionIdx + 1} de ${survivalMissions.length}`}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {survivalMissions.map((m, idx) => {
+                const isDone = completedMissionIds.includes(m.id);
+                const isCurrent = missionIdx === idx;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      playTactileSound('pop');
+                      setMissionIdx(idx);
+                      setTurnIdx(0);
+                      setSelectedSurvivalOpt(null);
+                      setSurvivalTurnStatus('idle');
+                      setShowNpcTranslation(false);
+                      setMissionCompleted(false);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl border-2 border-slate-900 text-xs font-black inline-flex items-center gap-1.5 transition-all ${
+                      isCurrent
+                        ? 'bg-slate-900 text-white shadow-[2px_2px_0px_0px_#4338ca]'
+                        : isDone
+                          ? 'bg-emerald-200 text-slate-950 hover:bg-emerald-300'
+                          : 'bg-white text-slate-900 hover:bg-yellow-200'
+                    }`}
+                  >
+                    <span>
+                      {m.level} #{idx + 1}: {m.title}
+                    </span>
+                    {isDone && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -1964,6 +2353,7 @@ export function LevelArcadeGameSection({
                       setTurnIdx(0);
                       setSelectedSurvivalOpt(null);
                       setSurvivalTurnStatus('idle');
+                      setShowNpcTranslation(false);
                       setMissionCompleted(false);
                     }}
                     className="px-6 py-3 rounded-2xl bg-indigo-600 text-white border-2 border-slate-900 font-black text-xs shadow-[3px_3px_0px_0px_#0f172a]"
@@ -2119,6 +2509,197 @@ export function LevelArcadeGameSection({
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* MODE 5: FALSE FRIENDS & BILINGUAL TRAPS (32 CARDS · A1–B2)           */}
+      {/* ==================================================================== */}
+      {activeGameMode === 'false-friends' && currentFf && (
+        <div className="pt-6 space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-100 dark:bg-zinc-800/90 p-3.5 rounded-2xl border-2 border-slate-900 dark:border-zinc-700">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span
+                className={`px-3 py-1 rounded-xl border-2 border-slate-900 text-xs font-black ${
+                  levelStyles[currentFf.level].badgeBg
+                }`}
+              >
+                {currentFf.level} · {currentFf.trapTitle}
+              </span>
+              <span className="text-xs font-black text-slate-700 dark:text-zinc-300 tabular-nums">
+                {isSpanishCourse
+                  ? `Card ${ffIndex + 1} of ${falseFriendsPool.length}`
+                  : `Carta ${ffIndex + 1} de ${falseFriendsPool.length}`}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-violet-200 text-slate-950 border-2 border-slate-900 text-xs font-black">
+                <Flame className="w-4 h-4 text-violet-700 fill-violet-600" />
+                <span>
+                  {isSpanishCourse ? `Trap Streak: ${ffStreak}` : `Racha sin caer: ${ffStreak}`}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleNextFalseFriend}
+                className="px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 text-slate-950 dark:text-white border-2 border-slate-900 text-xs font-black inline-flex items-center gap-1"
+              >
+                <Dices className="w-3.5 h-3.5" />
+                <span>{isSpanishCourse ? 'Skip / Next' : 'Siguiente Carta'}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-[#FAF8F5] dark:bg-zinc-800/80 border-2 border-slate-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_#0f172a] space-y-5">
+            {/* Intended Native Meaning Banner */}
+            <div className="p-5 rounded-2xl bg-violet-100 dark:bg-violet-950/40 border-2 border-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <span className="text-xs font-black uppercase tracking-wider text-violet-800 dark:text-violet-300 flex items-center gap-1.5">
+                  <ShieldAlert className="w-4 h-4" />
+                  <span>
+                    {isSpanishCourse
+                      ? 'Beware of the False Friend! Express this exact meaning:'
+                      : '¡Cuidado con el Falso Amigo! Cómo expresarías esta idea:'}
+                  </span>
+                </span>
+                <p className="text-base sm:text-lg font-black text-slate-950 dark:text-white">
+                  "{currentFf.situationPrompt}"
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  playSpeech(
+                    currentFf.fullCorrectSentence ||
+                      (currentFf.targetSentenceWithBlank || '').replace(
+                        '_____',
+                        currentFf.correctAnswer
+                      ),
+                    { courseLanguage, rate: 0.92 }
+                  )
+                }
+                className="p-3 rounded-2xl bg-yellow-300 hover:bg-yellow-400 text-slate-950 border-2 border-slate-900 shadow-[3px_3px_0px_0px_#0f172a] shrink-0"
+              >
+                <Volume2 className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Target Sentence with Blank */}
+            <div className="space-y-2">
+              <span className="text-xs font-black uppercase text-slate-600 dark:text-zinc-400">
+                {isSpanishCourse
+                  ? 'Choose the authentic word (do not fall for the sound-alike trap!):'
+                  : 'Elige la palabra auténtica (¡no caigas en la palabra que suena parecida!):'}
+              </span>
+              <p className="text-xl sm:text-2xl font-black text-slate-950 dark:text-white leading-snug">
+                {(currentFf.targetSentenceWithBlank || '').split('_____').map((part, i, arr) => (
+                  <React.Fragment key={i}>
+                    {part}
+                    {i < arr.length - 1 && (
+                      <span
+                        className={`inline-block mx-1.5 px-3 py-0.5 rounded-xl border-2 border-slate-900 font-black ${
+                          ffStatus === 'correct'
+                            ? 'bg-emerald-300 text-slate-950'
+                            : ffStatus === 'wrong'
+                              ? 'bg-rose-300 text-slate-950'
+                              : 'bg-yellow-200 text-slate-950'
+                        }`}
+                      >
+                        {ffStatus !== 'idle'
+                          ? currentFf.correctAnswer
+                          : selectedFfOption || '_____'}
+                      </span>
+                    )}
+                  </React.Fragment>
+                ))}
+              </p>
+            </div>
+
+            {/* 4 Options */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {shuffledFfOptions.map((opt, idx) => {
+                const isPicked = selectedFfOption === opt;
+                const isRight = opt === currentFf.correctAnswer;
+
+                let btnStyle =
+                  'bg-white dark:bg-zinc-900 text-slate-950 dark:text-white border-slate-900 hover:bg-violet-100';
+                if (ffStatus !== 'idle') {
+                  if (isRight) {
+                    btnStyle = 'bg-emerald-300 text-slate-950 border-slate-900';
+                  } else if (isPicked && !isRight) {
+                    btnStyle = 'bg-rose-300 text-slate-950 border-slate-900';
+                  } else {
+                    btnStyle = 'bg-slate-100 text-slate-400 border-slate-300 opacity-60';
+                  }
+                }
+
+                return (
+                  <button
+                    key={`${opt}_${idx}`}
+                    type="button"
+                    disabled={ffStatus !== 'idle'}
+                    onClick={() => handleSelectFalseFriendOption(opt)}
+                    className={`p-4 rounded-2xl border-2 font-black text-left text-base shadow-[3px_3px_0px_0px_#0f172a] flex items-center justify-between gap-3 ${btnStyle}`}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <span className="w-7 h-7 rounded-lg bg-slate-900 text-white text-xs font-black flex items-center justify-center shrink-0">
+                        {String.fromCharCode(65 + idx)}
+                      </span>
+                      <span>{opt}</span>
+                    </span>
+                    {ffStatus !== 'idle' && isRight && (
+                      <CheckCircle2 className="w-5 h-5 shrink-0" />
+                    )}
+                    {ffStatus !== 'idle' && isPicked && !isRight && (
+                      <XCircle className="w-5 h-5 shrink-0" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Bilingual Contrast Explanation */}
+            {ffStatus !== 'idle' && (
+              <div
+                className={`p-4 rounded-2xl border-2 border-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                  ffStatus === 'correct'
+                    ? 'bg-emerald-200 text-slate-950'
+                    : 'bg-amber-200 text-slate-950'
+                }`}
+              >
+                <div className="space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 text-white text-xs font-black">
+                      {currentFf.falseFriendPair}
+                    </span>
+                    <span className="text-xs font-black uppercase">
+                      {ffStatus === 'correct'
+                        ? isSpanishCourse
+                          ? '★ Trap Avoided! (+20 XP)'
+                          : '★ ¡Trampa Evitada! (+20 XP)'
+                        : isSpanishCourse
+                          ? `Correct word: "${currentFf.correctAnswer}"`
+                          : `Palabra correcta: "${currentFf.correctAnswer}"`}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-bold leading-relaxed">
+                    {currentFf.contrastExplanation}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleNextFalseFriend}
+                  className="px-5 py-3 rounded-xl bg-slate-950 text-white border-2 border-slate-900 font-black text-xs whitespace-nowrap shrink-0 inline-flex items-center gap-1.5"
+                >
+                  <span>{isSpanishCourse ? 'Next Card' : 'Siguiente Trampa'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
